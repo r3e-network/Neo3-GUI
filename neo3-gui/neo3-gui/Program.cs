@@ -2,8 +2,9 @@
 using System.IO;
 using System.Net;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Hosting;
 using Neo.Common;
 
 namespace Neo
@@ -16,14 +17,15 @@ namespace Neo
         {
             AppDomain.CurrentDomain.ProcessExit += new EventHandler(CurrentDomain_ProcessExit);
 
-            Starter.Start(args);
-            CreateWebHostBuilder(args).Build().Start();
+            await Starter.Start(args);
+            var host = CreateHostBuilder(args).Build();
+            await host.StartAsync();
             Starter.RunConsole();
             Starter.Stop();
-
+            await host.StopAsync();
         }
 
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        public static IHostBuilder CreateHostBuilder(string[] args)
         {
             var url = "http://127.0.0.1:8081";
             var envPort = Environment.GetEnvironmentVariable("NEO_GUI_PORT");
@@ -31,9 +33,12 @@ namespace Neo
             {
                 url = $"http://127.0.0.1:{port}";
             }
-            return WebHost.CreateDefaultBuilder(args)
-                .UseUrls(url)
-                .UseStartup<Startup>();
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureWebHostDefaults(webBuilder =>
+                {
+                    webBuilder.UseUrls(url)
+                        .UseStartup<Startup>();
+                });
         }
 
 

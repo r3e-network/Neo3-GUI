@@ -51,7 +51,7 @@ namespace Neo.Services.ApiServices
                 }
                 return key.ToHexString();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return Error(ErrorCode.InvalidPrivateKey);
             }

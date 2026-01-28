@@ -1018,7 +1018,7 @@ namespace Neo
                 {
                     return privateKey.HexToBytes();
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                 }
             }

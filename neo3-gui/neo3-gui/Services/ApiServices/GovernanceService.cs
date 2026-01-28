@@ -52,7 +52,7 @@ namespace Neo.Services.ApiServices
             {
                 publicKeys = pubkeys.Select(p => ECPoint.Parse(p, ECCurve.Secp256r1)).ToArray();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Error(ErrorCode.InvalidPara);
             }

@@ -82,7 +82,7 @@ namespace Neo.Common.Storage.SQLiteModules
             {
                 return SyncIndexes.OrderByDescending(s => s.BlockHeight).FirstOrDefault()?.BlockHeight;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return null;
             }

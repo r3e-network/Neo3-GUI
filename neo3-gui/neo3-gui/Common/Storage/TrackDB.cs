@@ -25,7 +25,6 @@ namespace Neo.Common.Storage
         public TimeSpan LiveTime => DateTime.Now - _createTime;
 
         private static bool _hasConsistencyCheck = false;
-        private static bool _hasInitCahce = false;
 
         private static readonly ConcurrentDictionary<long, ContractEntity> ContractCache = new();
         private static readonly ConcurrentDictionary<UInt160, AddressEntity> AddressHashCache = new();

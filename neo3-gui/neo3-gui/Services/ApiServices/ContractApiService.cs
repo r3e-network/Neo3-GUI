@@ -254,7 +254,7 @@ namespace Neo.Services.ApiServices
 
             var result = new InvokeResultModel();
             result.VmState = engine.State;
-            result.GasConsumed = new BigDecimal((BigInteger)engine.GasConsumed, NativeContract.GAS.Decimals);
+            result.GasConsumed = new BigDecimal((BigInteger)engine.FeeConsumed, NativeContract.GAS.Decimals);
             result.ResultStack = engine.ResultStack.Select(p => p.ToJStackItem()).ToList();
             result.Notifications = engine.Notifications?.Select(ConvertToEventModel).ToList();
             if (engine.State.HasFlag(VMState.FAULT))
@@ -494,7 +494,7 @@ namespace Neo.Services.ApiServices
             {
                 publicKey = ECPoint.Parse(pubkey, ECCurve.Secp256r1);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Error(ErrorCode.InvalidPara);
             }
@@ -538,7 +538,7 @@ namespace Neo.Services.ApiServices
                 //publicKeys = pubkeys.Select(p => ECPoint.Parse(p, ECCurve.Secp256r1)).ToArray();
                 publicKey = ECPoint.Parse(pubkeys.FirstOrDefault(), ECCurve.Secp256r1);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Error(ErrorCode.InvalidPara);
             }

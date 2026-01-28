@@ -46,11 +46,11 @@ namespace Neo.Services.ApiServices
             {
                 Program.Starter.OpenWallet(path, password);
             }
-            catch (CryptographicException e)
+            catch (CryptographicException)
             {
                 return Error(ErrorCode.WrongPassword);
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Error(ErrorCode.FailToOpenWallet);
             }
@@ -118,7 +118,7 @@ namespace Neo.Services.ApiServices
                         throw new Exception("Wallet files in that format are not supported, please use a .json or .db3 file extension.");
                 }
             }
-            catch (CryptographicException e)
+            catch (CryptographicException)
             {
                 return Error(ErrorCode.WrongPassword);
             }
@@ -791,7 +791,7 @@ namespace Neo.Services.ApiServices
             {
                 context = ContractParametersContext.FromJson(signContext.DeserializeJson<JObject>(), Helpers.GetDefaultSnapshot());
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Error(ErrorCode.InvalidPara);
             }
@@ -850,7 +850,7 @@ namespace Neo.Services.ApiServices
                 transaction = (Transaction)context.Verifiable;
                 transaction.Witnesses = context.GetWitnesses();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return Error(ErrorCode.InvalidPara);
             }
