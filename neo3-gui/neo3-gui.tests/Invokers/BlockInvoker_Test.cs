@@ -18,6 +18,7 @@ namespace neo3_gui.tests.Invokers
         }
 
         [TestMethod]
+        [Ignore("Requires NeoSystem runtime - integration test")]
         public async Task GetBlock_Test()
         {
             var invoker = new BlockApiService();
