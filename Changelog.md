@@ -2,6 +2,10 @@
 
 Compatbile with Neo3-preview3: [Neo CLI v3.0.0-preview3](https://github.com/neo-project/neo-node/releases/tag/v3.0.0-preview3)
 
+### Updated
+
++ Align Neo dependency and bundled LevelDBStore plugin to 3.9.1 during build/publish
+
 ### Added
 
 ##### 1. Blockchain Data

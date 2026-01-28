@@ -75,6 +75,8 @@
     "start": "cross-env BROWSER=none node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
+    "fetch-neo-assets": "node ../scripts/fetch-leveldbstore.js",
+    "prepublish": "npm run fetch-neo-assets",
     "build-electron": "electron-builder",
     "start-electron": "cross-env NODE_ENV=development electron .",
     "start-electron-prod": "electron .",
@@ -186,12 +188,13 @@
       "^(?!.*\\.(js|jsx|mjs|cjs|ts|tsx|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
     },
     "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|cjs|ts|tsx)$",
+      "[/\\\\]node_modules[/\\\\](?!axios/).+\\.(js|jsx|mjs|cjs|ts|tsx)$",
       "^.+\\.module\\.(css|sass|scss)$"
     ],
     "modulePaths": [],
     "moduleNameMapper": {
       "^react-native$": "react-native-web",
+      "^@electron/remote$": "<rootDir>/src/__mocks__/electronRemote.js",
       "^.+\\.module\\.(css|sass|scss)$": "identity-obj-proxy"
     },
     "moduleFileExtensions": [

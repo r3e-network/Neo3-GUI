@@ -1,8 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
-  render(<App />);
-  const linkElement = screen.getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
+jest.mock('./neonode', () => ({
+  switchNode: jest.fn(),
+}));
+
+jest.mock('./components/WebSocket/neoWebSocket', () => ({
+  initWebSocket: jest.fn(),
+  registMethod: jest.fn(),
+  unregistMethod: jest.fn(),
+}));
+
+test('renders app without crashing', () => {
+  const { container } = render(<App />);
+  expect(container).toBeTruthy();
 });

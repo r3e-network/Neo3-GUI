@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using Neo.Ledger;
 using Neo.Models.Wallets;
 using Neo.Persistence;
+using Neo.SmartContract;
 using Neo.SmartContract.Native;
+using Neo.Common.Consoles;
 
 namespace Neo.Models.Jobs
 {

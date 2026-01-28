@@ -24,6 +24,9 @@ module.exports = babelJest.createTransformer({
       },
     ],
   ],
+  plugins: [
+    [require.resolve('@babel/plugin-proposal-decorators'), { legacy: true }],
+  ],
   babelrc: false,
   configFile: false,
 });

@@ -23,6 +23,10 @@ After successfully install JS dependencies, you can start runing or debugging Ne
 
 Open `./neo3-gui/neo3-gui.sln` with Visual Studio 2019, press **F5** to start debuging Neo3-GUI.
 
+## Neo 3.9.1 Alignment
+
+Build/publish now pins the `Neo` NuGet dependency to 3.9.1 and fetches the `Neo.Plugins.Storage.LevelDBStore` 3.9.1 plugin during packaging. See `neo3-gui/neo3-gui/scripts/fetch-leveldbstore.js`.
+
 ## Release
 To release and publish an installation program for Neo3-GUI, please run the following comment in `neo3-gui/neo3-gui` directory:
 ```
