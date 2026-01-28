@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Neo.Common.Consoles;
 using Neo.Cryptography.ECC;
 using Neo.Extensions;
 using Neo.Models;
@@ -134,7 +135,8 @@ namespace Neo.Services.ApiServices
 
         public async Task<object> GetExecFeeFactor()
         {
-            return NativeContract.Policy.GetExecFeeFactor(Helpers.GetDefaultSnapshot());
+            var snapshot = Helpers.GetDefaultSnapshot();
+            return NativeContract.Policy.GetExecFeeFactor(CliSettings.Default.Protocol, snapshot, snapshot.GetHeight());
         }
 
         public async Task<object> SetExecFeeFactor(uint factor, List<UInt160> signers = null)

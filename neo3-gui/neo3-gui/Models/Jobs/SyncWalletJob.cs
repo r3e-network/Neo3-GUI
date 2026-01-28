@@ -47,7 +47,7 @@ namespace Neo.Models.Jobs
                 BigInteger gas = BigInteger.Zero;
                 foreach (UInt160 account in accounts.Where(a => !a.WatchOnly).Select(p => p.ScriptHash))
                 {
-                    gas += NativeContract.NEO.UnclaimedGas(snapshot, account, snapshot.GetHeight() + 1);
+                    gas += Helpers.GetUnclaimedGas(snapshot, account, snapshot.GetHeight() + 1);
                 }
 
                 var unclaimedGas = new BigDecimal(gas, NativeContract.GAS.Decimals);

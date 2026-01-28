@@ -24,7 +24,7 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.1" />
-    <PackageReference Include="Neo" Version="3.9.2" />
+    <PackageReference Include="Neo" Version="3.9.1" />
     <PackageReference Include="ngd.leveldb.release" Version="2.0.0" />
   </ItemGroup>
 

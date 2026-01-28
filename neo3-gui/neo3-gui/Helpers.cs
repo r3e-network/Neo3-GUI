@@ -1499,5 +1499,24 @@ namespace Neo
                 return defaultValue;
             }
         }
+
+        /// <summary>
+        /// Get unclaimed GAS for an account using ApplicationEngine (Neo 3.9+ API)
+        /// </summary>
+        /// <param name="snapshot">The data cache snapshot</param>
+        /// <param name="account">The account to check</param>
+        /// <param name="end">The block index used when calculating GAS</param>
+        /// <returns>The amount of unclaimed GAS</returns>
+        public static BigInteger GetUnclaimedGas(DataCache snapshot, UInt160 account, uint end)
+        {
+            using var engine = ApplicationEngine.Create(
+                TriggerType.Application,
+                null,
+                snapshot,
+                null,
+                CliSettings.Default.Protocol,
+                ApplicationEngine.TestModeGas);
+            return NativeContract.NEO.UnclaimedGas(engine, account, end);
+        }
     }
 }

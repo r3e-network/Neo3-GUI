@@ -424,7 +424,7 @@ namespace Neo.Services.ApiServices
             var snapshot = Helpers.GetDefaultSnapshot();
             foreach (UInt160 account in CurrentWallet.GetAccounts().Where(a => !a.WatchOnly).Select(p => p.ScriptHash))
             {
-                gas += NativeContract.NEO.UnclaimedGas(snapshot, account, snapshot.GetHeight() + 1);
+                gas += Helpers.GetUnclaimedGas(snapshot, account, snapshot.GetHeight() + 1);
             }
             return new UnclaimedGasModel()
             {
