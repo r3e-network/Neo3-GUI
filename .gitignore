@@ -33,3 +33,4 @@ packages/
 Data_*/
 build*/
 /neo3-gui/neo3-gui/ClientApp/.vscode/settings.json
+/.worktrees
