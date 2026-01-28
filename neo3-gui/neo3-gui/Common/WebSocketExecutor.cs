@@ -1,32 +1,29 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using Neo.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Neo.Services;
 
-
 namespace Neo.Common
 {
-
-
+    /// <summary>
+    /// WebSocket API method executor
+    /// </summary>
     public class WebSocketExecutor
     {
-
-        private readonly Dictionary<string, MethodMetadata> _methods = new Dictionary<string, MethodMetadata>(StringComparer.OrdinalIgnoreCase);
-
+        private readonly Dictionary<string, MethodMetadata> _methods = new(StringComparer.OrdinalIgnoreCase);
         private readonly IServiceProvider _provider;
-
 
         public WebSocketExecutor(IServiceProvider provider)
         {
-            _provider = provider;
+            _provider = provider ?? throw new ArgumentNullException(nameof(provider));
             var invokerType = typeof(IApiService);
-            foreach (var type in invokerType.Assembly.GetExportedTypes().Where(t => !t.IsAbstract && t != invokerType && invokerType.IsAssignableFrom(t)))
+            
+            foreach (var type in invokerType.Assembly.GetExportedTypes()
+                .Where(t => !t.IsAbstract && t != invokerType && invokerType.IsAssignableFrom(t)))
             {
                 foreach (var methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
                 {
@@ -40,7 +37,7 @@ namespace Neo.Common
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        Console.WriteLine($"Failed to register method {methodInfo.Name}: {e.Message}");
                         throw;
                     }
                 }
@@ -49,6 +46,10 @@ namespace Neo.Common
 
         public async Task<object> Execute(WsRequest request)
         {
+            if (request == null)
+            {
+                return ErrorCode.InvalidPara.ToError();
+            }
             if (request.Method.IsNull())
             {
                 return ErrorCode.MethodNotFound.ToError();
@@ -61,13 +62,12 @@ namespace Neo.Common
                     invoker.Client = _provider.GetService<WebSocketSession>().Connection;
                 }
                 return await method.Invoke(instance, request);
-
             }
-            return new WsError() { Code = (int)ErrorCode.MethodNotFound, Message = $"method [{request.Method}] not found!" };
+            return new WsError 
+            { 
+                Code = (int)ErrorCode.MethodNotFound, 
+                Message = $"Method [{request.Method}] not found!" 
+            };
         }
-
-
-
-
     }
 }

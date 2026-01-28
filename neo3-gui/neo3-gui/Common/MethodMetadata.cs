@@ -1,44 +1,42 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Neo.Models;
 
 namespace Neo.Common
 {
+    /// <summary>
+    /// Metadata for API method invocation
+    /// </summary>
     public class MethodMetadata
     {
-        private readonly MethodInfo _methodInfo;
         private readonly ParameterInfo[] _parameters;
         private readonly dynamic _delegate;
 
-
         public Type DeclaringType { get; }
+        public bool IsValid { get; }
 
-
-        public bool IsValid = false;
         public MethodMetadata(MethodInfo methodInfo)
         {
-            _methodInfo = methodInfo;
             DeclaringType = methodInfo.DeclaringType;
             _parameters = methodInfo.GetParameters();
-            var paras = new List<Type>();
-            paras.Add(methodInfo.DeclaringType);
+            
+            var paras = new List<Type> { methodInfo.DeclaringType };
             paras.AddRange(_parameters.Select(p => p.ParameterType));
             paras.Add(methodInfo.ReturnType);
 
-            if (methodInfo.ReturnType.IsGenericType && methodInfo.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
+            if (methodInfo.ReturnType.IsGenericType && 
+                methodInfo.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
             {
                 IsValid = true;
                 var func = Expression.GetFuncType(paras.ToArray());
                 _delegate = Delegate.CreateDelegate(func, methodInfo);
             }
         }
-
 
         public dynamic Invoke(object instance, WsRequest request)
         {
@@ -48,25 +46,17 @@ namespace Neo.Common
 
         private dynamic InvokeInternal(dynamic instance, params dynamic[] paras)
         {
-            switch (_parameters.Length)
+            return _parameters.Length switch
             {
-                case 0:
-                    return _delegate(instance);
-                case 1:
-                    return _delegate(instance, paras[0]);
-                case 2:
-                    return _delegate(instance, paras[0], paras[1]);
-                case 3:
-                    return _delegate(instance, paras[0], paras[1], paras[2]);
-                case 4:
-                    return _delegate(instance, paras[0], paras[1], paras[2], paras[3]);
-                case 5:
-                    return _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4]);
-                case 6:
-                    return _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4], paras[5]);
-            }
-
-            return Task.FromResult(string.Empty);
+                0 => _delegate(instance),
+                1 => _delegate(instance, paras[0]),
+                2 => _delegate(instance, paras[0], paras[1]),
+                3 => _delegate(instance, paras[0], paras[1], paras[2]),
+                4 => _delegate(instance, paras[0], paras[1], paras[2], paras[3]),
+                5 => _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4]),
+                6 => _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4], paras[5]),
+                _ => Task.FromResult(string.Empty)
+            };
         }
 
         private List<object> PrepareParameters(JsonElement inputParas)
@@ -74,43 +64,55 @@ namespace Neo.Common
             var paras = new List<object>();
             if (_parameters.Length == 0)
             {
-                //no parameter method
                 return paras;
             }
             if (inputParas.ValueKind == JsonValueKind.Undefined)
             {
-                //no input paras
                 paras.AddRange(_parameters.Select(p => p.DefaultValue));
                 return paras;
             }
-            //only accept one parameter
+
+            // Only accept one parameter
             if (_parameters.Length == 1)
             {
                 var parameterType = _parameters[0].ParameterType;
 
                 if (inputParas.ValueKind == JsonValueKind.Array && parameterType.IsArray)
                 {
-                    // input paras is Array format, method only accept one array parameter
                     paras.Add(inputParas.GetRawText().DeserializeJson(parameterType));
                     return paras;
                 }
 
-                if (!parameterType.IsPrimitive && !parameterType.IsArray && !parameterType.IsEnum && parameterType != typeof(string) && parameterType != typeof(UInt256) && parameterType != typeof(UInt160))
+                if (!parameterType.IsPrimitive && !parameterType.IsArray && 
+                    !parameterType.IsEnum && parameterType != typeof(string) && 
+                    parameterType != typeof(UInt256) && parameterType != typeof(UInt160))
                 {
-                    //method only accept one Object parameter
                     paras.Add(inputParas.GetRawText().DeserializeJson(parameterType));
                     return paras;
                 }
             }
 
-            //input para is array, method accept many parameters
+            // Input para is array, method accepts many parameters
             if (inputParas.ValueKind == JsonValueKind.Array)
             {
-                paras.AddRange(_parameters.Select((p, index) => inputParas[index].GetRawText().DeserializeJson(p.ParameterType)));
+                var arrayLength = inputParas.GetArrayLength();
+                for (int index = 0; index < _parameters.Length; index++)
+                {
+                    if (index < arrayLength)
+                    {
+                        paras.Add(inputParas[index].GetRawText().DeserializeJson(_parameters[index].ParameterType));
+                    }
+                    else
+                    {
+                        // Use default value for missing parameters
+                        var defaultVal = _parameters[index].DefaultValue;
+                        paras.Add(defaultVal != DBNull.Value ? defaultVal : _parameters[index].ParameterType.GetDefaultValue());
+                    }
+                }
                 return paras;
             }
 
-            // input para is Object, method accept many parameters
+            // Input para is Object, method accepts many parameters
             foreach (var parameterInfo in _parameters)
             {
                 if (inputParas.TryGetProperty(parameterInfo.Name, out var paraVal))
@@ -119,18 +121,18 @@ namespace Neo.Common
                 }
                 else
                 {
-                    //try find paraVal case-insensitive
-                    var paraToken = inputParas.EnumerateObject().FirstOrDefault(p => parameterInfo.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase));
+                    // Try find paraVal case-insensitive
+                    var paraToken = inputParas.EnumerateObject()
+                        .FirstOrDefault(p => parameterInfo.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase));
+                    
                     if (paraToken.Value.ValueKind != JsonValueKind.Undefined)
                     {
-                        //found
                         paras.Add(paraToken.Value.GetRawText().DeserializeJson(parameterInfo.ParameterType));
                     }
                     else
                     {
-                        //not found, set default value
-                        //paras.Add(parameterInfo.ParameterType.GetDefaultValue());
-                        paras.Add(parameterInfo.DefaultValue != DBNull.Value ? parameterInfo.DefaultValue : parameterInfo.ParameterType.GetDefaultValue());
+                        var defaultVal = parameterInfo.DefaultValue;
+                        paras.Add(defaultVal != DBNull.Value ? defaultVal : parameterInfo.ParameterType.GetDefaultValue());
                     }
                 }
             }
