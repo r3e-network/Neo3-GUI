@@ -86,20 +86,6 @@ namespace Neo.Services.ApiServices
             {
                 switch (Path.GetExtension(path))
                 {
-                    //case ".db3":
-                    //    {
-                    //        UserWallet wallet = UserWallet.Create(path, password, CliSettings.Default.Protocol);
-                    //        var account = hexPrivateKey.NotEmpty() ? wallet.CreateAccount(hexPrivateKey) : wallet.CreateAccount();
-                    //        result.Accounts.Add(new AccountModel()
-                    //        {
-                    //            AccountType = AccountType.Standard,
-                    //            Address = account.Address,
-                    //            ScriptHash = account.ScriptHash,
-
-                    //        });
-                    //        Program.Starter.CurrentWallet = wallet;
-                    //    }
-                    //    break;
                     case ".json":
                         {
                             NEP6Wallet wallet = new NEP6Wallet(path, password, CliSettings.Default.Protocol);

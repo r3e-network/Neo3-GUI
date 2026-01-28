@@ -149,9 +149,6 @@ namespace Neo
         /// <returns></returns>
         public static DataCache GetDefaultSnapshot()
         {
-            //while (Program.Starter.NeoSystem==null)
-            //{
-            //}
             return Program.Starter.NeoSystem.StoreView;
         }
 
@@ -177,13 +174,13 @@ namespace Neo
         }
 
 
-        public static readonly Dictionary<string, ContractEventDescriptor> EventMetaCache = new Dictionary<string, ContractEventDescriptor>();
+        public static readonly ConcurrentDictionary<string, ContractEventDescriptor> EventMetaCache = new();
         public static ContractEventDescriptor GetEvent(this UInt160 contractHash, string eventName)
         {
-            var cachekey = contractHash + eventName;
-            if (EventMetaCache.ContainsKey(cachekey))
+            var cacheKey = contractHash + eventName;
+            if (EventMetaCache.TryGetValue(cacheKey, out var cached))
             {
-                return EventMetaCache[cachekey];
+                return cached;
             }
             var contract = GetDefaultSnapshot().GetContract(contractHash);
             var eventMeta = contract?.Manifest.Abi.Events.FirstOrDefault(e => e.Name == eventName);
@@ -192,7 +189,7 @@ namespace Neo
                 return null;
             }
 
-            EventMetaCache[cachekey] = eventMeta;
+            EventMetaCache.TryAdd(cacheKey, eventMeta);
             return eventMeta;
         }
 
@@ -498,7 +495,7 @@ namespace Neo
         }
 
 
-        private static readonly Dictionary<Type, object> defaultValues = new Dictionary<Type, object>();
+        private static readonly ConcurrentDictionary<Type, object> defaultValues = new();
 
         /// <summary>
         /// get input type default value
@@ -507,15 +504,15 @@ namespace Neo
         /// <returns></returns>
         public static object GetDefaultValue(this Type type)
         {
-            if (defaultValues.ContainsKey(type))
+            if (defaultValues.TryGetValue(type, out var cached))
             {
-                return defaultValues[type];
+                return cached;
             }
 
             if (type.IsValueType)
             {
                 var val = Activator.CreateInstance(type);
-                defaultValues[type] = val;
+                defaultValues.TryAdd(type, val);
                 return val;
             }
 
@@ -667,7 +664,6 @@ namespace Neo
         /// <returns></returns>
         public static List<BigDecimal> GetBalanceOf(this IEnumerable<UInt160> addresses, UInt160 assetId)
         {
-            //using var snapshot = Blockchain..Singleton.GetSnapshot();
             return GetBalanceOf(addresses, assetId, GetDefaultSnapshot());
         }
 
@@ -720,7 +716,6 @@ namespace Neo
         /// <returns></returns>
         public static BigDecimal GetBalanceOf(this UInt160 address, UInt160 assetId)
         {
-            //using var snapshot = Blockchai.Singleton.GetSnapshot();
             return GetBalanceOf(address, assetId, GetDefaultSnapshot());
         }
 
@@ -1456,12 +1451,6 @@ namespace Neo
                 }
 
             }
-            //var iterator = iop.GetInterface<IIterator>();
-            //var first = iterator.Value;
-            //while (iterator.Next())
-            //{
-            //    var val = iterator.Value;
-            //}
             return list.ToArray();
         }
 

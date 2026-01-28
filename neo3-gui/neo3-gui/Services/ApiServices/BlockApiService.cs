@@ -146,14 +146,6 @@ namespace Neo.Services.ApiServices
         {
             var model = new BlockModel(block);
             model.Confirmations = this.GetCurrentHeight() - block.Index + 1;
-
-            //if (block.Transactions.NotEmpty())
-            //{
-            //    using var db = new TrackDB();
-            //    var trans = db.FindTransfer(new TrackFilter() { TxIds = block.Transactions.Select(t => t.Hash).ToList() });
-            //    model.Transactions = trans.List.ToTransactionPreviewModel();
-            //}
-
             return model;
         }
 

@@ -94,7 +94,6 @@ namespace Neo.Services.ApiServices
             using ScriptBuilder sb = new ScriptBuilder();
             sb.EmitDynamicCall(NativeContract.ContractManagement.Hash, "deploy", nefFile.ToArray(),
                 manifest.ToJson().ToString());
-            //sb.EmitAppCall(NativeContract.Management.Hash, "deploy", nefFile.ToArray(), manifest.ToJson().ToString());
             var script = sb.ToArray();
 
             Transaction tx;

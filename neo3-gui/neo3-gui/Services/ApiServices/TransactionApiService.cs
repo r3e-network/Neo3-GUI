@@ -152,7 +152,7 @@ namespace Neo.Services.ApiServices
         public async Task<object> SendTransaction(string txRaw)
         {
             Transaction tx = Convert.FromBase64String(txRaw).AsSerializable<Transaction>();
-            Blockchain.RelayResult reason = Program.Starter.NeoSystem.Blockchain.Ask<Blockchain.RelayResult>(tx).Result;
+            Blockchain.RelayResult reason = await Program.Starter.NeoSystem.Blockchain.Ask<Blockchain.RelayResult>(tx);
             return tx.ToJson(null);
         }
 
