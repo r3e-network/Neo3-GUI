@@ -1,67 +1,65 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using Neo.Common.Storage;
 using Neo.Common.Storage.LevelDBModules;
-using Neo.Common.Storage.SQLiteModules;
 using Neo.Extensions;
-using Neo.Ledger;
 using Neo.Models;
 using Neo.Persistence;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.VM;
-using Neo.VM.Types;
 
 namespace Neo.Common.Utility
 {
+    /// <summary>
+    /// Cache for NEP-17/NEP-11 asset information
+    /// </summary>
     public class AssetCache
     {
-
-        private static readonly ConcurrentDictionary<UInt160, AssetInfo> _assets = new ConcurrentDictionary<UInt160, AssetInfo>();
-
+        private static readonly ConcurrentDictionary<UInt160, AssetInfo> _assets = new();
 
         /// <summary>
-        /// read nep5 from cache first
+        /// Read NEP-17 asset info from cache first
         /// </summary>
-        /// <param name="assetId"></param>
-        /// <returns></returns>
+        /// <param name="assetId">Asset contract hash</param>
+        /// <param name="readFromDb">Whether to read from database if not in cache</param>
+        /// <returns>Asset info or null if not found</returns>
         public static AssetInfo GetAssetInfo(UInt160 assetId, bool readFromDb = true)
         {
-            if (_assets.ContainsKey(assetId))
+            if (_assets.TryGetValue(assetId, out var cached))
             {
-                return _assets[assetId];
+                return cached;
             }
             var snapshot = Helpers.GetDefaultSnapshot();
             return GetAssetInfo(assetId, snapshot, readFromDb);
         }
 
-
         /// <summary>
-        /// read nep5 from cache first
+        /// Read NEP-17 asset info from cache first
         /// </summary>
-        /// <param name="assetId"></param>
-        /// <param name="snapshot"></param>
-        /// <returns></returns>
+        /// <param name="assetId">Asset contract hash</param>
+        /// <param name="snapshot">Data cache snapshot</param>
+        /// <param name="readFromDb">Whether to read from database if not in cache</param>
+        /// <returns>Asset info or null if not found</returns>
         public static AssetInfo GetAssetInfo(UInt160 assetId, DataCache snapshot, bool readFromDb = true)
         {
-            if (_assets.ContainsKey(assetId))
+            if (_assets.TryGetValue(assetId, out var cached))
             {
-                return _assets[assetId];
+                return cached;
             }
-            return GetAssetInfoFromChain(assetId, snapshot) ?? (readFromDb ? GetAssetInfoFromLevelDb(assetId) : null);
+            return GetAssetInfoFromChain(assetId, snapshot) 
+                   ?? (readFromDb ? GetAssetInfoFromLevelDb(assetId) : null);
         }
 
-
         /// <summary>
-        /// read nep17 from chain, and set cache
+        /// Read NEP-17 asset info from chain and cache it
         /// https://github.com/neo-project/proposals/blob/master/nep-17.mediawiki
         /// </summary>
-        /// <param name="assetId"></param>
-        /// <param name="snapshot"></param>
-        /// <returns></returns>
+        /// <param name="assetId">Asset contract hash</param>
+        /// <param name="snapshot">Data cache snapshot</param>
+        /// <returns>Asset info or null if not a valid asset</returns>
         public static AssetInfo GetAssetInfoFromChain(UInt160 assetId, DataCache snapshot)
         {
             var contract = snapshot.GetContract(assetId);
@@ -108,14 +106,11 @@ namespace Neo.Common.Utility
             }
         }
 
-
-
-
         /// <summary>
-        /// read asset info from backup db
+        /// Read asset info from backup LevelDB
         /// </summary>
-        /// <param name="assetId"></param>
-        /// <returns></returns>
+        /// <param name="assetId">Asset contract hash</param>
+        /// <returns>Asset info or null if not found</returns>
         public static AssetInfo GetAssetInfoFromLevelDb(UInt160 assetId)
         {
             using var db = new LevelDbContext();
@@ -129,7 +124,6 @@ namespace Neo.Common.Utility
                     Name = oldAsset.Name,
                     Symbol = oldAsset.Symbol,
                     Type = oldAsset.Type,
-                    //TotalSupply = oldAsset.TotalSupply,
                 };
                 _assets[assetId] = asset;
                 return asset;
@@ -137,49 +131,71 @@ namespace Neo.Common.Utility
             return null;
         }
 
-
+        /// <summary>
+        /// Get total supply of an asset
+        /// </summary>
+        /// <param name="asset">Asset contract hash</param>
+        /// <returns>Total supply or null if failed</returns>
         public static BigDecimal? GetTotalSupply(UInt160 asset)
         {
             var snapshot = Helpers.GetDefaultSnapshot();
             using var sb = new ScriptBuilder();
             sb.EmitDynamicCall(asset, "totalSupply");
             using var engine = sb.ToArray().RunTestMode(snapshot);
-            var total = engine.ResultStack.FirstOrDefault().ToBigInteger();
+            
+            if (engine.State.HasFlag(VMState.FAULT))
+            {
+                return null;
+            }
+            
+            var total = engine.ResultStack.FirstOrDefault()?.ToBigInteger();
             var assetInfo = GetAssetInfo(asset);
-            return total.HasValue ? new BigDecimal(total.Value, assetInfo.Decimals) : (BigDecimal?)null;
+            return total.HasValue && assetInfo != null 
+                ? new BigDecimal(total.Value, assetInfo.Decimals) 
+                : null;
         }
 
+        /// <summary>
+        /// Get total supply for multiple assets
+        /// </summary>
+        /// <param name="assets">Asset contract hashes</param>
+        /// <returns>List of total supplies (null for failed queries)</returns>
         public static List<BigDecimal?> GetTotalSupply(IEnumerable<UInt160> assets)
         {
             if (assets.IsEmpty())
             {
                 return new List<BigDecimal?>();
             }
+
+            var assetList = assets.ToList();
+            var results = new List<BigDecimal?>(assetList.Count);
             var snapshot = Helpers.GetDefaultSnapshot();
-            using var sb = new ScriptBuilder();
-            var assetInfos = new List<AssetInfo>();
-            var values = new List<BigInteger?>();
-            foreach (var asset in assets)
+
+            foreach (var asset in assetList)
             {
-                assetInfos.Add(GetAssetInfo(asset));
+                var assetInfo = GetAssetInfo(asset);
+                if (assetInfo == null)
+                {
+                    results.Add(null);
+                    continue;
+                }
+
+                using var sb = new ScriptBuilder();
                 sb.EmitDynamicCall(asset, "totalSupply");
                 using var engine = sb.ToArray().RunTestMode(snapshot);
+                
                 if (engine.State == VMState.FAULT)
                 {
-                    Console.WriteLine($"{asset} has invalid totalsupply");
-                    values.Add(null);
+                    Console.WriteLine($"{asset} has invalid totalSupply");
+                    results.Add(null);
                 }
                 else
                 {
-                    var totalSupply = engine.ResultStack.Pop();
-                    values.Add(totalSupply.ToBigInteger());
+                    var totalSupply = engine.ResultStack.Pop().ToBigInteger();
+                    results.Add(totalSupply.HasValue 
+                        ? new BigDecimal(totalSupply.Value, assetInfo.Decimals) 
+                        : null);
                 }
-
-            }
-            var results = new List<BigDecimal?>();
-            for (var i = 0; i < values.Count; i++)
-            {
-                results.Add(values[i].HasValue ? new BigDecimal(values[i].Value, assetInfos[i].Decimals) : (BigDecimal?)null);
             }
             return results;
         }
