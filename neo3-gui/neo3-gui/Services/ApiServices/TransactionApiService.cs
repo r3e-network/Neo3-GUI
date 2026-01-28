@@ -152,7 +152,7 @@ namespace Neo.Services.ApiServices
         public async Task<object> SendTransaction(string txRaw)
         {
             Transaction tx = Convert.FromBase64String(txRaw).AsSerializable<Transaction>();
-            Blockchain.RelayResult reason = await Program.Starter.NeoSystem.Blockchain.Ask<Blockchain.RelayResult>(tx);
+            await Program.Starter.NeoSystem.Blockchain.Ask<Blockchain.RelayResult>(tx);
             return tx.ToJson(null);
         }
 
@@ -200,10 +200,10 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// query all nep transactions(on chain)
+        /// query all NEP-17 transactions (on chain)
         /// </summary>
         /// <returns></returns>
-        public async Task<object> QueryNep5Transactions(int pageIndex = 1, int limit = 100, UInt160 address = null, UInt160 asset = null, uint? blockHeight = null)
+        public async Task<object> QueryNep17Transactions(int pageIndex = 1, int limit = 100, UInt160 address = null, UInt160 asset = null, uint? blockHeight = null)
         {
             using var db = new TrackDB();
             var filter = new TransferFilter()
@@ -258,7 +258,7 @@ namespace Neo.Services.ApiServices
         /// <returns></returns>
         public async Task<object> GetApplicationLog(UInt256 txId)
         {
-            var db = new TrackDB();
+            using var db = new TrackDB();
             var result = db.GetExecuteLog(txId);
             return result;
         }
