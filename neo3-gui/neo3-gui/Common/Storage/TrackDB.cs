@@ -19,7 +19,7 @@ namespace Neo.Common.Storage
     {
         private readonly uint _magic;
         private readonly SQLiteContext _sqldb;
-        public readonly LevelDbContext _leveldb;
+        private readonly LevelDbContext _leveldb;
         private readonly DateTime _createTime = DateTime.Now;
 
         public TimeSpan LiveTime => DateTime.Now - _createTime;

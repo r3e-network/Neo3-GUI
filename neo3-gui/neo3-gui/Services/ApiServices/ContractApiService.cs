@@ -89,7 +89,7 @@ namespace Neo.Services.ApiServices
             // Read manifest
             ContractManifest manifest = ReadManifestFile(manifestPath);
             // Basic script checks
-            await CheckBadOpcode(nefFile.Script.ToArray());
+            CheckBadOpcode(nefFile.Script.ToArray());
 
             // Build script
             using ScriptBuilder sb = new ScriptBuilder();
@@ -161,7 +161,7 @@ namespace Neo.Services.ApiServices
             // Read manifest
             ContractManifest manifest = ReadManifestFile(manifestPath);
             // Basic script checks
-            await CheckBadOpcode(nefFile.Script.ToArray());
+            CheckBadOpcode(nefFile.Script.ToArray());
 
             // Build script
             using ScriptBuilder sb = new ScriptBuilder();
@@ -687,8 +687,7 @@ namespace Neo.Services.ApiServices
         /// check script if it contains wrong Opcode
         /// </summary>
         /// <param name="script"></param>
-        /// <returns></returns>
-        private async Task CheckBadOpcode(byte[] script)
+        private void CheckBadOpcode(byte[] script)
         {
             Script scriptCodes = new Script(script);
             for (var i = 0; i < scriptCodes.Length;)

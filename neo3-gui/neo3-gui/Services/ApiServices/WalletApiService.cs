@@ -979,8 +979,8 @@ namespace Neo.Services.ApiServices
             bool hasGas = false;
             foreach (var assetBalanceModel in list)
             {
-                hasNeo ^= assetBalanceModel.Asset == NativeContract.NEO.Hash;
-                hasGas ^= assetBalanceModel.Asset == NativeContract.GAS.Hash;
+                hasNeo |= assetBalanceModel.Asset == NativeContract.NEO.Hash;
+                hasGas |= assetBalanceModel.Asset == NativeContract.GAS.Hash;
                 if (hasNeo && hasGas)
                 {
                     break;

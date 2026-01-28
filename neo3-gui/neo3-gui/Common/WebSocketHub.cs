@@ -36,12 +36,23 @@ namespace Neo.Common
             }
         }
 
-        private bool IsHeartBeating = false;
+        private volatile bool _isHeartBeating = false;
+
+        /// <summary>
+        /// Start the heartbeat loop
+        /// </summary>
+        public void StartHeartBeat()
+        {
+            if (!_isHeartBeating)
+            {
+                _ = HeartBeatLoop();
+            }
+        }
 
         private async Task HeartBeatLoop()
         {
-            IsHeartBeating = true;
-            while (IsHeartBeating)
+            _isHeartBeating = true;
+            while (_isHeartBeating)
             {
                 if (_clients.Any())
                 {
@@ -71,7 +82,7 @@ namespace Neo.Common
 
         public void StopHeartBeat()
         {
-            IsHeartBeating = false;
+            _isHeartBeating = false;
         }
 
 
