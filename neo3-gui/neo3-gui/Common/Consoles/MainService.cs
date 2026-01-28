@@ -127,7 +127,7 @@ namespace Neo.Common.Consoles
             }
         }
 
-        public async Task StartNode()
+        public Task StartNode()
         {
             NeoSystem.StartNode(new ChannelsConfig
             {
@@ -137,6 +137,7 @@ namespace Neo.Common.Consoles
                 MaxKnownHashes = CliSettings.Default.P2P.MaxKnownHashes,
                 MaxConnectionsPerAddress = CliSettings.Default.P2P.MaxConnectionsPerAddress
             });
+            return Task.CompletedTask;
         }
 
         public void Stop()
@@ -243,6 +244,7 @@ namespace Neo.Common.Consoles
 
         private bool OnExportCommand(string[] args)
         {
+            if (args.Length < 2) return base.OnCommand(args);
             switch (args[1].ToLower())
             {
                 case "block":
@@ -349,6 +351,7 @@ namespace Neo.Common.Consoles
 
         private bool OnListCommand(string[] args)
         {
+            if (args.Length < 2) return base.OnCommand(args);
             switch (args[1].ToLower())
             {
                 case "address":
@@ -439,6 +442,7 @@ namespace Neo.Common.Consoles
 
         private bool OnOpenCommand(string[] args)
         {
+            if (args.Length < 2) return base.OnCommand(args);
             switch (args[1].ToLower())
             {
                 case "wallet":
@@ -488,6 +492,7 @@ namespace Neo.Common.Consoles
         /// <returns></returns>
         private bool OnCloseCommand(string[] args)
         {
+            if (args.Length < 2) return base.OnCommand(args);
             switch (args[1].ToLower())
             {
                 case "wallet":
@@ -591,6 +596,7 @@ namespace Neo.Common.Consoles
 
         private bool OnShowCommand(string[] args)
         {
+            if (args.Length < 2) return base.OnCommand(args);
             switch (args[1].ToLower())
             {
                 case "gas":
@@ -635,7 +641,7 @@ namespace Neo.Common.Consoles
 
         private bool OnShowStateCommand(string[] args)
         {
-            var cancel = new CancellationTokenSource();
+            using var cancel = new CancellationTokenSource();
 
             Console.CursorVisible = false;
             Console.Clear();
