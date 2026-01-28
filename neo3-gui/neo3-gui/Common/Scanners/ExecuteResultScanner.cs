@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Neo.Common.Storage;
 using Neo.Common.Storage.LevelDBModules;
 using Neo.Common.Storage.SQLiteModules;
 using Neo.Common.Utility;
-using Neo.Ledger;
 using Neo.Network.P2P.Payloads;
 using Neo.Persistence;
 using Neo.SmartContract.Native;
@@ -18,16 +16,15 @@ namespace Neo.Common.Scanners
     /// <summary>
     /// Scan execute result log background
     /// </summary>
-    public class ExecuteResultScanner
+    public class ExecuteResultScanner : IDisposable
     {
         private TrackDB _db = new TrackDB();
         private LevelDbContext _levelDb = new LevelDbContext();
-        private bool _running = true;
+        private volatile bool _running = true;
+        private bool _disposed;
+        
         private static uint _scanHeight = 0;
-        public static uint ScanHeight
-        {
-            get { return _scanHeight; }
-        }
+        public static uint ScanHeight => _scanHeight;
 
         private uint _lastHeight = 0;
         private DateTime _lastTime;
@@ -42,7 +39,7 @@ namespace Neo.Common.Scanners
             {
                 try
                 {
-                    if (await Sync(_scanHeight))
+                    if (Sync(_scanHeight))
                     {
                         if (_scanHeight - _lastHeight >= 500)
                         {
@@ -78,7 +75,7 @@ namespace Neo.Common.Scanners
         /// </summary>
         /// <param name="blockHeight"></param>
         /// <returns></returns>
-        public async Task<bool> Sync(uint blockHeight)
+        public bool Sync(uint blockHeight)
         {
             if (blockHeight > this.GetCurrentHeight())
             {
@@ -284,45 +281,9 @@ namespace Neo.Common.Scanners
 
 
         /// <summary>
-        /// get invoke methods from transaction script
-        /// </summary>
-        /// <param name="tx"></param>
-        /// <returns></returns>
-        private Dictionary<UInt160, HashSet<string>> GetInvokeMethods(Transaction tx)
-        {
-            var methodBox = new Dictionary<UInt160, HashSet<string>>();
-
-            var instructions = OpCodeConverter.Parse(tx.Script);
-            for (int i = 2; i < instructions.Count; i++)
-            {
-                var currentInstruction = instructions[i];
-                if (currentInstruction.OpCode == OpCode.SYSCALL && currentInstruction.SystemCallMethod == "System.Contract.Call")
-                {
-                    var contractInstruction = instructions[i - 1];
-                    var contract = contractInstruction.OpData.ToUInt160();
-                    if (contract == null) { continue; }
-
-                    var methodInstruction = instructions[i - 2];
-                    var method = methodInstruction.OpDataUtf8String;
-                    if (method.NotNull())
-                    {
-                        var box = methodBox.ContainsKey(contract) ? methodBox[contract] : new HashSet<string>();
-                        box.Add(method);
-                        methodBox[contract] = box;
-                    }
-                }
-            }
-            return methodBox;
-        }
-
-
-        /// <summary>
         /// update record will save after call <see cref="_db.Commit()"/> method;
         /// new record will save immediately
         /// </summary>
-        /// <param name="account"></param>
-        /// <param name="asset"></param>
-        /// <param name="snapshot"></param>
         private void UpdateBalance(UInt160 account, UInt160 asset, DataCache snapshot)
         {
             try
@@ -330,13 +291,34 @@ namespace Neo.Common.Scanners
                 var balance = account.GetBalanceOf(asset, snapshot).Value;
                 _db.UpdateBalance(account, asset, balance, snapshot.GetHeight());
             }
-            catch
+            catch (Exception ex)
             {
+                Console.WriteLine($"Failed to get balance for {account}: {ex.Message}");
                 var backupBalance = _levelDb.GetBalance(account, asset);
                 if (backupBalance != null)
                 {
                     _db.UpdateBalance(account, asset, backupBalance.Balance, backupBalance.Height);
                 }
+            }
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                if (disposing)
+                {
+                    _running = false;
+                    _db?.Dispose();
+                    _levelDb?.Dispose();
+                }
+                _disposed = true;
             }
         }
     }
