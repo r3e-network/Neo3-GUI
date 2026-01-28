@@ -1,24 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.WebSockets;
+using System;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Neo.Common;
-using Neo.Ledger;
 using Neo.Models.Jobs;
 
 namespace Neo.Services
 {
+    /// <summary>
+    /// Background notification service for pushing messages to WebSocket clients
+    /// </summary>
     public class NotificationService
     {
         private readonly WebSocketHub _hub;
-        private readonly List<Job> _jobs = new List<Job>();
-        private bool _running = true;
+        private readonly ConcurrentBag<Job> _jobs = new();
+        private volatile bool _running = true;
+
         public NotificationService(WebSocketHub hub)
         {
-            _hub = hub;
+            _hub = hub ?? throw new ArgumentNullException(nameof(hub));
         }
 
         public async Task Start()
@@ -42,7 +43,7 @@ namespace Neo.Services
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Job Error[{job}]:{e}");
+                        Console.WriteLine($"Job Error[{job}]: {e.Message}");
                     }
                 }
                 await Task.Delay(TimeSpan.FromSeconds(1));
@@ -51,6 +52,7 @@ namespace Neo.Services
 
         public void Register(Job job)
         {
+            if (job == null) throw new ArgumentNullException(nameof(job));
             _jobs.Add(job);
         }
 
@@ -60,13 +62,12 @@ namespace Neo.Services
         }
     }
 
-
     public static class NotificationServiceExtension
     {
         public static NotificationService UseNotificationService(this IApplicationBuilder app)
         {
-            var service = app.ApplicationServices.GetService<NotificationService>();
-            Task.Run(service.Start);
+            var service = app.ApplicationServices.GetRequiredService<NotificationService>();
+            _ = Task.Run(service.Start);
             return service;
         }
     }
