@@ -53,8 +53,14 @@ namespace Neo.Models.Contracts
         public string Description { get; set; }
 
         /// <summary>
-        /// Logo FS ID
+        /// Logo FS ID (NeoFS object ID)
         /// </summary>
         public string Logo { get; set; }
+
+        /// <summary>
+        /// Logo file path for auto-upload to NeoFS
+        /// If provided, the file will be uploaded and Logo will be set to the returned object ID
+        /// </summary>
+        public string LogoPath { get; set; }
     }
 }

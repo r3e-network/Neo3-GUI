@@ -594,6 +594,20 @@ namespace Neo.Services.ApiServices
                 return Error(ErrorCode.ParameterIsNull, "Sender is required.");
             }
 
+            // Auto-upload logo if LogoPath is provided
+            var logoId = info.Logo ?? "";
+            if (!string.IsNullOrEmpty(info.LogoPath))
+            {
+                try
+                {
+                    logoId = await LogoFsService.UploadLogo(info.LogoPath);
+                }
+                catch (Exception ex)
+                {
+                    return Error(ErrorCode.InvalidPara, $"Failed to upload logo: {ex.Message}");
+                }
+            }
+
             var contractHash = GetCommitteeInfoContract();
 
             using ScriptBuilder sb = new ScriptBuilder();
@@ -607,7 +621,7 @@ namespace Neo.Services.ApiServices
                 new ContractParameter { Type = ContractParameterType.String, Value = info.Telegram ?? "" },
                 new ContractParameter { Type = ContractParameterType.String, Value = info.Twitter ?? "" },
                 new ContractParameter { Type = ContractParameterType.String, Value = info.Description ?? "" },
-                new ContractParameter { Type = ContractParameterType.String, Value = info.Logo ?? "" }
+                new ContractParameter { Type = ContractParameterType.String, Value = logoId }
             );
 
             return await SignAndBroadcastTxWithSender(sb.ToArray(), info.Sender, info.Sender);
