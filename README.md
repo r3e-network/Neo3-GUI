@@ -1,35 +1,103 @@
 # Neo3-GUI
 
-Neo-GUI for neo3 is still under development, we will keep adding features and improving user experience along with the development of neo3. 
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-6.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/6.0)
+[![Neo](https://img.shields.io/badge/Neo-3.9.1-green.svg)](https://github.com/neo-project/neo)
 
-Your feedbacks and suggestions are welcome. Please submit issues.
+A cross-platform graphical user interface for Neo N3 blockchain. Neo3-GUI provides an intuitive way to interact with the Neo blockchain, manage wallets, deploy smart contracts, and more.
 
-## Required Tools and Dependencies for development
+## Features
 
-1. [Visual Studio 2019](https://visualstudio.microsoft.com/) and [.NET Core 6.0](https://dotnet.microsoft.com/download) 
-2. [Node.js](https://nodejs.org/) 
+- **Blockchain Explorer** - Browse blocks, transactions, and assets
+- **Wallet Management** - Create, import, and manage Neo wallets
+- **Smart Contracts** - Deploy, invoke, and manage contracts
+- **Multi-signature Support** - Create and sign multi-sig transactions
+- **Network Selection** - Switch between MainNet, TestNet, and private networks
+- **Multi-language** - English and Chinese support
 
-## Build and Run
+## Requirements
 
-### Install Front-End dependencies
-To install all the JS dependencies required for Neo3-GUI, please run the following commands in the project's `neo3-gui/neo3-gui/ClientApp` directory:
+- [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+- [Node.js](https://nodejs.org/) (v16 or later recommended)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/) (for development)
 
+## Quick Start
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/neo-project/Neo3-GUI.git
+cd Neo3-GUI
 ```
+
+### 2. Install frontend dependencies
+
+```bash
+cd neo3-gui/neo3-gui/ClientApp
 npm install
 ```
 
-### Run Neo3-GUI
-After successfully install JS dependencies, you can start runing or debugging Neo3-GUI with Visual Studio.
+### 3. Run with Visual Studio
 
-Open `./neo3-gui/neo3-gui.sln` with Visual Studio 2019, press **F5** to start debuging Neo3-GUI.
+Open `neo3-gui/neo3-gui.sln` in Visual Studio and press **F5** to start debugging.
 
-## Neo 3.9.1 Alignment
+### 4. Or run from command line
 
-Build/publish now pins the `Neo` NuGet dependency to 3.9.1 and fetches the `Neo.Plugins.Storage.LevelDBStore` 3.9.1 plugin during packaging. See `neo3-gui/neo3-gui/scripts/fetch-leveldbstore.js`.
-
-## Release
-To release and publish an installation program for Neo3-GUI, please run the following comment in `neo3-gui/neo3-gui` directory:
+```bash
+cd neo3-gui/neo3-gui
+dotnet run
 ```
-./publish.sh
+
+## Building for Release
+
+To build a distributable package:
+
+```bash
+cd neo3-gui/neo3-gui
+./publish.sh        # Linux/Windows
+./publish.macos.sh  # macOS
 ```
-Once the script runs success,  the installation program will be in the default release output directory is `neo3-gui/neo3-gui/ClientApp/build-electron`. 
+
+Output will be in `neo3-gui/neo3-gui/ClientApp/build-electron`.
+
+## Documentation
+
+- [Usage Guide](docs/USAGE.md) - How to use Neo3-GUI
+- [Configuration Guide](docs/CONFIGURATION.md) - Configuration options
+- [Changelog](Changelog.md) - Version history
+
+## Neo 3.9.1 Compatibility
+
+This version is aligned with Neo 3.9.1:
+- Neo NuGet dependency pinned to 3.9.1
+- LevelDBStore plugin 3.9.1 bundled during build
+
+## Project Structure
+
+```
+Neo3-GUI/
+├── neo3-gui/
+│   ├── neo3-gui/           # Main application
+│   │   ├── ClientApp/      # React frontend
+│   │   ├── Common/         # Shared utilities
+│   │   ├── Models/         # Data models
+│   │   ├── Services/       # Backend services
+│   │   └── config.*.json   # Network configurations
+│   └── neo3-gui.tests/     # Unit tests
+├── docs/                   # Documentation
+└── Changelog.md            # Release notes
+```
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit issues and pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Links
+
+- [Neo Official Website](https://neo.org/)
+- [Neo Documentation](https://docs.neo.org/)
+- [Neo GitHub](https://github.com/neo-project)
