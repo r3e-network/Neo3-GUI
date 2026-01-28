@@ -5,6 +5,7 @@ using System.Linq;
 using System.Numerics;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Neo.Common.Consoles;
 using Neo.Common.Storage;
 using Neo.Common.Utility;
 using Neo.Cryptography.ECC;
@@ -555,6 +556,62 @@ namespace Neo.Services.ApiServices
             return await SignAndBroadcastTx(sb.ToArray(), account);
         }
 
+
+        #endregion
+
+
+        #region Candidate Info
+
+        // CommitteeInfoContract addresses
+        private static readonly UInt160 CommitteeInfoContractMainnet = UInt160.Parse("0xb776afb6ad0c11565e70f8ee1dd898da43e51be1");
+        private static readonly UInt160 CommitteeInfoContractTestnet = UInt160.Parse("0x6177bfcef0f51b5dd21b183ff89e301b9c66d71c");
+
+        // Network magic values
+        private const uint MainnetMagic = 860833102;
+
+        /// <summary>
+        /// Get CommitteeInfoContract address based on current network
+        /// </summary>
+        private UInt160 GetCommitteeInfoContract()
+        {
+            var network = CliSettings.Default.Protocol.Network;
+            return network == MainnetMagic ? CommitteeInfoContractMainnet : CommitteeInfoContractTestnet;
+        }
+
+        /// <summary>
+        /// Set candidate information via CommitteeInfoContract.setInfo
+        /// </summary>
+        /// <param name="info">Candidate information model</param>
+        /// <returns>Transaction result</returns>
+        public async Task<object> SetCandidateInfo(CandidateInfoModel info)
+        {
+            if (CurrentWallet == null)
+            {
+                return Error(ErrorCode.WalletNotOpen);
+            }
+            if (info == null || info.Sender == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "Sender is required.");
+            }
+
+            var contractHash = GetCommitteeInfoContract();
+
+            using ScriptBuilder sb = new ScriptBuilder();
+            sb.EmitDynamicCall(contractHash, "setInfo",
+                new ContractParameter { Type = ContractParameterType.Hash160, Value = info.Sender },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Name ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Location ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Website ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Email ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Github ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Telegram ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Twitter ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Description ?? "" },
+                new ContractParameter { Type = ContractParameterType.String, Value = info.Logo ?? "" }
+            );
+
+            return await SignAndBroadcastTxWithSender(sb.ToArray(), info.Sender, info.Sender);
+        }
 
         #endregion
 
