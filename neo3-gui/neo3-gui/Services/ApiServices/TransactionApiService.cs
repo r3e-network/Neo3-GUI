@@ -220,11 +220,26 @@ namespace Neo.Services.ApiServices
         }
 
         /// <summary>
-        /// query all transactions(on chain)
+        /// query all transactions (on chain) with filters
         /// </summary>
-        /// <returns></returns>
+        /// <param name="pageIndex">Page index (1-based)</param>
+        /// <param name="limit">Page size (1-100)</param>
+        /// <param name="blockHeight">Optional block height filter</param>
+        /// <param name="address">Optional address filter</param>
+        /// <param name="contract">Optional contract filter</param>
+        /// <param name="blockHash">Optional block hash filter</param>
+        /// <returns>Paged list of transaction previews</returns>
         public async Task<object> QueryTransactions(int pageIndex = 1, int limit = 100, uint? blockHeight = null, UInt160 address = null, UInt160 contract = null, UInt256 blockHash = null)
         {
+            if (pageIndex < 1)
+            {
+                return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
+            }
+            if (limit <= 0 || limit > 100)
+            {
+                limit = 100;
+            }
+
             using var db = new TrackDB();
             var filter = new TransactionFilter()
             {
@@ -252,10 +267,10 @@ namespace Neo.Services.ApiServices
             var trans = db.QueryTransactions(filter, true);
             var result = new PageList<TransactionPreviewModel>
             {
-                TotalCount = trans.TotalCount,
-                PageSize = trans.PageSize,
+                TotalCount = trans?.TotalCount ?? 0,
+                PageSize = trans?.PageSize ?? limit,
                 PageIndex = pageIndex,
-                List = ConvertToTransactionPreviewModel(trans.List),
+                List = trans?.List != null ? ConvertToTransactionPreviewModel(trans.List) : new List<TransactionPreviewModel>(),
             };
             return result;
         }
