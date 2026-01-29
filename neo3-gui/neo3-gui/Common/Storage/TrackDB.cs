@@ -63,12 +63,6 @@ namespace Neo.Common.Storage
                 _hasConsistencyCheck = true;
                 InitConsistencyCheck();
             }
-
-            //if (!_hasInitCahce)
-            //{
-            //    _hasInitCahce = true;
-            //    //InitCache();
-            //}
         }
 
 
@@ -248,11 +242,6 @@ namespace Neo.Common.Storage
                     tx.Transfers.Any(t => addresses.Contains(t.To.Hash)));
             }
 
-            //if (filter.Contracts.NotEmpty())
-            //{
-            //    var contracts = filter.Contracts.Select(a => a.ToBigEndianHex()).Distinct().ToList();
-            //    query = query.Where(tx => tx.InvokeContracts.Any(c => contracts.Contains(c.Contract.Hash) && c.Contract.DeleteTxId == null));
-            //}
             if (filter.Assets.NotEmpty())
             {
                 var assets = filter.Assets.Select(a => a.ToBigEndianHex()).Distinct().ToList();
@@ -308,43 +297,6 @@ namespace Neo.Common.Storage
         ///// <summary>
         ///// query without transfers(High Performance)
         ///// </summary>
-        //private readonly Expression<Func<TransactionEntity, TransactionInfo>> ToTransactionWithoutTransfer = (tx) => new TransactionInfo()
-        //{
-        //    TxId = UInt256.Parse(tx.TxId),
-        //    BlockHeight = tx.BlockHeight,
-        //    Sender = tx.Sender != null ? UInt160.Parse(tx.Sender.Hash) : null,
-        //    Time = tx.Time.AsUtcTime(),
-        //};
-
-        ///// <summary>
-        /////  query with transfers(Low Performance)
-        ///// </summary>
-        //private readonly Expression<Func<TransactionEntity, TransactionInfo>> ToTransactionWithTransfer = (tx) => new TransactionInfo()
-        //{
-        //    TxId = UInt256.Parse(tx.TxId),
-        //    BlockHeight = tx.BlockHeight,
-        //    Sender = tx.Sender != null ? UInt160.Parse(tx.Sender.Hash) : null,
-        //    Time = tx.Time.AsUtcTime(),
-        //    //Transfers = tx.Transfers.ToList(),
-        //    //    .Select(t=>new TransferInfo(){
-        //    //    From = t.FromId != null ? UInt160.Parse(GetAddress(t.FromId.Value).Hash) : null,
-        //    //    To = t.To != null ? UInt160.Parse(t.To.Hash) : null,
-        //    //    Amount = new BigInteger(t.Amount),
-        //    //    TxId = UInt256.Parse(t.TxId),
-        //    //    Asset = UInt160.Parse(t.Asset.Hash),
-        //    //    TimeStamp = t.Time.ToTimestampMS(),
-        //    //}),
-        //    //Transfers = tx.Transfers.Select(t => new TransferInfo()
-        //    //{
-        //    //    From = t.From != null ? UInt160.Parse(t.From.Hash) : null,
-        //    //    To = t.To != null ? UInt160.Parse(t.To.Hash) : null,
-        //    //    Amount = new BigInteger(t.Amount),
-        //    //    TxId = UInt256.Parse(t.TxId),
-        //    //    Asset = UInt160.Parse(t.Asset.Hash),
-        //    //    TimeStamp = t.Time.ToTimestampMS(),
-        //    //}).ToList()
-        //};
-
 
 
         /// <summary>
