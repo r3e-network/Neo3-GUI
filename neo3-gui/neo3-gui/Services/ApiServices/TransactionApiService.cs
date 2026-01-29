@@ -189,9 +189,32 @@ namespace Neo.Services.ApiServices
         }
 
 
+        /// <summary>
+        /// Send raw transaction
+        /// </summary>
+        /// <param name="txRaw">Base64 encoded transaction</param>
+        /// <returns>Transaction JSON</returns>
         public async Task<object> SendTransaction(string txRaw)
         {
-            Transaction tx = Convert.FromBase64String(txRaw).AsSerializable<Transaction>();
+            if (string.IsNullOrWhiteSpace(txRaw))
+            {
+                return Error(ErrorCode.ParameterIsNull, "txRaw cannot be empty");
+            }
+
+            Transaction tx;
+            try
+            {
+                tx = Convert.FromBase64String(txRaw).AsSerializable<Transaction>();
+            }
+            catch (FormatException)
+            {
+                return Error(ErrorCode.InvalidPara, "Invalid base64 format");
+            }
+            catch (Exception ex)
+            {
+                return Error(ErrorCode.InvalidPara, $"Failed to deserialize transaction: {ex.Message}");
+            }
+
             await Program.Starter.NeoSystem.Blockchain.Ask<Blockchain.RelayResult>(tx);
             return tx.ToJson(null);
         }
