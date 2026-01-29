@@ -288,15 +288,15 @@ namespace Neo.Services.ApiServices
         /// <param name="asset">Optional asset filter</param>
         /// <param name="blockHeight">Optional block height filter</param>
         /// <returns>Paged list of transaction previews</returns>
-        public async Task<object> QueryNep17Transactions(int pageIndex = 1, int limit = 100, UInt160 address = null, UInt160 asset = null, uint? blockHeight = null)
+        public async Task<object> QueryNep17Transactions(int pageIndex = DefaultPageIndex, int limit = DefaultPageSize, UInt160 address = null, UInt160 asset = null, uint? blockHeight = null)
         {
             if (pageIndex < 1)
             {
                 return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
             }
-            if (limit <= 0 || limit > 100)
+            if (limit <= 0 || limit > DefaultPageSize)
             {
-                limit = 100;
+                limit = DefaultPageSize;
             }
 
             using var db = new TrackDB();
@@ -336,11 +336,11 @@ namespace Neo.Services.ApiServices
             }
             if (filter.PageIndex < 1)
             {
-                filter.PageIndex = 1;
+                filter.PageIndex = DefaultPageIndex;
             }
-            if (filter.PageSize <= 0 || filter.PageSize > 100)
+            if (filter.PageSize <= 0 || filter.PageSize > DefaultPageSize)
             {
-                filter.PageSize = 100;
+                filter.PageSize = DefaultPageSize;
             }
 
             using var db = new TrackDB();
@@ -362,11 +362,11 @@ namespace Neo.Services.ApiServices
             }
             if (filter.PageIndex < 1)
             {
-                filter.PageIndex = 1;
+                filter.PageIndex = DefaultPageIndex;
             }
-            if (filter.PageSize <= 0 || filter.PageSize > 100)
+            if (filter.PageSize <= 0 || filter.PageSize > DefaultPageSize)
             {
-                filter.PageSize = 100;
+                filter.PageSize = DefaultPageSize;
             }
 
             using var db = new TrackDB();
