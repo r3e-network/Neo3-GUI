@@ -11,6 +11,8 @@ namespace Neo.Common.Storage.SQLiteModules
 {
     public class SQLiteContext : DbContext
     {
+        private const string DataTrackDirectory = "Data_Track";
+        private const string TrackDbFileTemplate = "track.{0}.db";
 
         private static readonly object _lockObject = new object();
         private static byte[] _dbId;
@@ -34,13 +36,13 @@ namespace Neo.Common.Storage.SQLiteModules
 
         static SQLiteContext()
         {
-            if (!Directory.Exists("Data_Track"))
+            if (!Directory.Exists(DataTrackDirectory))
             {
-                Directory.CreateDirectory("Data_Track");
+                Directory.CreateDirectory(DataTrackDirectory);
             }
         }
 
-        public SQLiteContext() : this(Path.Combine($"Data_Track", $"track.{CliSettings.Default.Protocol.Network}.db"))
+        public SQLiteContext() : this(Path.Combine(DataTrackDirectory, string.Format(TrackDbFileTemplate, CliSettings.Default.Protocol.Network)))
         {
 
         }
