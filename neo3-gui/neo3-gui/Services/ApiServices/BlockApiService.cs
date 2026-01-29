@@ -12,6 +12,10 @@ namespace Neo.Services.ApiServices
 {
     public class BlockApiService : ApiService
     {
+        private const int MaxBlockLimit = 100;
+        private const int MaxAddressesPerQuery = 100;
+        private const int DefaultBlockLimit = 10;
+
         /// <summary>
         /// get block by height
         /// </summary>
@@ -56,16 +60,16 @@ namespace Neo.Services.ApiServices
         /// <param name="limit">Number of blocks to retrieve (1-100)</param>
         /// <param name="height">Optional starting height</param>
         /// <returns></returns>
-        public async Task<object> GetLastBlocks(int limit = 10, int? height = null)
+        public async Task<object> GetLastBlocks(int limit = DefaultBlockLimit, int? height = null)
         {
             // Validate limit parameter
             if (limit <= 0)
             {
                 return Error(ErrorCode.InvalidPara, "limit must be greater than 0");
             }
-            if (limit > 100)
+            if (limit > MaxBlockLimit)
             {
-                limit = 100; // Cap at 100 to prevent excessive load
+                limit = MaxBlockLimit; // Cap at maximum to prevent excessive load
             }
 
             var lastHeight = this.GetCurrentHeight();
@@ -169,9 +173,9 @@ namespace Neo.Services.ApiServices
             }
 
             // Limit the number of addresses to prevent excessive queries
-            if (addresses.Length > 100)
+            if (addresses.Length > MaxAddressesPerQuery)
             {
-                return Error(ErrorCode.InvalidPara, "Maximum 100 addresses allowed per query");
+                return Error(ErrorCode.InvalidPara, $"Maximum {MaxAddressesPerQuery} addresses allowed per query");
             }
 
             using var db = new TrackDB();
