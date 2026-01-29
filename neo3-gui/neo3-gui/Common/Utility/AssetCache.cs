@@ -19,6 +19,12 @@ namespace Neo.Common.Utility
     /// </summary>
     public class AssetCache
     {
+        private const string DecimalsMethod = "decimals";
+        private const string SymbolMethod = "symbol";
+        private const string TotalSupplyMethod = "totalSupply";
+        private const string NeoSymbol = "neo";
+        private const string GasSymbol = "gas";
+
         private static readonly ConcurrentDictionary<UInt160, AssetInfo> _assets = new();
 
         /// <summary>
@@ -76,8 +82,8 @@ namespace Neo.Common.Utility
             try
             {
                 using var sb = new ScriptBuilder();
-                sb.EmitDynamicCall(assetId, "decimals");
-                sb.EmitDynamicCall(assetId, "symbol");
+                sb.EmitDynamicCall(assetId, DecimalsMethod);
+                sb.EmitDynamicCall(assetId, SymbolMethod);
                 using var engine = sb.ToArray().RunTestMode(snapshot);
                 if (engine.State.HasFlag(VMState.FAULT))
                 {
@@ -87,7 +93,7 @@ namespace Neo.Common.Utility
                 string name = contract.Manifest.Name;
                 string symbol = engine.ResultStack.Pop().GetString();
                 byte decimals = (byte)engine.ResultStack.Pop().GetInteger();
-                symbol = symbol == "neo" || symbol == "gas" ? symbol.ToUpper() : symbol;
+                symbol = symbol == NeoSymbol || symbol == GasSymbol ? symbol.ToUpper() : symbol;
                 var assetInfo = new AssetInfo()
                 {
                     Asset = assetId,
@@ -141,7 +147,7 @@ namespace Neo.Common.Utility
         {
             var snapshot = Helpers.GetDefaultSnapshot();
             using var sb = new ScriptBuilder();
-            sb.EmitDynamicCall(asset, "totalSupply");
+            sb.EmitDynamicCall(asset, TotalSupplyMethod);
             using var engine = sb.ToArray().RunTestMode(snapshot);
             
             if (engine.State.HasFlag(VMState.FAULT))
@@ -182,7 +188,7 @@ namespace Neo.Common.Utility
                 }
 
                 using var sb = new ScriptBuilder();
-                sb.EmitDynamicCall(asset, "totalSupply");
+                sb.EmitDynamicCall(asset, TotalSupplyMethod);
                 using var engine = sb.ToArray().RunTestMode(snapshot);
                 
                 if (engine.State == VMState.FAULT)
