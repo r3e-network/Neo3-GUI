@@ -953,13 +953,17 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// append signature for multi address tx
         /// </summary>
-        /// <param name="signContext"></param>
-        /// <returns></returns>
+        /// <param name="signContext">Serialized sign context JSON</param>
+        /// <returns>Updated sign context or error</returns>
         public async Task<object> AppendSignature(string signContext)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
+            }
+            if (string.IsNullOrWhiteSpace(signContext))
+            {
+                return Error(ErrorCode.ParameterIsNull, "signContext cannot be empty");
             }
 
             ContractParametersContext context;
@@ -967,9 +971,9 @@ namespace Neo.Services.ApiServices
             {
                 context = ContractParametersContext.FromJson(signContext.DeserializeJson<JObject>(), Helpers.GetDefaultSnapshot());
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Error(ErrorCode.InvalidPara);
+                return Error(ErrorCode.InvalidPara, $"Invalid sign context format: {ex.Message}");
             }
 
             if (CurrentWallet.SignContext(context))
