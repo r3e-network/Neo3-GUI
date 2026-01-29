@@ -278,11 +278,25 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// query all NEP-17 transactions (on chain)
+        /// query all NEP-17 transactions (on chain) with filters
         /// </summary>
-        /// <returns></returns>
+        /// <param name="pageIndex">Page index (1-based)</param>
+        /// <param name="limit">Page size (1-100)</param>
+        /// <param name="address">Optional address filter</param>
+        /// <param name="asset">Optional asset filter</param>
+        /// <param name="blockHeight">Optional block height filter</param>
+        /// <returns>Paged list of transaction previews</returns>
         public async Task<object> QueryNep17Transactions(int pageIndex = 1, int limit = 100, UInt160 address = null, UInt160 asset = null, uint? blockHeight = null)
         {
+            if (pageIndex < 1)
+            {
+                return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
+            }
+            if (limit <= 0 || limit > 100)
+            {
+                limit = 100;
+            }
+
             using var db = new TrackDB();
             var filter = new TransferFilter()
             {
@@ -299,10 +313,10 @@ namespace Neo.Services.ApiServices
             var trans = db.QueryTransfersPagedByTx(filter);
             var result = new PageList<TransactionPreviewModel>
             {
-                TotalCount = trans.TotalCount,
-                PageSize = trans.PageSize,
+                TotalCount = trans?.TotalCount ?? 0,
+                PageSize = trans?.PageSize ?? limit,
                 PageIndex = pageIndex,
-                List = trans.List.ToTransactionPreviewModel(),
+                List = trans?.List?.ToTransactionPreviewModel() ?? new List<TransactionPreviewModel>(),
             };
             return result;
         }
