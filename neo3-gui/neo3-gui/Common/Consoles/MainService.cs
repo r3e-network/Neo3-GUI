@@ -26,6 +26,11 @@ namespace Neo.Common.Consoles
 {
     public class MainService : ConsoleServiceBase
     {
+        private const string ChainAccFile = "chain.acc";
+        private const int BlockImportBatchSize = 10;
+        private const string ServicePrompt = "neo";
+        private const string DefaultServiceName = "NEO-CLI";
+
         public event EventHandler WalletChanged;
 
         public LocalNode LocalNode;
@@ -57,8 +62,8 @@ namespace Neo.Common.Consoles
             }
         }
 
-        protected override string Prompt => "neo";
-        public override string ServiceName => "NEO-CLI";
+        protected override string Prompt => ServicePrompt;
+        public override string ServiceName => DefaultServiceName;
 
         public virtual async Task Start(string[] args)
         {
@@ -116,7 +121,7 @@ namespace Neo.Common.Consoles
             while (true)
             {
                 List<Block> blocksToImport = new List<Block>();
-                for (int i = 0; i < 10; i++)
+                for (int i = 0; i < BlockImportBatchSize; i++)
                 {
                     if (!blocksBeingImported.MoveNext()) break;
                     blocksToImport.Add(blocksBeingImported.Current);
@@ -172,9 +177,8 @@ namespace Neo.Common.Consoles
 
         private IEnumerable<Block> GetBlocksFromFile()
         {
-            const string pathAcc = "chain.acc";
-            if (File.Exists(pathAcc))
-                using (FileStream fs = new FileStream(pathAcc, FileMode.Open, FileAccess.Read, FileShare.Read))
+            if (File.Exists(ChainAccFile))
+                using (FileStream fs = new FileStream(ChainAccFile, FileMode.Open, FileAccess.Read, FileShare.Read))
                     foreach (var block in GetBlocks(fs))
                         yield return block;
 
