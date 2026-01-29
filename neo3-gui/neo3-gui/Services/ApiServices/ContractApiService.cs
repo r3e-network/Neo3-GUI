@@ -45,8 +45,17 @@ namespace Neo.Services.ApiServices
             return list;
         }
 
+        /// <summary>
+        /// Get contract information by hash
+        /// </summary>
+        /// <param name="contractHash">Contract hash</param>
+        /// <returns>Contract model</returns>
         public async Task<object> GetContract(UInt160 contractHash)
         {
+            if (contractHash == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "contractHash cannot be null");
+            }
             var contract = contractHash.GetContract();
             if (contract == null)
             {
