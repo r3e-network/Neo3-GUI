@@ -13,6 +13,9 @@ namespace Neo.Common
 {
     public class JsonRpcMiddleware : IMiddleware
     {
+        private const string ContentTypeJsonRpc = "application/json-rpc";
+        private const string CorsMaxAge = "31536000"; // 1 year in seconds
+        private const int UnknownErrorCode = -1;
 
         private readonly IServiceProvider _provider;
 
@@ -27,7 +30,7 @@ namespace Neo.Common
             context.Response.Headers["Access-Control-Allow-Origin"] = "*";
             context.Response.Headers["Access-Control-Allow-Methods"] = "GET, POST";
             context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type";
-            context.Response.Headers["Access-Control-Max-Age"] = "31536000";
+            context.Response.Headers["Access-Control-Max-Age"] = CorsMaxAge;
             if (context.Request.Method != "GET" && context.Request.Method != "POST"
                 || context.WebSockets.IsWebSocketRequest)
             {
@@ -78,14 +81,14 @@ namespace Neo.Common
                 message.MsgType = WsMessageType.Error;
                 message.Error = new WsError()
                 {
-                    Code = -1,
+                    Code = UnknownErrorCode,
                     Message = e.GetExMessage(),
                 };
                 Console.WriteLine(e);
             }
             finally
             {
-                context.Response.ContentType = "application/json-rpc";
+                context.Response.ContentType = ContentTypeJsonRpc;
                 await context.Response.WriteAsync(message.SerializeJson(), Encoding.UTF8);
             }
         }
