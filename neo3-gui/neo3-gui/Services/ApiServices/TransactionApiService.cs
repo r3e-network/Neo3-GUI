@@ -173,8 +173,17 @@ namespace Neo.Services.ApiServices
         }
 
 
+        /// <summary>
+        /// Remove unconfirmed transaction from cache
+        /// </summary>
+        /// <param name="txId">Transaction hash</param>
+        /// <returns>True if removed</returns>
         public async Task<object> RemoveUnconfirmTransaction(UInt256 txId)
         {
+            if (txId == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "txId cannot be null");
+            }
             UnconfirmedTransactionCache.RemoveUnconfirmedTransactions(txId);
             return true;
         }
