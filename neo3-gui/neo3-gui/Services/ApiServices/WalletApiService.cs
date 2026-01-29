@@ -740,27 +740,37 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// send asset
+        /// send assets with multiple transfer requests
         /// </summary>
-        /// <returns></returns>
+        /// <param name="transfers">Array of transfer requests</param>
+        /// <returns>Transaction model</returns>
         public async Task<object> SendTo(TransferRequest[] transfers)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (transfers.IsEmpty())
+            if (transfers == null || transfers.Length == 0)
             {
-                return Error(ErrorCode.ParameterIsNull);
+                return Error(ErrorCode.ParameterIsNull, "transfers cannot be empty");
+            }
+            if (transfers.Length > 50)
+            {
+                return Error(ErrorCode.InvalidPara, "Maximum 50 transfers allowed per transaction");
             }
 
             var transferList = new List<TransferRequestModel>();
-            foreach (var transferRequest in transfers)
+            for (int i = 0; i < transfers.Length; i++)
             {
+                var transferRequest = transfers[i];
+                if (transferRequest == null)
+                {
+                    return Error(ErrorCode.InvalidPara, $"Transfer at index {i} is null");
+                }
                 var (transfer, error) = ParseTransferRequest(transferRequest);
                 if (error.NotNull())
                 {
-                    return Error(ErrorCode.InvalidPara, error);
+                    return Error(ErrorCode.InvalidPara, $"Transfer at index {i}: {error}");
                 }
                 transferList.Add(transfer);
             }
@@ -787,13 +797,7 @@ namespace Neo.Services.ApiServices
                     return Error(ErrorCode.GasNotEnough);
                 }
 
-                var error = ex.Message;
-                var currentEx = ex;
-                while (currentEx.InnerException != null)
-                {
-                    currentEx = currentEx.InnerException;
-                    error += $"\r\n{currentEx.Message}";
-                }
+                var error = ex.GetExMessage();
                 return Error(ErrorCode.TransferError, error);
             }
         }
