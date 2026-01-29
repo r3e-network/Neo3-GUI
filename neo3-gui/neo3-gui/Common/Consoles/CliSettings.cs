@@ -11,6 +11,9 @@ namespace Neo.Common.Consoles
 {
     public class CliSettings
     {
+        private const string ConfigFileName = "config";
+        private const string ApplicationConfigSection = "ApplicationConfiguration";
+
         public ProtocolSettings Protocol { get; private set; }
         public StorageSettings Storage { get; }
         public P2PSettings P2P { get; }
@@ -21,8 +24,8 @@ namespace Neo.Common.Consoles
 
         static bool UpdateDefault(IConfiguration configuration)
         {
-            var settings = new CliSettings(configuration.GetSection("ApplicationConfiguration"));
-            settings.Protocol = ProtocolSettings.Load("config".GetEnvConfigPath());
+            var settings = new CliSettings(configuration.GetSection(ApplicationConfigSection));
+            settings.Protocol = ProtocolSettings.Load(ConfigFileName.GetEnvConfigPath());
             return null == Interlocked.CompareExchange(ref _default, settings, null);
         }
 
@@ -34,7 +37,7 @@ namespace Neo.Common.Consoles
             {
                 if (_default == null)
                 {
-                    UpdateDefault("config".LoadConfig());
+                    UpdateDefault(ConfigFileName.LoadConfig());
                 }
                 return _default;
             }
