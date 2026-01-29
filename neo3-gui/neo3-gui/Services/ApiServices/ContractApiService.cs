@@ -544,29 +544,31 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// apply for new validator
+        /// Apply for new validator (consensus node candidate)
         /// </summary>
-        /// <param name="pubkey"></param>
-        /// <returns></returns>
+        /// <param name="pubkey">Public key in hex format</param>
+        /// <returns>Transaction result</returns>
         public async Task<object> ApplyForValidator(string pubkey)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (pubkey.IsNull())
+            if (string.IsNullOrWhiteSpace(pubkey))
             {
-                return Error(ErrorCode.ParameterIsNull);
+                return Error(ErrorCode.ParameterIsNull, "pubkey cannot be empty");
             }
+
             ECPoint publicKey = null;
             try
             {
                 publicKey = ECPoint.Parse(pubkey, ECCurve.Secp256r1);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Error(ErrorCode.InvalidPara);
+                return Error(ErrorCode.InvalidPara, $"Invalid public key format: {ex.Message}");
             }
+
             var snapshot = Helpers.GetDefaultSnapshot();
             var candidates = snapshot.GetCandidates();
             if (candidates.Any(v => v.PublicKey.Equals(publicKey)))
