@@ -221,9 +221,11 @@ namespace Neo.Services.ApiServices
             var height = this.GetCurrentHeight();
             high = high > height ? (int)height : high;
 
-            var tasks = Enumerable.Range(low, high - low + 1).Reverse().Select(async (i) => GetBlockByHeight((uint)i));
-            await Task.WhenAll(tasks);
-            return tasks.Select(t => t.Result);
+            // GetBlockByHeight is synchronous, no need for async/await overhead
+            return Enumerable.Range(low, high - low + 1)
+                .Reverse()
+                .Select(i => GetBlockByHeight((uint)i))
+                .Where(b => b != null);
         }
         #endregion
     }
