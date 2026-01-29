@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neo.Common.Storage.SQLiteModules
 {
     [Table("ContractUpdateRecord")]
-
     public class ContractUpdateRecordEntity
     {
         [Key]
@@ -26,8 +21,5 @@ namespace Neo.Common.Storage.SQLiteModules
         public string MigrateTxId { get; set; }
 
         public DateTime MigrateTime { get; set; }
-
-        //public AssetType OldType { get; set; }
-        //public AssetType NewType { get; set; }
     }
 }
