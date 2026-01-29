@@ -1,14 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Basic contract information
+    /// </summary>
     public class ContractInfoModel
     {
-        public UInt160 Hash { get; set; }
-        public string Name { get; set; }
+        /// <summary>
+        /// Contract script hash
+        /// </summary>
+        public UInt160? Hash { get; set; }
+
+        /// <summary>
+        /// Contract name
+        /// </summary>
+        public string? Name { get; set; }
     }
 }

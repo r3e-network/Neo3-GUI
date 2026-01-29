@@ -1111,7 +1111,7 @@ namespace Neo
                 amount = (BigInteger)item.Value;
                 return true;
             }
-            if (item.TypeCode == StackItemType.Buffer || item.TypeCode == StackItemType.Buffer)
+            if (item.TypeCode == StackItemType.Buffer || item.TypeCode == StackItemType.ByteString)
             {
                 amount = new BigInteger((byte[])item.Value);
                 return true;

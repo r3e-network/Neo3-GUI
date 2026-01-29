@@ -5,44 +5,67 @@ using System.Reflection;
 using System.Threading.Tasks;
 using Neo.Models;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Neo.Services;
 
 namespace Neo.Common
 {
     /// <summary>
-    /// WebSocket API method executor
+    /// WebSocket API method executor with caching
     /// </summary>
     public class WebSocketExecutor
     {
-        private const string MethodNotFoundMessageTemplate = "Method [{0}] not found!";
-        private const string MethodRegistrationFailedTemplate = "Failed to register method {0}: {1}";
+        private const string MethodNotFoundTemplate = "Method [{0}] not found!";
+        private const string MethodRegFailedTemplate = "Failed to register method {0}: {1}";
 
-        private readonly Dictionary<string, MethodMetadata> _methods = new(StringComparer.OrdinalIgnoreCase);
+        private readonly Dictionary<string, MethodMetadata> _methods;
         private readonly IServiceProvider _provider;
+        private readonly ILogger<WebSocketExecutor> _logger;
 
-        public WebSocketExecutor(IServiceProvider provider)
+        public WebSocketExecutor(
+            IServiceProvider provider,
+            ILogger<WebSocketExecutor> logger = null)
         {
             _provider = provider ?? throw new ArgumentNullException(nameof(provider));
-            var invokerType = typeof(IApiService);
+            _logger = logger;
+            _methods = new Dictionary<string, MethodMetadata>(StringComparer.OrdinalIgnoreCase);
             
-            foreach (var type in invokerType.Assembly.GetExportedTypes()
-                .Where(t => !t.IsAbstract && t != invokerType && invokerType.IsAssignableFrom(t)))
+            RegisterMethods();
+        }
+
+        private void RegisterMethods()
+        {
+            var invokerType = typeof(IApiService);
+            var types = invokerType.Assembly.GetExportedTypes()
+                .Where(t => !t.IsAbstract && t != invokerType && invokerType.IsAssignableFrom(t));
+
+            foreach (var type in types)
             {
-                foreach (var methodInfo in type.GetMethods(BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly))
+                RegisterTypeMethods(type);
+            }
+
+            _logger?.LogInformation("Registered {Count} API methods", _methods.Count);
+        }
+
+        private void RegisterTypeMethods(Type type)
+        {
+            var methods = type.GetMethods(
+                BindingFlags.Instance | BindingFlags.Public | BindingFlags.DeclaredOnly);
+
+            foreach (var methodInfo in methods)
+            {
+                try
                 {
-                    try
+                    var metadata = new MethodMetadata(methodInfo);
+                    if (metadata.IsValid)
                     {
-                        var methodMetadata = new MethodMetadata(methodInfo);
-                        if (methodMetadata.IsValid)
-                        {
-                            _methods[methodInfo.Name] = methodMetadata;
-                        }
+                        _methods[methodInfo.Name] = metadata;
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(string.Format(MethodRegistrationFailedTemplate, methodInfo.Name, e.Message));
-                        throw;
-                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger?.LogError(ex, MethodRegFailedTemplate, methodInfo.Name, ex.Message);
+                    throw;
                 }
             }
         }
@@ -53,24 +76,35 @@ namespace Neo.Common
             {
                 return ErrorCode.InvalidPara.ToError();
             }
-            if (request.Method.IsNull())
+
+            if (string.IsNullOrEmpty(request.Method))
             {
                 return ErrorCode.MethodNotFound.ToError();
             }
-            if (_methods.TryGetValue(request.Method, out var method))
+
+            if (!_methods.TryGetValue(request.Method, out var method))
             {
-                var instance = _provider.GetService(method.DeclaringType);
-                if (instance is ApiService invoker)
+                return new WsError
                 {
-                    invoker.Client = _provider.GetService<WebSocketSession>().Connection;
-                }
-                return await method.Invoke(instance, request);
+                    Code = (int)ErrorCode.MethodNotFound,
+                    Message = string.Format(MethodNotFoundTemplate, request.Method)
+                };
             }
-            return new WsError 
-            { 
-                Code = (int)ErrorCode.MethodNotFound, 
-                Message = string.Format(MethodNotFoundMessageTemplate, request.Method)
-            };
+
+            return await ExecuteMethod(method, request);
+        }
+
+        private async Task<object> ExecuteMethod(MethodMetadata method, WsRequest request)
+        {
+            var instance = _provider.GetService(method.DeclaringType);
+            
+            if (instance is ApiService invoker)
+            {
+                var session = _provider.GetService<WebSocketSession>();
+                invoker.Client = session?.Connection;
+            }
+
+            return await method.Invoke(instance, request);
         }
     }
 }

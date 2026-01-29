@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Neo.SmartContract;
 
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Represents a deployed smart contract
+    /// </summary>
     public class ContractModel
     {
+        /// <summary>
+        /// Creates a ContractModel from a ContractState
+        /// </summary>
         public ContractModel(ContractState contract)
         {
             ContractId = contract.Id;
@@ -16,15 +17,24 @@ namespace Neo.Models.Contracts
             Manifest = new ManifestModel(contract.Manifest);
         }
 
-
-
+        /// <summary>
+        /// Contract ID in the blockchain
+        /// </summary>
         public int ContractId { get; set; }
-        public UInt160 ContractHash { get; set; }
-        //public bool HasStorage { get; set; }
-        //public bool Payable { get; set; }
-        public byte[] Script { get; set; }
-        public ManifestModel Manifest { get; set; }
 
+        /// <summary>
+        /// Contract script hash
+        /// </summary>
+        public UInt160? ContractHash { get; set; }
+
+        /// <summary>
+        /// Contract bytecode
+        /// </summary>
+        public byte[]? Script { get; set; }
+
+        /// <summary>
+        /// Contract manifest
+        /// </summary>
+        public ManifestModel? Manifest { get; set; }
     }
-
 }

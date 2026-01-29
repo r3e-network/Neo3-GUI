@@ -1,11 +1,23 @@
-﻿using System.Collections.Generic;
-
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Represents an event emitted during contract invocation
+    /// </summary>
     public class InvokeEventValueModel
     {
-        public UInt160 Contract { get; set; }
-        public string EventName { get; set; }
-        public object EventParameters { get; set; }
+        /// <summary>
+        /// Contract that emitted the event
+        /// </summary>
+        public UInt160? Contract { get; set; }
+
+        /// <summary>
+        /// Name of the emitted event
+        /// </summary>
+        public string? EventName { get; set; }
+
+        /// <summary>
+        /// Parameters passed with the event
+        /// </summary>
+        public object? EventParameters { get; set; }
     }
 }

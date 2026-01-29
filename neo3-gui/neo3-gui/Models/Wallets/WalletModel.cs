@@ -1,13 +1,15 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Neo.Models.Wallets
 {
+    /// <summary>
+    /// Wallet model containing accounts
+    /// </summary>
     public class WalletModel
     {
-        public List<AccountModel> Accounts { get; set; } = new List<AccountModel>();
+        /// <summary>
+        /// Wallet accounts
+        /// </summary>
+        public List<AccountModel> Accounts { get; set; } = new();
     }
 }

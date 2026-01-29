@@ -1,17 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 using Neo.SmartContract;
 using Neo.SmartContract.Manifest;
 
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Represents a contract method parameter
+    /// </summary>
     public class ContractParameterModel
     {
-        public ContractParameterModel(ContractParameterDefinition parameter)
+        /// <summary>
+        /// Creates a new ContractParameterModel from a definition
+        /// </summary>
+        public ContractParameterModel(ContractParameterDefinition? parameter)
         {
             if (parameter != null)
             {
@@ -21,13 +22,12 @@ namespace Neo.Models.Contracts
         }
 
         /// <summary>
-        /// Name is the name of the parameter, which can be any valid identifier.
+        /// Parameter name identifier
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
-        /// Type indicates the type of the parameter. It can be one of the following values: 
-        ///     Signature, Boolean, Integer, Hash160, Hash256, ByteArray, PublicKey, String, Array, InteropInterface.
+        /// Parameter type (Signature, Boolean, Integer, Hash160, etc.)
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContractParameterType Type { get; set; }

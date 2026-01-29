@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Result containing a transaction ID
+    /// </summary>
     public class TxResultModel
     {
-        public UInt256 TxId { get; set; }
+        /// <summary>
+        /// Transaction hash identifier
+        /// </summary>
+        public UInt256? TxId { get; set; }
     }
 }

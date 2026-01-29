@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.Json.Serialization;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using Neo.SmartContract;
 using Neo.SmartContract.Manifest;
 
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Represents a contract method descriptor
+    /// </summary>
     public class ContractMethodModel : ContractEventModel
     {
-        public ContractMethodModel(ContractMethodDescriptor method) : base(method)
+        /// <summary>
+        /// Creates a new ContractMethodModel from a descriptor
+        /// </summary>
+        public ContractMethodModel(ContractMethodDescriptor? method) : base(method)
         {
             if (method != null)
             {
@@ -22,13 +23,18 @@ namespace Neo.Models.Contracts
             }
         }
 
+        /// <summary>
+        /// Byte offset in the script
+        /// </summary>
         public int Offset { get; set; }
 
+        /// <summary>
+        /// Whether this method is safe (read-only)
+        /// </summary>
         public bool Safe { get; set; }
 
         /// <summary>
-        /// ReturnType indicates the return type of the method. It can be one of the following values: 
-        ///     Signature, Boolean, Integer, Hash160, Hash256, ByteArray, PublicKey, String, Array, InteropInterface, Void.
+        /// Return type of the method
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContractParameterType ReturnType { get; set; }

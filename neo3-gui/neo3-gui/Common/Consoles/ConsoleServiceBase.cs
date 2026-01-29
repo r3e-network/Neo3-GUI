@@ -28,9 +28,10 @@ namespace Neo.Common.Consoles
         protected bool ShowPrompt { get; set; } = true;
         public bool ReadingPassword { get; set; } = false;
 
-        private bool _running;
-        private readonly CancellationTokenSource _shutdownTokenSource = new CancellationTokenSource();
-        private readonly CountdownEvent _shutdownAcknowledged = new CountdownEvent(1);
+        private volatile bool _running;
+        private readonly CancellationTokenSource _shutdownTokenSource = new();
+        private readonly CountdownEvent _shutdownAcknowledged = new(1);
+        private bool _disposed;
 
         protected virtual bool OnCommand(string[] args)
         {
@@ -337,6 +338,18 @@ namespace Neo.Common.Consoles
             }
 
             System.Console.ResetColor();
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed) return;
+            _disposed = true;
+
+            if (disposing)
+            {
+                _shutdownTokenSource?.Dispose();
+                _shutdownAcknowledged?.Dispose();
+            }
         }
     }
 }

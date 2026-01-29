@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
-using System.Net.WebSockets;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Threading.Tasks.Dataflow;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.WebSockets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -18,15 +9,16 @@ using Neo.Common;
 using Neo.Models.Jobs;
 using Neo.Services;
 
-
 namespace Neo
 {
     public class Startup
     {
+        private const int WebSocketKeepAliveSeconds = 30;
+        private const int WebSocketBufferSize = 4 * 1024;
 
         public IConfiguration Configuration { get; }
-
         public string ContentRootPath { get; set; }
+
         public Startup(IConfiguration configuration, IHostEnvironment env)
         {
             Configuration = configuration;
@@ -37,46 +29,48 @@ namespace Neo
 
             if (Directory.Exists(ContentRootPath))
             {
-                CommandLineTool.Run("npm run dev",ContentRootPath);
+                CommandLineTool.Run("npm run dev", ContentRootPath);
             }
 #endif
         }
 
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // WebSocket services
             services.AddWebSocketInvoker();
+            
+            // Background services
             services.AddSingleton<NotificationService>();
+            
+            // Middleware
             services.AddSingleton<JsonRpcMiddleware>();
-            services.AddWebSockets(option =>
+            
+            // WebSocket options
+            services.AddWebSockets(options =>
             {
-
+                options.KeepAliveInterval = TimeSpan.FromSeconds(WebSocketKeepAliveSeconds);
+                options.ReceiveBufferSize = WebSocketBufferSize;
             });
+
+            // Memory cache for hot data
+            services.AddMemoryCache();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             app.UseWebSockets();
             app.UseMiddleware<JsonRpcMiddleware>();
             app.UseMiddleware<WebSocketHubMiddleware>();
 
+            ConfigureNotificationJobs(app);
+        }
+
+        private static void ConfigureNotificationJobs(IApplicationBuilder app)
+        {
             var notify = app.UseNotificationService();
             notify.Register(new SyncHeightJob(TimeSpan.FromSeconds(5)));
             notify.Register(new SyncWalletJob(TimeSpan.FromSeconds(11)));
             notify.Register(new TransactionConfirmJob(TimeSpan.FromSeconds(7)));
-
-            //app.UseSpa(spa =>
-            //{
-            //    spa.Options.SourcePath = "ClientApp";
-
-            //    if (env.IsDevelopment())
-            //    {
-            //        spa.UseReactDevelopmentServer(npmScript: "start");
-            //    }
-            //});
         }
-
     }
 }

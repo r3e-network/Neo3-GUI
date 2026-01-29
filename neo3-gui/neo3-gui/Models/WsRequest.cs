@@ -1,16 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace Neo.Models
 {
+    /// <summary>
+    /// Represents a WebSocket request message
+    /// </summary>
     public class WsRequest
     {
-        public string Id { get; set; }
-        public string Method { get; set; }
+        /// <summary>
+        /// Unique request identifier for correlation
+        /// </summary>
+        public string? Id { get; set; }
+
+        /// <summary>
+        /// Method name to invoke
+        /// </summary>
+        public string? Method { get; set; }
+
+        /// <summary>
+        /// Method parameters as JSON element
+        /// </summary>
         public JsonElement Params { get; set; }
     }
 }

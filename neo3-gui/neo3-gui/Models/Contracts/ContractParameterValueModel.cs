@@ -1,17 +1,22 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Neo.SmartContract;
 
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Contract parameter with type and value
+    /// </summary>
     public class ContractParameterValueModel
     {
         /// <summary>
-        /// Type indicates the type of the parameter. It can be one of the following values: 
-        ///     Signature, Boolean, Integer, Hash160, Hash256, ByteArray, PublicKey, String, Array, InteropInterface.
+        /// Parameter type
         /// </summary>
         [JsonConverter(typeof(JsonStringEnumConverter))]
         public ContractParameterType Type { get; set; }
 
-        public string Value { get; set; }
+        /// <summary>
+        /// Parameter value as string
+        /// </summary>
+        public string? Value { get; set; }
     }
 }

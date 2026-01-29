@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace Neo.Common
 {
+    /// <summary>
+    /// Application-wide constants
+    /// </summary>
     public static class Constant
     {
         /// <summary>
@@ -22,5 +21,30 @@ namespace Neo.Common
         /// Default page index (1-based)
         /// </summary>
         public const int DefaultPageIndex = 1;
+
+        /// <summary>
+        /// WebSocket buffer size in bytes
+        /// </summary>
+        public const int WebSocketBufferSize = 4 * 1024;
+
+        /// <summary>
+        /// Maximum WebSocket connections
+        /// </summary>
+        public const int MaxWebSocketConnections = 10;
+
+        /// <summary>
+        /// Heartbeat interval in seconds
+        /// </summary>
+        public const int HeartbeatIntervalSeconds = 3;
+
+        /// <summary>
+        /// Default operation timeout in milliseconds
+        /// </summary>
+        public const int DefaultTimeoutMs = 5000;
+
+        /// <summary>
+        /// Maximum retry attempts for operations
+        /// </summary>
+        public const int MaxRetryAttempts = 3;
     }
 }

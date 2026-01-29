@@ -37,5 +37,31 @@ namespace neo3_gui.tests
             Assert.IsNull(request.Id);
             Assert.IsNull(request.Method);
         }
+
+        [TestMethod]
+        public void WsRequest_EmptyId_IsValid()
+        {
+            var request = new WsRequest { Id = "" };
+            Assert.AreEqual("", request.Id);
+        }
+
+        [TestMethod]
+        public void WsRequest_ArrayParams_WorksCorrectly()
+        {
+            var json = JsonDocument.Parse("[1, 2, 3]");
+            var request = new WsRequest { Params = json.RootElement };
+            
+            Assert.AreEqual(JsonValueKind.Array, request.Params.ValueKind);
+            Assert.AreEqual(3, request.Params.GetArrayLength());
+        }
+
+        [TestMethod]
+        public void WsRequest_NullParams_WorksCorrectly()
+        {
+            var json = JsonDocument.Parse("null");
+            var request = new WsRequest { Params = json.RootElement };
+            
+            Assert.AreEqual(JsonValueKind.Null, request.Params.ValueKind);
+        }
     }
 }

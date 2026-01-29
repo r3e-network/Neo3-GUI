@@ -1,19 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Represents a consensus validator node
+    /// </summary>
     public class ValidatorModel
     {
-        public string Publickey { get; set; }
-
-        public string Votes { get; set; }
+        /// <summary>
+        /// Public key of the validator (hex encoded)
+        /// </summary>
+        public string? Publickey { get; set; }
 
         /// <summary>
-        /// In Use
+        /// Number of votes received by this validator
+        /// </summary>
+        public string? Votes { get; set; }
+
+        /// <summary>
+        /// Whether this validator is currently active in consensus
         /// </summary>
         public bool Active { get; set; }
     }

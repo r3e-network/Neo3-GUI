@@ -1,11 +1,17 @@
-﻿using System.Linq;
+using System.Linq;
 using Neo.SmartContract.Manifest;
 
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Represents a contract event descriptor
+    /// </summary>
     public class ContractEventModel
     {
-        public ContractEventModel(ContractEventDescriptor e)
+        /// <summary>
+        /// Creates a new ContractEventModel from a descriptor
+        /// </summary>
+        public ContractEventModel(ContractEventDescriptor? e)
         {
             if (e != null)
             {
@@ -15,13 +21,13 @@ namespace Neo.Models.Contracts
         }
 
         /// <summary>
-        /// Name is the name of the method, which can be any valid identifier.
+        /// Event name identifier
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
-        /// Parameters is an array of Parameter objects which describe the details of each parameter in the method.
+        /// Event parameters
         /// </summary>
-        public ContractParameterModel[] Parameters { get; set; }
+        public ContractParameterModel[]? Parameters { get; set; }
     }
 }

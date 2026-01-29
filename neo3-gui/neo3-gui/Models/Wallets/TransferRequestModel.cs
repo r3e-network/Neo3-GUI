@@ -1,16 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Neo.Models.Wallets
 {
+    /// <summary>
+    /// Transfer request with typed amount
+    /// </summary>
     public class TransferRequestModel
     {
-        public UInt160 Receiver { get; set; }
+        /// <summary>Receiver address</summary>
+        public UInt160? Receiver { get; set; }
+
+        /// <summary>Transfer amount</summary>
         public BigDecimal Amount { get; set; }
-        public UInt160 Asset { get; set; }
-        public UInt160 Sender { get; set; }
+
+        /// <summary>Asset hash</summary>
+        public UInt160? Asset { get; set; }
+
+        /// <summary>Sender address</summary>
+        public UInt160? Sender { get; set; }
     }
 }

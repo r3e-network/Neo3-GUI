@@ -1,18 +1,19 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neo.Common.Storage;
-using Neo.Wallets;
 
 namespace Neo.Models.Wallets
 {
+    /// <summary>
+    /// Address balance model
+    /// </summary>
     public class AddressBalanceModel
     {
-        public UInt160 AddressHash { get; set; }
-        public string Address => AddressHash?.ToAddress();
+        /// <summary>Address hash</summary>
+        public UInt160? AddressHash { get; set; }
 
-        public List<AssetBalanceModel> Balances { get; set; } = new List<AssetBalanceModel>();
+        /// <summary>Address string</summary>
+        public string? Address => AddressHash?.ToAddress();
+
+        /// <summary>Asset balances</summary>
+        public List<AssetBalanceModel> Balances { get; set; } = new();
     }
 }

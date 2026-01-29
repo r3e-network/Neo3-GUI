@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Neo.Models.Wallets
 {
+    /// <summary>
+    /// Unclaimed GAS model
+    /// </summary>
     public class UnclaimedGasModel
     {
+        /// <summary>Amount of unclaimed GAS</summary>
         public BigDecimal UnclaimedGas { get; set; }
     }
 }

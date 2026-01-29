@@ -40,5 +40,27 @@ namespace neo3_gui.tests
             Assert.AreEqual(0, error.Code);
             Assert.IsNull(error.Message);
         }
+
+        [TestMethod]
+        public void WsError_NegativeCode_IsValid()
+        {
+            var error = new WsError { Code = -1 };
+            Assert.AreEqual(-1, error.Code);
+        }
+
+        [TestMethod]
+        public void WsError_EmptyMessage_IsValid()
+        {
+            var error = new WsError { Message = "" };
+            Assert.AreEqual("", error.Message);
+        }
+
+        [TestMethod]
+        public void WsError_FromCode_CreatesError()
+        {
+            var error = WsError.FromCode(ErrorCode.MethodNotFound);
+            Assert.IsNotNull(error);
+            Assert.AreEqual((int)ErrorCode.MethodNotFound, error.Code);
+        }
     }
 }

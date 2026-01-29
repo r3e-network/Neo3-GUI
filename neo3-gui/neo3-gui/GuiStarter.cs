@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Neo.Common.Analyzers;
 using Neo.Common.Consoles;
@@ -12,24 +13,36 @@ namespace Neo
     /// </summary>
     public class GuiStarter : MainService, IDisposable
     {
+        private const int ScanTaskWaitTimeoutSeconds = 5;
+
         public ExecuteResultScanner ExecuteResultScanner { get; }
         public ExecuteResultLogTracker ExecuteResultLogTracker { get; }
         
         private Task _scanTask;
-        private bool _disposed;
+        private CancellationTokenSource _scanCts;
+        private volatile bool _disposed;
+        private volatile bool _started;
 
         public GuiStarter()
         {
             ExecuteResultLogTracker = new ExecuteResultLogTracker();
             ExecuteResultScanner = new ExecuteResultScanner();
+            _scanCts = new CancellationTokenSource();
         }
 
         public override async Task Start(string[] args)
         {
+            if (_started) return;
+            _started = true;
+
             await base.Start(args);
+            
             _scanTask = Task.Factory.StartNew(
                 () => ExecuteResultScanner.Start(), 
-                TaskCreationOptions.LongRunning);
+                _scanCts.Token,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
+            
             UnconfirmedTransactionCache.RegisterBlockPersistEvent(NeoSystem);
         }
 
@@ -41,15 +54,28 @@ namespace Neo
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (_disposed) return;
+            _disposed = true;
+
+            if (disposing)
             {
-                if (disposing)
+                // Cancel scan task
+                _scanCts?.Cancel();
+                
+                // Dispose scanner
+                ExecuteResultScanner?.Dispose();
+                
+                // Wait for scan task
+                try
                 {
-                    ExecuteResultScanner?.Dispose();
-                    // Wait for scan task to complete
-                    _scanTask?.Wait(TimeSpan.FromSeconds(5));
+                    _scanTask?.Wait(TimeSpan.FromSeconds(ScanTaskWaitTimeoutSeconds));
                 }
-                _disposed = true;
+                catch (AggregateException)
+                {
+                    // Task may have been cancelled
+                }
+                
+                _scanCts?.Dispose();
             }
         }
     }

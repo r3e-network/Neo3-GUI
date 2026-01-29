@@ -82,5 +82,35 @@ namespace neo3_gui.tests
 
             Assert.AreEqual(0, projected.List.Count);
         }
+
+        [TestMethod]
+        public void TotalPages_CalculatesCorrectly()
+        {
+            var pageList = new PageList<int>
+            {
+                PageSize = 10,
+                TotalCount = 95
+            };
+            Assert.AreEqual(10, pageList.TotalPages);
+        }
+
+        [TestMethod]
+        public void TotalPages_ZeroPageSize_ReturnsZero()
+        {
+            var pageList = new PageList<int>
+            {
+                PageSize = 0,
+                TotalCount = 100
+            };
+            Assert.AreEqual(0, pageList.TotalPages);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void Project_NullFunc_ThrowsException()
+        {
+            var pageList = new PageList<int> { List = new List<int> { 1 } };
+            pageList.Project<string>(null!);
+        }
     }
 }

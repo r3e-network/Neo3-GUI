@@ -1,11 +1,16 @@
-﻿using Neo.SmartContract.Manifest;
+using Neo.SmartContract.Manifest;
 
 namespace Neo.Models.Contracts
 {
+    /// <summary>
+    /// Contract manifest model
+    /// </summary>
     public class ManifestModel
     {
-
-        public ManifestModel(ContractManifest manifest)
+        /// <summary>
+        /// Creates a ManifestModel from a ContractManifest
+        /// </summary>
+        public ManifestModel(ContractManifest? manifest)
         {
             if (manifest != null)
             {
@@ -18,43 +23,40 @@ namespace Neo.Models.Contracts
                 Extra = manifest.Extra;
             }
         }
-        /// <summary>
-        /// Contract Name
-        /// </summary>
-        public string ContractName { get; set; }
-        /// <summary>
-        /// A group represents a set of mutually trusted contracts. A contract will trust and allow any contract in the same group to invoke it, and the user interface will not give any warnings.
-        /// </summary>
-        public ContractGroup[] Groups { get; set; }
-
 
         /// <summary>
-        /// For technical details of ABI, please refer to NEP-3: NeoContract ABI. (https://github.com/neo-project/proposals/blob/master/nep-3.mediawiki)
+        /// Contract name
         /// </summary>
-        public ContractAbiModel Abi { get; set; }
+        public string? ContractName { get; set; }
 
         /// <summary>
-        /// The permissions field is an array containing a set of Permission objects. It describes which contracts may be invoked and which methods are called.
+        /// Mutually trusted contract groups
         /// </summary>
-        public ContractPermission[] Permissions { get; set; }
+        public ContractGroup[]? Groups { get; set; }
 
         /// <summary>
-        /// The trusts field is an array containing a set of contract hashes or group public keys. It can also be assigned with a wildcard *. If it is a wildcard *, then it means that it trusts any contract.
-        /// If a contract is trusted, the user interface will not give any warnings when called by the contract.
+        /// Contract ABI definition
         /// </summary>
-        public WildcardContainer<ContractPermissionDescriptor> Trusts { get; set; }
+        public ContractAbiModel? Abi { get; set; }
 
+        /// <summary>
+        /// Invocation permissions
+        /// </summary>
+        public ContractPermission[]? Permissions { get; set; }
 
-        public string[] SupportedStandards
-        {
-            get;
-            set;
-        }
+        /// <summary>
+        /// Trusted contracts or groups
+        /// </summary>
+        public WildcardContainer<ContractPermissionDescriptor>? Trusts { get; set; }
+
+        /// <summary>
+        /// Supported NEP standards
+        /// </summary>
+        public string[]? SupportedStandards { get; set; }
 
         /// <summary>
         /// Custom user data
         /// </summary>
-        public object Extra { get; set; }
-
+        public object? Extra { get; set; }
     }
 }
