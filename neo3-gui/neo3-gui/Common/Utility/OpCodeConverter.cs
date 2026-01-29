@@ -15,9 +15,13 @@ namespace Neo.Common.Utility
 {
     public class OpCodeConverter
     {
+        private const int OpCodeTableSize = 256;
+        private const char MinPrintableChar = '0';
+        private const char MaxPrintableChar = 'z';
+
         private static readonly Dictionary<uint, string> _interopServiceMap;
-        private static readonly int[] _operandSizePrefixTable = new int[256];
-        private static readonly int[] _operandSizeTable = new int[256];
+        private static readonly int[] _operandSizePrefixTable = new int[OpCodeTableSize];
+        private static readonly int[] _operandSizeTable = new int[OpCodeTableSize];
 
 
         static OpCodeConverter()
@@ -37,7 +41,7 @@ namespace Neo.Common.Utility
         public static string ToAsciiString(byte[] byteArray)
         {
             var output = Encoding.UTF8.GetString(byteArray);
-            if (output.Any(p => p < '0' || p > 'z')) return byteArray.ToHexString();
+            if (output.Any(p => p < MinPrintableChar || p > MaxPrintableChar)) return byteArray.ToHexString();
             return output;
         }
 
