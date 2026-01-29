@@ -41,10 +41,9 @@ namespace Neo.Common.Analyzers
             }
             foreach (var analyzerAssetInfo in analyzer.Result.AssetInfos)
             {
-                if (!_cachedAssets.Contains(analyzerAssetInfo.Key))
+                if (_cachedAssets.Add(analyzerAssetInfo.Key))
                 {
                     _levelDb.SaveAssetInfo(analyzerAssetInfo.Value);
-                    _cachedAssets.Add(analyzerAssetInfo.Key);
                 }
             }
 
