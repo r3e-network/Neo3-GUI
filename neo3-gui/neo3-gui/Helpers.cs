@@ -843,20 +843,15 @@ namespace Neo
         }
 
 
-        private static readonly ConcurrentDictionary<ErrorCode, string> _errorMap = new ConcurrentDictionary<ErrorCode, string>();
+        private static readonly ConcurrentDictionary<ErrorCode, string> _errorMap = new();
 
         public static WsError ToError(this ErrorCode code)
         {
-            if (!_errorMap.ContainsKey(code))
-            {
-                var message = GetErrorMsg(code);
-                _errorMap[code] = message ?? code.ToString();
-            }
-
+            var message = _errorMap.GetOrAdd(code, c => GetErrorMsg(c) ?? c.ToString());
             return new WsError()
             {
                 Code = (int)code,
-                Message = _errorMap[code],
+                Message = message,
             };
         }
 
