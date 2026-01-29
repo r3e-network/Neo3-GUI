@@ -330,16 +330,32 @@ namespace Neo.Services.ApiServices
         }
 
         /// <summary>
-        /// delete a address
+        /// delete addresses from wallet
         /// </summary>
-        /// <returns></returns>
+        /// <param name="addresses">Array of addresses to delete</param>
+        /// <returns>List of deletion results</returns>
         public async Task<object> DeleteAddress(UInt160[] addresses)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            var result = addresses.Select(scriptHash => CurrentWallet.DeleteAccount(scriptHash)).ToList();
+            if (addresses == null || addresses.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "addresses cannot be empty");
+            }
+
+            var result = new List<bool>();
+            foreach (var scriptHash in addresses)
+            {
+                if (scriptHash == null)
+                {
+                    result.Add(false);
+                    continue;
+                }
+                result.Add(CurrentWallet.DeleteAccount(scriptHash));
+            }
+
             if (CurrentWallet is NEP6Wallet wallet)
             {
                 wallet.Save();
