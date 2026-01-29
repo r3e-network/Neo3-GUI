@@ -141,12 +141,35 @@ namespace Neo.Services.ApiServices
         }
 
 
+        /// <summary>
+        /// Change wallet password
+        /// </summary>
+        /// <param name="oldPassword">Current password</param>
+        /// <param name="newPassword">New password (minimum 8 characters)</param>
+        /// <returns></returns>
         public async Task<object> ChangePassword(string oldPassword, string newPassword)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
+            if (string.IsNullOrEmpty(oldPassword))
+            {
+                return Error(ErrorCode.ParameterIsNull, "oldPassword cannot be empty");
+            }
+            if (string.IsNullOrEmpty(newPassword))
+            {
+                return Error(ErrorCode.ParameterIsNull, "newPassword cannot be empty");
+            }
+            if (newPassword.Length < 8)
+            {
+                return Error(ErrorCode.InvalidPara, "newPassword must be at least 8 characters");
+            }
+            if (oldPassword == newPassword)
+            {
+                return Error(ErrorCode.InvalidPara, "newPassword must be different from oldPassword");
+            }
+
             if (CurrentWallet.ChangePassword(oldPassword, newPassword))
             {
                 if (CurrentWallet is NEP6Wallet wallet)
@@ -155,7 +178,7 @@ namespace Neo.Services.ApiServices
                 }
                 return true;
             }
-            return false;
+            return Error(ErrorCode.WrongPassword);
         }
 
         /// <summary>
