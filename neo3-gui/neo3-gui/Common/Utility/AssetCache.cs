@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using Neo.Common.Storage.SQLiteModules;
 using Neo.Common.Storage.LevelDBModules;
 using Neo.Extensions;
 using Neo.Models;
