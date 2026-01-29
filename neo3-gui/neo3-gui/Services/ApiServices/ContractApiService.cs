@@ -68,8 +68,17 @@ namespace Neo.Services.ApiServices
             return model;
         }
 
+        /// <summary>
+        /// Get contract manifest file
+        /// </summary>
+        /// <param name="contractHash">Contract hash</param>
+        /// <returns>Contract manifest JSON</returns>
         public async Task<object> GetManifestFile(UInt160 contractHash)
         {
+            if (contractHash == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "contractHash cannot be null");
+            }
             var contract = contractHash.GetContract();
             if (contract == null)
             {
