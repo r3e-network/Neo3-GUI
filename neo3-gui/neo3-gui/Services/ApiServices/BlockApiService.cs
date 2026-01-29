@@ -48,18 +48,29 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// get latest blocks info
         /// </summary>
-        /// <param name="limit"></param>
+        /// <param name="limit">Number of blocks to retrieve (1-100)</param>
+        /// <param name="height">Optional starting height</param>
         /// <returns></returns>
         public async Task<object> GetLastBlocks(int limit = 10, int? height = null)
         {
+            // Validate limit parameter
+            if (limit <= 0)
+            {
+                return Error(ErrorCode.InvalidPara, "limit must be greater than 0");
+            }
+            if (limit > 100)
+            {
+                limit = 100; // Cap at 100 to prevent excessive load
+            }
+
             var lastHeight = this.GetCurrentHeight();
-            if (height > lastHeight)
+            if (height.HasValue && height.Value > lastHeight)
             {
                 return Error(ErrorCode.BlockHeightInvalid);
             }
 
             height ??= (int)lastHeight;
-            var blocks = await GetBlockByRange((height.Value - limit + 1), (int)height);
+            var blocks = await GetBlockByRange((height.Value - limit + 1), height.Value);
 
             var result = blocks.Select(b => new BlockPreviewModel(b));
             return result;
@@ -68,22 +79,33 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// 
+        /// Get all NEP-17 assets
         /// </summary>
-        /// <returns></returns>
+        /// <returns>List of asset information</returns>
         public async Task<object> GetAllAssets()
         {
             using var db = new TrackDB();
-            var result = db.GetAllContracts()?.Where(a => a.AssetType == AssetType.Nep17 && a.DeleteTxId == null).Select(a =>
-                   new AssetInfoModel()
-                   {
-                       Asset = UInt160.Parse(a.Hash),
-                       Decimals = a.Decimals,
-                       Name = a.Name,
-                       Symbol = a.Symbol,
-                       CreateTime = a.CreateTime,
-                   }).ToList();
+            var contracts = db.GetAllContracts();
+            if (contracts == null)
+            {
+                return new List<AssetInfoModel>();
+            }
 
+            var result = contracts
+                .Where(a => a.AssetType == AssetType.Nep17 && a.DeleteTxId == null)
+                .Select(a => new AssetInfoModel()
+                {
+                    Asset = UInt160.Parse(a.Hash),
+                    Decimals = a.Decimals,
+                    Name = a.Name,
+                    Symbol = a.Symbol,
+                    CreateTime = a.CreateTime,
+                }).ToList();
+
+            if (result.Count == 0)
+            {
+                return result;
+            }
 
             var totalSupplies = AssetCache.GetTotalSupply(result.Select(r => r.Asset));
             for (var i = 0; i < result.Count; i++)
@@ -122,14 +144,37 @@ namespace Neo.Services.ApiServices
         }
 
 
+        /// <summary>
+        /// Get balance for specified addresses and assets
+        /// </summary>
+        /// <param name="addresses">Array of addresses to query</param>
+        /// <param name="assets">Optional array of assets to filter</param>
+        /// <returns>Balance information grouped by address</returns>
         public async Task<object> GetAddressBalance(UInt160[] addresses, UInt160[] assets)
         {
+            if (addresses == null || addresses.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "addresses cannot be empty");
+            }
+
+            // Limit the number of addresses to prevent excessive queries
+            if (addresses.Length > 100)
+            {
+                return Error(ErrorCode.InvalidPara, "Maximum 100 addresses allowed per query");
+            }
+
             using var db = new TrackDB();
             var balances = db.FindAssetBalance(new BalanceFilter()
             {
                 Addresses = addresses,
                 Assets = assets,
             });
+
+            if (balances == null)
+            {
+                return new List<AddressBalanceModel>();
+            }
+
             return balances.ToLookup(b => b.Address).ToAddressBalanceModels();
         }
 
