@@ -30,10 +30,15 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// get block by hash
         /// </summary>
-        /// <param name="hash"></param>
-        /// <returns></returns>
+        /// <param name="hash">Block hash</param>
+        /// <returns>Block information</returns>
         public async Task<object> GetBlockByHash(UInt256 hash)
         {
+            if (hash == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "hash cannot be null");
+            }
+
             var block = hash.GetBlock();
             if (block == null)
             {
@@ -117,11 +122,17 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// 
+        /// Get asset information by hash
         /// </summary>
-        /// <returns></returns>
+        /// <param name="asset">Asset hash</param>
+        /// <returns>Asset information or null if not found</returns>
         public async Task<object> GetAsset(UInt160 asset)
         {
+            if (asset == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "asset cannot be null");
+            }
+
             var assetInfo = AssetCache.GetAssetInfo(asset);
             if (assetInfo == null)
             {
@@ -139,7 +150,7 @@ namespace Neo.Services.ApiServices
                 Symbol = assetInfo.Symbol,
                 TotalSupply = totalSupply,
                 CreateTime = record?.CreateTime,
-                TransactionCount = count.TotalCount,
+                TransactionCount = count?.TotalCount ?? 0,
             };
         }
 
