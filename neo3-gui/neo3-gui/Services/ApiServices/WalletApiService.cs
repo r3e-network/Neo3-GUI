@@ -266,9 +266,9 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// create new contract address
         /// </summary>
-        /// <param name="parameterTypes"></param>
-        /// <param name="script"></param>
-        /// <param name="privateKey"></param>
+        /// <param name="parameterTypes">Contract parameter types</param>
+        /// <param name="script">Contract script in hex format</param>
+        /// <param name="privateKey">Private key (WIF or hex)</param>
         /// <returns></returns>
         public async Task<object> CreateContractAddress(ContractParameterType[] parameterTypes, string script, string privateKey)
         {
@@ -276,12 +276,45 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            Contract contract = Contract.Create(parameterTypes, script.HexToBytes());
+            if (parameterTypes == null || parameterTypes.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "parameterTypes cannot be empty");
+            }
+            if (string.IsNullOrWhiteSpace(script))
+            {
+                return Error(ErrorCode.ParameterIsNull, "script cannot be empty");
+            }
+            if (string.IsNullOrWhiteSpace(privateKey))
+            {
+                return Error(ErrorCode.ParameterIsNull, "privateKey cannot be empty");
+            }
+
+            byte[] scriptBytes;
+            try
+            {
+                scriptBytes = script.HexToBytes();
+            }
+            catch (Exception)
+            {
+                return Error(ErrorCode.InvalidPara, "Invalid script hex format");
+            }
+
+            Contract contract = Contract.Create(parameterTypes, scriptBytes);
             if (contract == null)
             {
                 return Error(ErrorCode.CreateContractAddressFail);
             }
-            byte[] keyBytes = privateKey.ToPrivateKeyBytes();
+
+            byte[] keyBytes;
+            try
+            {
+                keyBytes = privateKey.ToPrivateKeyBytes();
+            }
+            catch (Exception)
+            {
+                return Error(ErrorCode.InvalidPrivateKey);
+            }
+
             var key = new KeyPair(keyBytes);
             var newAccount = CurrentWallet.CreateAccount(contract, key);
             if (CurrentWallet is NEP6Wallet wallet)
