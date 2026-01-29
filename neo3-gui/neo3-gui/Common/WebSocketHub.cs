@@ -11,14 +11,17 @@ namespace Neo.Common
 {
     public class WebSocketHub
     {
-        private int _limitCount = 10;
+        private const int MaxConnectionLimit = 10;
+        private const int HeartBeatIntervalSeconds = 3;
+        private const string HeartBeatMessage = "heart beat";
+
         private readonly ConcurrentDictionary<WebSocketConnection, byte> _clients = new();
 
         public bool Accept(WebSocketConnection connection)
         {
             lock (_clients)
             {
-                if (_clients.Count >= _limitCount)
+                if (_clients.Count >= MaxConnectionLimit)
                 {
                     return false;
                 }
@@ -58,10 +61,10 @@ namespace Neo.Common
                 {
                     foreach (var client in _clients.Keys)
                     {
-                        client.PushMessage(new WsMessage { MsgType = WsMessageType.HeartBeat, Result = "heart beat" });
+                        client.PushMessage(new WsMessage { MsgType = WsMessageType.HeartBeat, Result = HeartBeatMessage });
                     }
                 }
-                await Task.Delay(TimeSpan.FromSeconds(3));
+                await Task.Delay(TimeSpan.FromSeconds(HeartBeatIntervalSeconds));
             }
         }
 
