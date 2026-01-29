@@ -17,6 +17,9 @@ namespace Neo.Common.Storage.LevelDBModules
     /// </summary>
     public class LevelDbContext : IDisposable
     {
+        private const string DataTrackDirectory = "Data_Track";
+        private const string LevelDbPathTemplate = "TransactionLog_LevelDB_{0}";
+
         private static readonly ConcurrentDictionary<string, DB> _cache = new();
 
         private readonly DB _db;
@@ -33,14 +36,14 @@ namespace Neo.Common.Storage.LevelDBModules
 
         static LevelDbContext()
         {
-            if (!Directory.Exists("Data_Track"))
+            if (!Directory.Exists(DataTrackDirectory))
             {
-                Directory.CreateDirectory("Data_Track");
+                Directory.CreateDirectory(DataTrackDirectory);
             }
         }
 
         public LevelDbContext() 
-            : this(Path.Combine("Data_Track", $"TransactionLog_LevelDB_{CliSettings.Default.Protocol.Network}"))
+            : this(Path.Combine(DataTrackDirectory, string.Format(LevelDbPathTemplate, CliSettings.Default.Protocol.Network)))
         {
         }
 
