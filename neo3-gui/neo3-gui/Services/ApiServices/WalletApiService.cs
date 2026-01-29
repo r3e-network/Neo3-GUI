@@ -446,17 +446,30 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// import watch only addresses
         /// </summary>
-        /// <param name="addresses"></param>
-        /// <returns></returns>
+        /// <param name="addresses">Array of addresses to import</param>
+        /// <returns>List of imported account models</returns>
         public async Task<object> ImportWatchOnlyAddress(UInt160[] addresses)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
+            if (addresses == null || addresses.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "addresses cannot be empty");
+            }
+            if (addresses.Length > 100)
+            {
+                return Error(ErrorCode.InvalidPara, "Maximum 100 addresses allowed per import");
+            }
+
             var importedAccounts = new List<AccountModel>();
             foreach (var address in addresses)
             {
+                if (address == null)
+                {
+                    continue;
+                }
                 var account = CurrentWallet.CreateAccount(address);
                 importedAccounts.Add(new AccountModel
                 {
