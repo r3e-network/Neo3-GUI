@@ -32,6 +32,11 @@ namespace Neo.Services.ApiServices
     {
         private const int MinPasswordLength = 8;
         private const string WalletFileExtension = ".json";
+        private const int DefaultListCount = 100;
+        private const int MaxListCount = 1000;
+        private const int MaxAddressesPerImport = 100;
+        private const int DefaultPageSize = 100;
+        private const int DefaultPageIndex = 1;
 
         /// <summary>
         /// open wallet
@@ -371,7 +376,7 @@ namespace Neo.Services.ApiServices
         /// </summary>
         /// <param name="count">Maximum number of addresses to return (1-1000)</param>
         /// <returns>Wallet model with account list</returns>
-        public async Task<object> ListAddress(int count = 100)
+        public async Task<object> ListAddress(int count = DefaultListCount)
         {
             if (CurrentWallet == null)
             {
@@ -381,9 +386,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.InvalidPara, "count must be greater than 0");
             }
-            if (count > 1000)
+            if (count > MaxListCount)
             {
-                count = 1000; // Cap at 1000 to prevent excessive load
+                count = MaxListCount; // Cap at maximum to prevent excessive load
             }
             return GetWalletAddress(CurrentWallet, count);
         }
@@ -393,7 +398,7 @@ namespace Neo.Services.ApiServices
         /// </summary>
         /// <param name="count">Maximum number of keys to return (1-1000)</param>
         /// <returns>List of public key models</returns>
-        public async Task<object> ListPublicKey(int count = 100)
+        public async Task<object> ListPublicKey(int count = DefaultListCount)
         {
             if (CurrentWallet == null)
             {
@@ -403,9 +408,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.InvalidPara, "count must be greater than 0");
             }
-            if (count > 1000)
+            if (count > MaxListCount)
             {
-                count = 1000;
+                count = MaxListCount;
             }
             var accounts = CurrentWallet.GetAccounts().Where(a => a.HasKey).Take(count).ToList();
             return accounts.Select(a => new PublicKeyModel
@@ -421,7 +426,7 @@ namespace Neo.Services.ApiServices
         /// </summary>
         /// <param name="count">Maximum number of candidates to return (1-1000)</param>
         /// <returns>List of public key models for candidate addresses</returns>
-        public async Task<object> ListCandidatePublicKey(int count = 100)
+        public async Task<object> ListCandidatePublicKey(int count = DefaultListCount)
         {
             if (CurrentWallet == null)
             {
@@ -431,9 +436,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.InvalidPara, "count must be greater than 0");
             }
-            if (count > 1000)
+            if (count > MaxListCount)
             {
-                count = 1000;
+                count = MaxListCount;
             }
             var accounts = CurrentWallet.GetAccounts()
                 .Where(a => !a.WatchOnly && a.Contract?.Script != null && a.Contract.Script.IsSignatureContract())
@@ -461,9 +466,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.ParameterIsNull, "addresses cannot be empty");
             }
-            if (addresses.Length > 100)
+            if (addresses.Length > MaxAddressesPerImport)
             {
-                return Error(ErrorCode.InvalidPara, "Maximum 100 addresses allowed per import");
+                return Error(ErrorCode.InvalidPara, $"Maximum {MaxAddressesPerImport} addresses allowed per import");
             }
 
             var importedAccounts = new List<AccountModel>();
@@ -1064,7 +1069,7 @@ namespace Neo.Services.ApiServices
         /// get my wallet unconfirmed transactions
         /// </summary>
         /// <returns></returns>
-        public async Task<object> GetMyUnconfirmedTransactions(int pageIndex = 1, int limit = 100)
+        public async Task<object> GetMyUnconfirmedTransactions(int pageIndex = DefaultPageIndex, int limit = DefaultPageSize)
         {
             if (CurrentWallet == null)
             {
@@ -1088,7 +1093,7 @@ namespace Neo.Services.ApiServices
         /// <param name="limit">Page size (1-100)</param>
         /// <param name="address">Optional address filter</param>
         /// <returns>Paged list of transaction previews</returns>
-        public async Task<object> GetMyTransactions(int pageIndex = 1, int limit = 100, UInt160 address = null)
+        public async Task<object> GetMyTransactions(int pageIndex = DefaultPageIndex, int limit = DefaultPageSize, UInt160 address = null)
         {
             if (CurrentWallet == null)
             {
@@ -1098,9 +1103,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
             }
-            if (limit <= 0 || limit > 100)
+            if (limit <= 0 || limit > DefaultPageSize)
             {
-                limit = 100;
+                limit = DefaultPageSize;
             }
 
             var addresses = address != null ? new List<UInt160>() { address } : CurrentWallet.GetAccounts().Select(a => a.ScriptHash).ToList();
