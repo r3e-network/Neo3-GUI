@@ -364,14 +364,23 @@ namespace Neo.Services.ApiServices
         }
 
         /// <summary>
-        /// list current wallet address
+        /// list current wallet addresses
         /// </summary>
-        /// <returns></returns>
+        /// <param name="count">Maximum number of addresses to return (1-1000)</param>
+        /// <returns>Wallet model with account list</returns>
         public async Task<object> ListAddress(int count = 100)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
+            }
+            if (count <= 0)
+            {
+                return Error(ErrorCode.InvalidPara, "count must be greater than 0");
+            }
+            if (count > 1000)
+            {
+                count = 1000; // Cap at 1000 to prevent excessive load
             }
             return GetWalletAddress(CurrentWallet, count);
         }
