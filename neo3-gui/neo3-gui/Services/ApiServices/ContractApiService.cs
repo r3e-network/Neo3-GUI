@@ -591,29 +591,34 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// vote for consensus node
         /// </summary>
-        /// <returns></returns>
+        /// <param name="account">Voter account</param>
+        /// <param name="pubkeys">Public keys to vote for</param>
+        /// <returns>Transaction result</returns>
         public async Task<object> VoteCN(UInt160 account, string[] pubkeys)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (account == null || pubkeys.IsEmpty())
+            if (account == null)
             {
-                return Error(ErrorCode.ParameterIsNull);
+                return Error(ErrorCode.ParameterIsNull, "account cannot be null");
+            }
+            if (pubkeys == null || pubkeys.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "pubkeys cannot be empty");
             }
 
             ECPoint publicKey = null;
-            //ECPoint[] publicKeys = null;
             try
             {
-                //publicKeys = pubkeys.Select(p => ECPoint.Parse(p, ECCurve.Secp256r1)).ToArray();
                 publicKey = ECPoint.Parse(pubkeys.FirstOrDefault(), ECCurve.Secp256r1);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Error(ErrorCode.InvalidPara);
+                return Error(ErrorCode.InvalidPara, $"Invalid public key format: {ex.Message}");
             }
+
             using ScriptBuilder sb = new ScriptBuilder();
             sb.EmitDynamicCall(NativeContract.NEO.Hash, "vote", new ContractParameter
             {
