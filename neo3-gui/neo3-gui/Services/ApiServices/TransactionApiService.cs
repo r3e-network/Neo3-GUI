@@ -231,15 +231,15 @@ namespace Neo.Services.ApiServices
         /// <param name="contract">Optional contract filter</param>
         /// <param name="blockHash">Optional block hash filter</param>
         /// <returns>Paged list of transaction previews</returns>
-        public async Task<object> QueryTransactions(int pageIndex = 1, int limit = 100, uint? blockHeight = null, UInt160 address = null, UInt160 contract = null, UInt256 blockHash = null)
+        public async Task<object> QueryTransactions(int pageIndex = DefaultPageIndex, int limit = DefaultPageSize, uint? blockHeight = null, UInt160 address = null, UInt160 contract = null, UInt256 blockHash = null)
         {
             if (pageIndex < 1)
             {
                 return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
             }
-            if (limit <= 0 || limit > 100)
+            if (limit <= 0 || limit > DefaultPageSize)
             {
-                limit = 100;
+                limit = DefaultPageSize;
             }
 
             using var db = new TrackDB();
