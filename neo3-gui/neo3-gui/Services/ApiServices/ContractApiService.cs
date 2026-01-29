@@ -403,27 +403,15 @@ namespace Neo.Services.ApiServices
             }
         }
 
-        public static ContractParameterType ToContractParameterType(StackItemType type)
+        public static ContractParameterType ToContractParameterType(StackItemType type) => type switch
         {
-            switch (type)
-            {
-                case StackItemType.Array:
-                case StackItemType.Struct:
-                    return ContractParameterType.Array;
-                case StackItemType.Boolean:
-                    return ContractParameterType.Boolean;
-                case StackItemType.Buffer:
-                case StackItemType.ByteString:
-                    return ContractParameterType.ByteArray;
-                case StackItemType.Integer:
-                    return ContractParameterType.Integer;
-                case StackItemType.Map:
-                    return ContractParameterType.Array;
-                case StackItemType.Any:
-                default:
-                    return ContractParameterType.Any;
-            }
-        }
+            StackItemType.Array or StackItemType.Struct => ContractParameterType.Array,
+            StackItemType.Boolean => ContractParameterType.Boolean,
+            StackItemType.Buffer or StackItemType.ByteString => ContractParameterType.ByteArray,
+            StackItemType.Integer => ContractParameterType.Integer,
+            StackItemType.Map => ContractParameterType.Array,
+            _ => ContractParameterType.Any,
+        };
 
 
         public static ContractParameter JsonToContractParameter(JsonElement json)
