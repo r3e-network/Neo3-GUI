@@ -82,30 +82,6 @@ namespace Neo.Common.Consoles
             }
 
             _ = Task.Run(ImportAndStartNode);
-
-            //NeoSystem.StartNode(new ChannelsConfig
-            //{
-            //    Tcp = new IPEndPoint(IPAddress.Any, CliSettings.Default.P2P.Port),
-            //    WebSocket = new IPEndPoint(IPAddress.Any, CliSettings.Default.P2P.WsPort),
-            //    MinDesiredConnections = CliSettings.Default.P2P.MinDesiredConnections,
-            //    MaxConnections = CliSettings.Default.P2P.MaxConnections,
-            //    MaxConnectionsPerAddress = CliSettings.Default.P2P.MaxConnectionsPerAddress
-            //});
-            //if (CliSettings.Default.UnlockWallet.IsActive)
-            //{
-            //    try
-            //    {
-            //        OpenWallet(CliSettings.Default.UnlockWallet.Path, CliSettings.Default.UnlockWallet.Password);
-            //    }
-            //    catch (FileNotFoundException)
-            //    {
-            //        Console.WriteLine($"Warning: wallet file \"{CliSettings.Default.UnlockWallet.Path}\" not found.");
-            //    }
-            //    catch (CryptographicException)
-            //    {
-            //        Console.WriteLine($"failed to open file \"{CliSettings.Default.UnlockWallet.Path}\"");
-            //    }
-            //}
         }
 
         private async Task ImportAndStartNode()
@@ -586,7 +562,6 @@ namespace Neo.Common.Consoles
             {
                 tx.Witnesses = context.GetWitnesses();
                 NeoSystem.Blockchain.Tell(tx);
-                //NeoSystem.LocalNode.Tell(new LocalNode.Relay { Inventory = tx });
                 Console.WriteLine($"TXID: {tx.Hash}");
             }
             else
