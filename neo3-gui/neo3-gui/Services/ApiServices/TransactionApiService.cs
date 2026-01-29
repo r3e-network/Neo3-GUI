@@ -151,13 +151,22 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// get all unconfirmed transactions
+        /// get all unconfirmed transactions with pagination
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="limit"></param>
-        /// <returns></returns>
+        /// <param name="pageIndex">Page index (1-based)</param>
+        /// <param name="limit">Page size (1-100)</param>
+        /// <returns>Paged list of transaction previews</returns>
         public async Task<object> GetUnconfirmTransactions(int pageIndex = 1, int limit = 100)
         {
+            if (pageIndex < 1)
+            {
+                return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
+            }
+            if (limit <= 0 || limit > 100)
+            {
+                limit = 100;
+            }
+
             var tempTransactions = UnconfirmedTransactionCache.GetUnconfirmedTransactions(null, pageIndex, limit);
             var result = tempTransactions.Project(t => t.ToTransactionPreviewModel());
             return result;
