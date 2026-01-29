@@ -322,14 +322,28 @@ namespace Neo.Services.ApiServices
         }
 
         /// <summary>
-        /// query transaction info
+        /// query transfer info with filters
         /// </summary>
-        /// <returns></returns>
+        /// <param name="filter">Transfer filter</param>
+        /// <returns>Paged list of transfers</returns>
         public async Task<PageList<TransferInfo>> QueryTransfers(TransferFilter filter)
         {
+            if (filter == null)
+            {
+                filter = new TransferFilter();
+            }
+            if (filter.PageIndex < 1)
+            {
+                filter.PageIndex = 1;
+            }
+            if (filter.PageSize <= 0 || filter.PageSize > 100)
+            {
+                filter.PageSize = 100;
+            }
+
             using var db = new TrackDB();
             var result = db.QueryTransfers(filter) as PageList<TransferInfo>;
-            return result;
+            return result ?? new PageList<TransferInfo>();
         }
 
 
