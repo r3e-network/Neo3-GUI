@@ -25,21 +25,25 @@ namespace Neo.Services.ApiServices
 {
     public class ContractApiService : ApiService
     {
+        private const int DefaultPageSize = 100;
+        private const string InsufficientGasMessage = "Insufficient GAS";
+        private const string ManifestExtension = ".manifest.json";
+
         /// <summary>
         /// Get all contracts with pagination
         /// </summary>
         /// <param name="pageIndex">Page index (0-based)</param>
         /// <param name="pageSize">Page size (1-100)</param>
         /// <returns>List of contract info models</returns>
-        public async Task<object> GetAllContracts(int pageIndex = 0, int pageSize = 100)
+        public async Task<object> GetAllContracts(int pageIndex = 0, int pageSize = DefaultPageSize)
         {
             if (pageIndex < 0)
             {
                 return Error(ErrorCode.InvalidPara, "pageIndex must be >= 0");
             }
-            if (pageSize <= 0 || pageSize > 100)
+            if (pageSize <= 0 || pageSize > DefaultPageSize)
             {
-                pageSize = 100;
+                pageSize = DefaultPageSize;
             }
 
             var list = new List<ContractInfoModel>();
@@ -122,7 +126,7 @@ namespace Neo.Services.ApiServices
             }
             if (manifestPath.IsNull())
             {
-                manifestPath = Path.ChangeExtension(nefPath, ".manifest.json");
+                manifestPath = Path.ChangeExtension(nefPath, ManifestExtension);
             }
             // Read nef
             NefFile nefFile = ReadNefFile(nefPath);
@@ -148,7 +152,7 @@ namespace Neo.Services.ApiServices
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("Insufficient GAS"))
+                if (ex.Message.Contains(InsufficientGasMessage))
                 {
                     return Error(ErrorCode.GasNotEnough);
                 }
@@ -194,7 +198,7 @@ namespace Neo.Services.ApiServices
             }
             if (manifestPath.IsNull())
             {
-                manifestPath = Path.ChangeExtension(nefPath, ".manifest.json");
+                manifestPath = Path.ChangeExtension(nefPath, ManifestExtension);
             }
             // Read nef
             NefFile nefFile = ReadNefFile(nefPath);
@@ -224,7 +228,7 @@ namespace Neo.Services.ApiServices
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("Insufficient GAS"))
+                if (ex.Message.Contains(InsufficientGasMessage))
                 {
                     return Error(ErrorCode.GasNotEnough);
                 }
@@ -329,7 +333,7 @@ namespace Neo.Services.ApiServices
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("Insufficient GAS"))
+                if (ex.Message.Contains(InsufficientGasMessage))
                 {
                     return Error(ErrorCode.GasNotEnough);
                 }
