@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
-using System.Text;
 using System.Threading.Tasks;
-using Neo.Ledger;
 using Neo.Models.Wallets;
-using Neo.Persistence;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.Common.Consoles;
@@ -15,8 +11,6 @@ namespace Neo.Models.Jobs
 {
     public class SyncWalletJob : Job
     {
-
-
         private uint _lastHeight = 0;
         public SyncWalletJob(TimeSpan timeSpan)
         {
