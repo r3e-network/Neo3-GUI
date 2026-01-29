@@ -184,7 +184,7 @@ namespace Neo.Common.Storage
             var asset = GetActiveContract(assetHash);
             if (asset == null)
             {
-                throw new Exception($"Unkown asset:{assetHash}");
+                throw new Exception($"Unknown asset:{assetHash}");
             }
             var address = GetOrCreateAddress(addressHash);
             var balanceRecord = GetOrCreateBalance(address, asset, balance, height);
@@ -565,9 +565,9 @@ namespace Neo.Common.Storage
         /// <returns></returns>
         public ContractEntity GetContract(long id)
         {
-            if (ContractCache.ContainsKey(id))
+            if (ContractCache.TryGetValue(id, out var cached))
             {
-                return ContractCache[id];
+                return cached;
             }
             var contract = _sqldb.Contracts.FirstOrDefault(c => c.Id == id);
             if (contract != null)
@@ -586,9 +586,9 @@ namespace Neo.Common.Storage
         private AddressEntity GetOrCreateAddress(UInt160 address)
         {
             if (address == null) return null;
-            if (AddressHashCache.ContainsKey(address))
+            if (AddressHashCache.TryGetValue(address, out var cached))
             {
-                return AddressHashCache[address];
+                return cached;
             }
             var addr = address.ToBigEndianHex();
             var old = _sqldb.Addresses.FirstOrDefault(a => a.Hash == addr);
@@ -692,9 +692,9 @@ namespace Neo.Common.Storage
 
         public AddressEntity GetAddress(long id)
         {
-            if (AddressIdCache.ContainsKey(id))
+            if (AddressIdCache.TryGetValue(id, out var cached))
             {
-                return AddressIdCache[id];
+                return cached;
             }
             var address = _sqldb.Addresses.FirstOrDefault(c => c.Id == id);
             if (address != null)
