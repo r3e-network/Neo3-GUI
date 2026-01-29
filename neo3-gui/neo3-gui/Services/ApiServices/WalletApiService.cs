@@ -987,16 +987,29 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// append signature for text
         /// </summary>
-        /// <param name="text"></param>
-        /// <param name="address"></param>
-        /// <returns></returns>
+        /// <param name="text">Text to sign</param>
+        /// <param name="address">Address to sign with</param>
+        /// <returns>Signature bytes</returns>
         public async Task<object> AppendTextSignature(string text, UInt160 address)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
+            if (string.IsNullOrEmpty(text))
+            {
+                return Error(ErrorCode.ParameterIsNull, "text cannot be empty");
+            }
+            if (address == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "address cannot be null");
+            }
+
             var account = CurrentWallet.GetAccount(address);
+            if (account == null)
+            {
+                return Error(ErrorCode.AddressNotFound);
+            }
             if (!account.HasKey)
             {
                 return Error(ErrorCode.AddressNotFoundPrivateKey);
@@ -1009,7 +1022,7 @@ namespace Neo.Services.ApiServices
             }
             catch (Exception e)
             {
-                return Error(ErrorCode.InvalidPara, e.ToString());
+                return Error(ErrorCode.InvalidPara, $"Failed to sign: {e.Message}");
             }
         }
         /// <summary>
