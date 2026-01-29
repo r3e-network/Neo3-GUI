@@ -17,6 +17,10 @@ namespace Neo.Common.Storage
 {
     public class TrackDB : IDisposable
     {
+        private const string DataTrackDirectory = "Data_Track";
+        private const string TrackDbFileTemplate = "track.{0}.db";
+        private const string LevelDbDirectoryTemplate = "TransactionLog_LevelDB_{0}";
+
         private readonly uint _magic;
         private readonly SQLiteContext _sqldb;
         private readonly LevelDbContext _leveldb;
@@ -32,9 +36,9 @@ namespace Neo.Common.Storage
 
         static TrackDB()
         {
-            if (!Directory.Exists("Data_Track"))
+            if (!Directory.Exists(DataTrackDirectory))
             {
-                Directory.CreateDirectory("Data_Track");
+                Directory.CreateDirectory(DataTrackDirectory);
             }
         }
 
@@ -51,8 +55,8 @@ namespace Neo.Common.Storage
         public TrackDB()
         {
             _magic = CliSettings.Default.Protocol.Network;
-            _sqldb = new SQLiteContext(Path.Combine($"Data_Track", $"track.{_magic}.db"));
-            _leveldb = new LevelDbContext(Path.Combine("Data_Track", $"TransactionLog_LevelDB_{_magic}"));
+            _sqldb = new SQLiteContext(Path.Combine(DataTrackDirectory, string.Format(TrackDbFileTemplate, _magic)));
+            _leveldb = new LevelDbContext(Path.Combine(DataTrackDirectory, string.Format(LevelDbDirectoryTemplate, _magic)));
 
             if (!_hasConsistencyCheck)
             {
