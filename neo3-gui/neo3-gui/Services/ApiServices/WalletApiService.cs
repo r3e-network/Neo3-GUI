@@ -1098,7 +1098,9 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// query relate my wallet balances
         /// </summary>
-        /// <returns></returns>
+        /// <param name="address">Optional address filter</param>
+        /// <param name="assets">Optional assets filter</param>
+        /// <returns>List of address balance models</returns>
         public async Task<object> GetMyBalances(UInt160 address = null, UInt160[] assets = null)
         {
             if (CurrentWallet == null)
@@ -1120,8 +1122,13 @@ namespace Neo.Services.ApiServices
             {
                 return new List<AddressBalanceModel>();
             }
+
             using var db = new TrackDB();
             var balances = db.FindAssetBalance(new BalanceFilter() { Addresses = addresses, Assets = assets });
+            if (balances == null)
+            {
+                return new List<AddressBalanceModel>();
+            }
 
             var result = balances.ToLookup(b => b.Address).ToAddressBalanceModels();
             if (assets.IsEmpty())
