@@ -207,6 +207,8 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// create new multi address
         /// </summary>
+        /// <param name="limit">Minimum number of signatures required</param>
+        /// <param name="publicKeys">Array of public keys</param>
         /// <returns></returns>
         public async Task<object> CreateMultiAddress(int limit, string[] publicKeys)
         {
@@ -214,17 +216,33 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
+            if (publicKeys == null || publicKeys.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "publicKeys cannot be empty");
+            }
+            if (limit <= 0)
+            {
+                return Error(ErrorCode.InvalidPara, "limit must be greater than 0");
+            }
+            if (limit > publicKeys.Length)
+            {
+                return Error(ErrorCode.InvalidPara, "limit cannot exceed the number of public keys");
+            }
 
             ECPoint[] points = null;
             try
             {
                 points = publicKeys.Select(p => ECPoint.DecodePoint(StringExtensions.HexToBytes(p), ECCurve.Secp256r1)).ToArray();
-
             }
             catch (FormatException ex)
             {
-                return Error(ErrorCode.InvalidPara, ex.Message);
+                return Error(ErrorCode.InvalidPara, $"Invalid public key format: {ex.Message}");
             }
+            catch (Exception ex)
+            {
+                return Error(ErrorCode.InvalidPara, $"Failed to parse public keys: {ex.Message}");
+            }
+
             Contract contract = Contract.CreateMultiSigContract(limit, points);
             if (contract == null)
             {
