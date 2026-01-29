@@ -15,6 +15,9 @@ namespace Neo.Common.Utility
     /// </summary>
     public class UnconfirmedTransactionCache
     {
+        private const int DefaultPageIndex = 1;
+        private const int DefaultPageSize = 10;
+
         private static readonly ConcurrentDictionary<UInt256, TempTransaction> _unconfirmedTransactions = new();
         private static readonly object _actorLock = new();
         private static IActorRef _actor;
@@ -101,8 +104,8 @@ namespace Neo.Common.Utility
         /// </summary>
         public static PageList<TempTransaction> GetUnconfirmedTransactions(
             IEnumerable<UInt160> addresses = null, 
-            int pageIndex = 1, 
-            int pageSize = 10)
+            int pageIndex = DefaultPageIndex, 
+            int pageSize = DefaultPageSize)
         {
             IEnumerable<TempTransaction> query = _unconfirmedTransactions.Values;
             if (addresses.NotEmpty())
