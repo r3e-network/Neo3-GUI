@@ -14,6 +14,9 @@ namespace Neo.Common
     /// </summary>
     public class WebSocketExecutor
     {
+        private const string MethodNotFoundMessageTemplate = "Method [{0}] not found!";
+        private const string MethodRegistrationFailedTemplate = "Failed to register method {0}: {1}";
+
         private readonly Dictionary<string, MethodMetadata> _methods = new(StringComparer.OrdinalIgnoreCase);
         private readonly IServiceProvider _provider;
 
@@ -37,7 +40,7 @@ namespace Neo.Common
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine($"Failed to register method {methodInfo.Name}: {e.Message}");
+                        Console.WriteLine(string.Format(MethodRegistrationFailedTemplate, methodInfo.Name, e.Message));
                         throw;
                     }
                 }
@@ -66,7 +69,7 @@ namespace Neo.Common
             return new WsError 
             { 
                 Code = (int)ErrorCode.MethodNotFound, 
-                Message = $"Method [{request.Method}] not found!" 
+                Message = string.Format(MethodNotFoundMessageTemplate, request.Method)
             };
         }
     }
