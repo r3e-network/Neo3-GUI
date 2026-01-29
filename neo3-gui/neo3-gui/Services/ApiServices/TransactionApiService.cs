@@ -18,6 +18,8 @@ namespace Neo.Services.ApiServices
 {
     public class TransactionApiService : ApiService
     {
+        private const int DefaultPageSize = 100;
+        private const int DefaultPageIndex = 1;
 
 
         /// <summary>
@@ -156,15 +158,15 @@ namespace Neo.Services.ApiServices
         /// <param name="pageIndex">Page index (1-based)</param>
         /// <param name="limit">Page size (1-100)</param>
         /// <returns>Paged list of transaction previews</returns>
-        public async Task<object> GetUnconfirmTransactions(int pageIndex = 1, int limit = 100)
+        public async Task<object> GetUnconfirmTransactions(int pageIndex = DefaultPageIndex, int limit = DefaultPageSize)
         {
             if (pageIndex < 1)
             {
                 return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
             }
-            if (limit <= 0 || limit > 100)
+            if (limit <= 0 || limit > DefaultPageSize)
             {
-                limit = 100;
+                limit = DefaultPageSize;
             }
 
             var tempTransactions = UnconfirmedTransactionCache.GetUnconfirmedTransactions(null, pageIndex, limit);
