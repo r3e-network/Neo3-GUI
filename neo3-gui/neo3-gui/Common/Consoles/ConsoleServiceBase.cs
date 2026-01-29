@@ -17,8 +17,11 @@ namespace Neo.Common.Consoles
 {
     public abstract class ConsoleServiceBase
     {
+        private const string DefaultPrompt = "service";
+        private const string CommandNotFoundMessage = "error: command not found ";
+
         protected virtual string Depends => null;
-        protected virtual string Prompt => "service";
+        protected virtual string Prompt => DefaultPrompt;
 
         public abstract string ServiceName { get; }
 
@@ -44,7 +47,7 @@ namespace Neo.Common.Consoles
                     System.Console.WriteLine(Assembly.GetEntryAssembly().GetVersion());
                     return true;
                 default:
-                    System.Console.WriteLine("error: command not found " + args[0]);
+                    System.Console.WriteLine(CommandNotFoundMessage + args[0]);
                     return true;
             }
         }
