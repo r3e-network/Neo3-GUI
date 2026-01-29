@@ -488,25 +488,39 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// import wif or hex private keys
         /// </summary>
-        /// <param name="keys"></param>
-        /// <returns></returns>
+        /// <param name="keys">Array of private keys (WIF or hex format)</param>
+        /// <returns>List of imported account models</returns>
         public async Task<object> ImportAccounts(string[] keys)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
+            if (keys == null || keys.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "keys cannot be empty");
+            }
+            if (keys.Length > 50)
+            {
+                return Error(ErrorCode.InvalidPara, "Maximum 50 keys allowed per import");
+            }
 
             var importKeys = new List<byte[]>();
-            foreach (var key in keys)
+            for (int i = 0; i < keys.Length; i++)
             {
+                var key = keys[i];
+                if (string.IsNullOrWhiteSpace(key))
+                {
+                    return Error(ErrorCode.InvalidPara, $"Key at index {i} is empty");
+                }
                 var priKey = key.TryGetPrivateKey();
                 if (priKey.IsEmpty())
                 {
-                    return Error(ErrorCode.InvalidPrivateKey);
+                    return Error(ErrorCode.InvalidPrivateKey, $"Invalid key at index {i}");
                 }
                 importKeys.Add(priKey);
             }
+
             var importedAccounts = new List<AccountModel>();
             foreach (var privateKey in importKeys)
             {
