@@ -497,9 +497,25 @@ namespace Neo.Services.ApiServices
 
 
 
+        /// <summary>
+        /// Parse script to opcodes
+        /// </summary>
+        /// <param name="script">Script bytes</param>
+        /// <returns>Parsed opcode list</returns>
         public async Task<object> ParseScript(byte[] script)
         {
-            return OpCodeConverter.Parse(script);
+            if (script == null || script.Length == 0)
+            {
+                return Error(ErrorCode.ParameterIsNull, "script cannot be empty");
+            }
+            try
+            {
+                return OpCodeConverter.Parse(script);
+            }
+            catch (Exception ex)
+            {
+                return Error(ErrorCode.InvalidPara, $"Failed to parse script: {ex.Message}");
+            }
         }
 
         #region Vote
