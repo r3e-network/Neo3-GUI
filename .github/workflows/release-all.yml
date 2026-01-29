@@ -1,0 +1,205 @@
+name: Release All Platforms
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., 1.5.3)'
+        required: true
+        default: '1.5.3'
+      prerelease:
+        description: 'Is this a pre-release?'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  DOTNET_VERSION: 8.0.x
+  NODE_VERSION: 20.x
+
+jobs:
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore neo3-gui/neo3-gui/neo3-gui.csproj
+
+      - name: Build .NET backend
+        working-directory: neo3-gui/neo3-gui
+        run: dotnet publish -c Release -o ClientApp/build-neo-node
+
+      - name: Build Electron app
+        working-directory: neo3-gui/neo3-gui/ClientApp
+        env:
+          CI: false
+        run: |
+          npm install
+          npx electron-builder --win --x64
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x64
+          path: neo3-gui/neo3-gui/ClientApp/build-electron/*.exe
+
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore neo3-gui/neo3-gui/neo3-gui.csproj
+
+      - name: Build .NET backend
+        working-directory: neo3-gui/neo3-gui
+        run: dotnet publish -r linux-x64 --sc -c Release -o ClientApp/build-neo-node
+
+      - name: Build Electron app
+        working-directory: neo3-gui/neo3-gui/ClientApp
+        env:
+          CI: false
+        run: |
+          npm install
+          npx electron-builder --linux --x64
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-x64
+          path: |
+            neo3-gui/neo3-gui/ClientApp/build-electron/*.AppImage
+            neo3-gui/neo3-gui/ClientApp/build-electron/*.deb
+
+  build-macos-intel:
+    name: Build macOS Intel
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore neo3-gui/neo3-gui/neo3-gui.csproj
+
+      - name: Build .NET backend
+        working-directory: neo3-gui/neo3-gui
+        run: dotnet publish -r osx-x64 --sc -c Release -o ClientApp/build-neo-node
+
+      - name: Build Electron app
+        working-directory: neo3-gui/neo3-gui/ClientApp
+        env:
+          CI: false
+        run: |
+          npm install
+          npx electron-builder --mac --x64
+
+      - name: Upload macOS Intel artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: neo3-gui/neo3-gui/ClientApp/build-electron/*.dmg
+
+  build-macos-arm:
+    name: Build macOS ARM
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Restore dependencies
+        run: dotnet restore neo3-gui/neo3-gui/neo3-gui.csproj
+
+      - name: Build .NET backend
+        working-directory: neo3-gui/neo3-gui
+        run: dotnet publish -r osx-arm64 --sc -c Release -o ClientApp/build-neo-node
+
+      - name: Build Electron app
+        working-directory: neo3-gui/neo3-gui/ClientApp
+        env:
+          CI: false
+        run: |
+          npm install
+          npx electron-builder --mac --arm64
+
+      - name: Upload macOS ARM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64
+          path: neo3-gui/neo3-gui/ClientApp/build-electron/*.dmg
+
+  create-release:
+    name: Create Release
+    needs: [build-windows, build-linux, build-macos-intel, build-macos-arm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Display artifacts
+        run: ls -R artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ github.event.inputs.version }}
+          name: Neo3-GUI v${{ github.event.inputs.version }}
+          prerelease: ${{ github.event.inputs.prerelease }}
+          generate_release_notes: true
+          files: |
+            artifacts/windows-x64/*
+            artifacts/linux-x64/*
+            artifacts/macos-x64/*
+            artifacts/macos-arm64/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
