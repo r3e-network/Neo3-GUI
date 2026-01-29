@@ -1057,14 +1057,25 @@ namespace Neo.Services.ApiServices
         }
 
         /// <summary>
-        /// query relate my wallet transactions(on chain)
+        /// query relate my wallet transactions (on chain)
         /// </summary>
-        /// <returns></returns>
+        /// <param name="pageIndex">Page index (1-based)</param>
+        /// <param name="limit">Page size (1-100)</param>
+        /// <param name="address">Optional address filter</param>
+        /// <returns>Paged list of transaction previews</returns>
         public async Task<object> GetMyTransactions(int pageIndex = 1, int limit = 100, UInt160 address = null)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
+            }
+            if (pageIndex < 1)
+            {
+                return Error(ErrorCode.InvalidPara, "pageIndex must be >= 1");
+            }
+            if (limit <= 0 || limit > 100)
+            {
+                limit = 100;
             }
 
             var addresses = address != null ? new List<UInt160>() { address } : CurrentWallet.GetAccounts().Select(a => a.ScriptHash).ToList();
@@ -1076,10 +1087,10 @@ namespace Neo.Services.ApiServices
             var trans = db.QueryTransfersPagedByTx(new TransferFilter() { FromOrTo = addresses, PageIndex = pageIndex, PageSize = limit });
             var result = new PageList<TransactionPreviewModel>
             {
-                TotalCount = trans.TotalCount,
-                PageSize = trans.PageSize,
+                TotalCount = trans?.TotalCount ?? 0,
+                PageSize = trans?.PageSize ?? limit,
                 PageIndex = pageIndex,
-                List = trans.List?.ToTransactionPreviewModel(),
+                List = trans?.List?.ToTransactionPreviewModel() ?? new List<TransactionPreviewModel>(),
             };
             return result;
         }
