@@ -182,11 +182,11 @@ namespace Neo.Common.Consoles
                     foreach (var block in GetBlocks(fs))
                         yield return block;
 
-            const string pathAccZip = pathAcc + ".zip";
+            const string pathAccZip = ChainAccFile + ".zip";
             if (File.Exists(pathAccZip))
                 using (FileStream fs = new FileStream(pathAccZip, FileMode.Open, FileAccess.Read, FileShare.Read))
                 using (ZipArchive zip = new ZipArchive(fs, ZipArchiveMode.Read))
-                using (Stream zs = zip.GetEntry(pathAcc).Open())
+                using (Stream zs = zip.GetEntry(ChainAccFile).Open())
                     foreach (var block in GetBlocks(zs))
                         yield return block;
 
