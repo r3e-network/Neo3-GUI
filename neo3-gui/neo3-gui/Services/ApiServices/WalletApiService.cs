@@ -1028,24 +1028,29 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// Broadcast complete signed transaction
         /// </summary>
-        /// <param name="signContext"></param>
-        /// <returns></returns>
+        /// <param name="signContext">Serialized sign context JSON</param>
+        /// <returns>Transaction hash</returns>
         public async Task<object> BroadcastTransaction(string signContext)
         {
+            if (string.IsNullOrWhiteSpace(signContext))
+            {
+                return Error(ErrorCode.ParameterIsNull, "signContext cannot be empty");
+            }
+
             Transaction transaction = null;
             try
             {
                 ContractParametersContext context = ContractParametersContext.FromJson(signContext.DeserializeJson<JObject>(), Helpers.GetDefaultSnapshot());
                 if (!context.Completed)
                 {
-                    return Error(ErrorCode.SignFail, signContext);
+                    return Error(ErrorCode.SignFail, "Transaction signature is not complete");
                 }
                 transaction = (Transaction)context.Verifiable;
                 transaction.Witnesses = context.GetWitnesses();
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return Error(ErrorCode.InvalidPara);
+                return Error(ErrorCode.InvalidPara, $"Invalid sign context: {ex.Message}");
             }
             await transaction.Broadcast();
             return transaction.Hash;
