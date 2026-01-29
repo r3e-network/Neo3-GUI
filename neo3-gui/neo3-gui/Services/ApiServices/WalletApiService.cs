@@ -1287,27 +1287,6 @@ namespace Neo.Services.ApiServices
         };
 
 
-
-        /// <summary>
-        /// convert input address string to address hash
-        /// </summary>
-        /// <param name="address"></param>
-        /// <param name="error"></param>
-        /// <returns></returns>
-        private UInt160 ConvertToAddress(string address, out string error)
-        {
-            error = "";
-            try
-            {
-                return address.ToScriptHash();
-            }
-            catch (Exception e)
-            {
-                error = e.Message;
-                return null;
-            }
-        }
-
         /// <summary>
         /// convert input asset string to asset hash
         /// </summary>
