@@ -15,6 +15,8 @@ namespace Neo.Common
 {
     public class WebSocketHubMiddleware : IMiddleware
     {
+        private const string TooManyConnectionsMessage = "Too many connections!";
+        private const int UnknownErrorCode = -1;
 
         private readonly IServiceProvider _provider;
 
@@ -35,7 +37,7 @@ namespace Neo.Common
                 if (!hub.Accept(client))
                 {
                     // unaccepted connection
-                    await client.CloseAsync(WebSocketCloseStatus.PolicyViolation, "Too many connections!");
+                    await client.CloseAsync(WebSocketCloseStatus.PolicyViolation, TooManyConnectionsMessage);
                     return;
                 }
 
@@ -149,7 +151,7 @@ namespace Neo.Common
                 message.MsgType = WsMessageType.Error;
                 message.Error = new WsError()
                 {
-                    Code = -1,
+                    Code = UnknownErrorCode,
                     Message = e.ToString(),
                 };
             }
