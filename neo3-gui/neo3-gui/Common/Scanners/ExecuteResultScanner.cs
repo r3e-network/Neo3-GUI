@@ -18,6 +18,9 @@ namespace Neo.Common.Scanners
     /// </summary>
     public class ExecuteResultScanner : IDisposable
     {
+        private const uint LogIntervalBlocks = 500;
+        private const int SyncDelaySeconds = 5;
+
         private TrackDB _db = new TrackDB();
         private LevelDbContext _levelDb = new LevelDbContext();
         private volatile bool _running = true;
@@ -41,7 +44,7 @@ namespace Neo.Common.Scanners
                 {
                     if (Sync(_scanHeight))
                     {
-                        if (_scanHeight - _lastHeight >= 500)
+                        if (_scanHeight - _lastHeight >= LogIntervalBlocks)
                         {
                             var span = DateTime.Now - _lastTime;
                             Console.WriteLine($"Sync[{_lastHeight}-{_scanHeight}],cost:{span.TotalSeconds}");
@@ -52,7 +55,7 @@ namespace Neo.Common.Scanners
                     }
                     if (_scanHeight > this.GetCurrentHeight())
                     {
-                        await Task.Delay(TimeSpan.FromSeconds(5));
+                        await Task.Delay(TimeSpan.FromSeconds(SyncDelaySeconds));
                     }
                 }
                 catch (Exception e)
