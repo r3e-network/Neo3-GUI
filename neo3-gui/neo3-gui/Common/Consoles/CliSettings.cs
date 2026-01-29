@@ -54,13 +54,15 @@ namespace Neo.Common.Consoles
 
     public class LoggerSettings
     {
+        private const string DefaultLogPath = "Logs_{0}";
+
         public string Path { get; }
         public bool ConsoleOutput { get; }
         public bool Active { get; }
 
         public LoggerSettings(IConfigurationSection section)
         {
-            this.Path = section.GetValue("Path", "Logs_{0}");
+            this.Path = section.GetValue("Path", DefaultLogPath);
             this.ConsoleOutput = section.GetValue("ConsoleOutput", false);
             this.Active = section.GetValue("Active", false);
         }
@@ -68,13 +70,16 @@ namespace Neo.Common.Consoles
 
     public class StorageSettings
     {
+        private const string DefaultEngine = "LevelDBStore";
+        private const string DefaultStoragePath = "Data_LevelDB_{0}";
+
         public string Engine { get; }
         public string Path { get; }
 
         public StorageSettings(IConfigurationSection section)
         {
-            this.Engine = section.GetValue("Engine", "LevelDBStore");
-            this.Path = section.GetValue("Path", "Data_LevelDB_{0}");
+            this.Engine = section.GetValue("Engine", DefaultEngine);
+            this.Path = section.GetValue("Path", DefaultStoragePath);
         }
     }
 
