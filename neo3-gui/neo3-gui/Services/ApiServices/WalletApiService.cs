@@ -30,6 +30,9 @@ namespace Neo.Services.ApiServices
 {
     public class WalletApiService : ApiService
     {
+        private const int MinPasswordLength = 8;
+        private const string WalletFileExtension = ".json";
+
         /// <summary>
         /// open wallet
         /// </summary>
@@ -97,9 +100,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.ParameterIsNull, "password cannot be empty");
             }
-            if (password.Length < 8)
+            if (password.Length < MinPasswordLength)
             {
-                return Error(ErrorCode.InvalidPara, "password must be at least 8 characters");
+                return Error(ErrorCode.InvalidPara, $"password must be at least {MinPasswordLength} characters");
             }
 
             var result = new WalletModel();
@@ -108,7 +111,7 @@ namespace Neo.Services.ApiServices
             {
                 switch (Path.GetExtension(path).ToLowerInvariant())
                 {
-                    case ".json":
+                    case WalletFileExtension:
                         {
                             NEP6Wallet wallet = new NEP6Wallet(path, password, CliSettings.Default.Protocol);
                             var account = hexPrivateKey.NotEmpty() ? wallet.CreateAccount(hexPrivateKey) : wallet.CreateAccount();
@@ -123,7 +126,7 @@ namespace Neo.Services.ApiServices
                         }
                         break;
                     default:
-                        return Error(ErrorCode.InvalidPara, "Wallet files in that format are not supported, please use a .json file extension.");
+                        return Error(ErrorCode.InvalidPara, $"Wallet files in that format are not supported, please use a {WalletFileExtension} file extension.");
                 }
             }
             catch (CryptographicException)
