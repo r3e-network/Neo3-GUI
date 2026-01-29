@@ -249,15 +249,28 @@ namespace Neo.Services.ApiServices
             return result;
         }
 
+        /// <summary>
+        /// Invoke contract method
+        /// </summary>
+        /// <param name="para">Invoke contract parameters</param>
+        /// <returns>Invoke result model</returns>
         public async Task<object> InvokeContract(InvokeContractParameterModel para)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (para.ContractHash == null || para.Method.IsNull())
+            if (para == null)
             {
-                return Error(ErrorCode.ParameterIsNull);
+                return Error(ErrorCode.ParameterIsNull, "para cannot be null");
+            }
+            if (para.ContractHash == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "ContractHash is required");
+            }
+            if (string.IsNullOrWhiteSpace(para.Method))
+            {
+                return Error(ErrorCode.ParameterIsNull, "Method is required");
             }
             var contract = para.ContractHash.GetContract();
             if (contract == null)
