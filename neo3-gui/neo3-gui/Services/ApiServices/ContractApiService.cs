@@ -499,7 +499,6 @@ namespace Neo.Services.ApiServices
                 return Error(ErrorCode.InvalidPara);
             }
             var snapshot = Helpers.GetDefaultSnapshot();
-            //var candidates = NativeContract.NEO.GetCandidates(snapshot);
             var candidates = snapshot.GetCandidates();
             if (candidates.Any(v => v.PublicKey.Equals(publicKey)))
             {
@@ -510,7 +509,9 @@ namespace Neo.Services.ApiServices
             var account = contract.ScriptHash;
             using ScriptBuilder sb = new ScriptBuilder();
             sb.EmitDynamicCall(NativeContract.NEO.Hash, "registerCandidate", publicKey);
-            return await SignAndBroadcastTxWithSender(sb.ToArray(), account, account);
+            
+            // registerCandidate requires 1000 GAS fixed fee - use special method
+            return await SignAndBroadcastTxWithFixedFee(sb.ToArray(), account, 1000_1500_0000); // 1000.15 GAS
         }
 
 
@@ -564,7 +565,7 @@ namespace Neo.Services.ApiServices
 
         // CommitteeInfoContract addresses
         private static readonly UInt160 CommitteeInfoContractMainnet = UInt160.Parse("0xb776afb6ad0c11565e70f8ee1dd898da43e51be1");
-        private static readonly UInt160 CommitteeInfoContractTestnet = UInt160.Parse("0x6177bfcef0f51b5dd21b183ff89e301b9c66d71c");
+        private static readonly UInt160 CommitteeInfoContractTestnet = UInt160.Parse("0xe922910b49305ad00240cdd104fda6574e2f4d38");
 
         // Network magic values
         private const uint MainnetMagic = 860833102;
