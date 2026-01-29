@@ -666,9 +666,13 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (info == null || info.Sender == null)
+            if (info == null)
             {
-                return Error(ErrorCode.ParameterIsNull, "Sender is required.");
+                return Error(ErrorCode.ParameterIsNull, "info cannot be null");
+            }
+            if (info.Sender == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "Sender is required");
             }
 
             // Auto-upload logo if LogoPath is provided
