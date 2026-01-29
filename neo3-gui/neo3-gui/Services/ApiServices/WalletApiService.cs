@@ -414,16 +414,28 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// list current wallet candidate address(only single sign address)
+        /// list current wallet candidate addresses (only single sign address)
         /// </summary>
-        /// <returns></returns>
+        /// <param name="count">Maximum number of candidates to return (1-1000)</param>
+        /// <returns>List of public key models for candidate addresses</returns>
         public async Task<object> ListCandidatePublicKey(int count = 100)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            var accounts = CurrentWallet.GetAccounts().Where(a => !a.WatchOnly && a.Contract.Script.IsSignatureContract()).Take(count).ToList();
+            if (count <= 0)
+            {
+                return Error(ErrorCode.InvalidPara, "count must be greater than 0");
+            }
+            if (count > 1000)
+            {
+                count = 1000;
+            }
+            var accounts = CurrentWallet.GetAccounts()
+                .Where(a => !a.WatchOnly && a.Contract?.Script != null && a.Contract.Script.IsSignatureContract())
+                .Take(count)
+                .ToList();
             return accounts.Select(a => new PublicKeyModel
             {
                 Address = a.Address,
