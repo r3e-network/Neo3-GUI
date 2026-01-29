@@ -1,10 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neo.Common.Storage.SQLiteModules;
-
 namespace Neo.Common.Storage
 {
     public class ContractEventInfo
@@ -17,6 +10,5 @@ namespace Neo.Common.Storage
         public string Name { get; set; }
 
         public ContractEventType Event { get; set; }
-
     }
 }
