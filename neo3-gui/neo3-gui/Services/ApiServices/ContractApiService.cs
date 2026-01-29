@@ -392,12 +392,6 @@ namespace Neo.Services.ApiServices
                     case ContractParameterType.Array:
                         var array = ((Array)item).Select(t => ConvertValue(t, ToContractParameterType(t.Type))).ToList();
                         return array;
-                    //case ContractParameterType.Map:
-                    //    return ((Map) item).Select(t => new KeyValuePair<object, object>(ConvertValue(t["key"]), ConvertValue(t["value"])).tol;
-                    //    parameter.Value = ((JArray)json["value"]).Select(p =>
-                    //        new KeyValuePair<ContractParameter, ContractParameter>(JsonToContractParameter(p["key"]),
-                    //            JsonToContractParameter(p["value"]))).ToList();
-                    //    break;
                     default:
                         return item.SerializeJson();
                 }
