@@ -74,13 +74,18 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// query transaction info
+        /// query raw transaction info
         /// </summary>
-        /// <param name="txId"></param>
-        /// <param name="showJson"></param>
-        /// <returns></returns>
+        /// <param name="txId">Transaction hash</param>
+        /// <param name="showJson">Whether to return JSON format</param>
+        /// <returns>Transaction data</returns>
         public async Task<object> GetRawTransaction(UInt256 txId, bool showJson = false)
         {
+            if (txId == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "txId cannot be null");
+            }
+
             var snapshot = Helpers.GetDefaultSnapshot();
             var transaction = snapshot.GetTransaction(txId);
             if (transaction == null)
@@ -94,9 +99,12 @@ namespace Neo.Services.ApiServices
                 if (txState != null)
                 {
                     Header header = snapshot.GetHeader(txState.BlockIndex);
-                    json["blockhash"] = header.Hash.ToString();
-                    json["confirmations"] = snapshot.GetHeight() - header.Index + 1;
-                    json["blocktime"] = header.Timestamp;
+                    if (header != null)
+                    {
+                        json["blockhash"] = header.Hash.ToString();
+                        json["confirmations"] = snapshot.GetHeight() - header.Index + 1;
+                        json["blocktime"] = header.Timestamp;
+                    }
                     using var db = new TrackDB();
                     var executelog = db.GetExecuteLog(txId);
                     json["vm_state"] = executelog?.VMState;
