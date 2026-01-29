@@ -540,15 +540,19 @@ namespace Neo.Services.ApiServices
         }
 
         /// <summary>
-        /// show private key
+        /// show private key for an address
         /// </summary>
-        /// <param name="address"></param>
-        /// <returns></returns>
+        /// <param name="address">Address to show private key for</param>
+        /// <returns>Private key model with WIF and hex formats</returns>
         public async Task<object> ShowPrivateKey(UInt160 address)
         {
             if (CurrentWallet == null)
             {
                 return Error(ErrorCode.WalletNotOpen);
+            }
+            if (address == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "address cannot be null");
             }
             var account = CurrentWallet.GetAccount(address);
             if (account == null)
