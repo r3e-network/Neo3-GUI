@@ -647,13 +647,13 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// send asset
+        /// send asset to a single address
         /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="receiver"></param>
-        /// <param name="amount"></param>
-        /// <param name="asset"></param>
-        /// <returns></returns>
+        /// <param name="receiver">Receiver address</param>
+        /// <param name="amount">Amount to send</param>
+        /// <param name="asset">Asset identifier (neo/gas or contract hash)</param>
+        /// <param name="sender">Optional sender address</param>
+        /// <returns>Transaction model</returns>
         public async Task<object> SendToAddress(UInt160 receiver, string amount, string asset = "neo", UInt160 sender = null)
         {
             if (CurrentWallet == null)
@@ -662,8 +662,17 @@ namespace Neo.Services.ApiServices
             }
             if (receiver == null)
             {
-                return Error(ErrorCode.ParameterIsNull, $"receiver address is null!");
+                return Error(ErrorCode.ParameterIsNull, "receiver address is null!");
             }
+            if (string.IsNullOrWhiteSpace(amount))
+            {
+                return Error(ErrorCode.ParameterIsNull, "amount cannot be empty");
+            }
+            if (string.IsNullOrWhiteSpace(asset))
+            {
+                return Error(ErrorCode.ParameterIsNull, "asset cannot be empty");
+            }
+
             UInt160 assetHash = ConvertToAssetId(asset, out var convertError);
             if (assetHash == null)
             {
