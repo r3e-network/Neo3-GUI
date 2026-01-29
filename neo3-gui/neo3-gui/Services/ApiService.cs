@@ -44,6 +44,15 @@ namespace Neo.Services
             return new WsError() { Code = code, Message = message };
         }
 
+        /// <summary>
+        /// Broadcast transaction and return result with transaction hash
+        /// </summary>
+        private static async Task<TxResultModel> BroadcastAndReturnResult(Transaction tx)
+        {
+            await tx.Broadcast();
+            return new TxResultModel { TxId = tx.Hash };
+        }
+
         protected async Task<object> SignAndBroadcastTxWithSender(byte[] script, UInt160 sender, params UInt160[] signers)
         {
             Transaction tx;
@@ -68,10 +77,7 @@ namespace Neo.Services
             {
                 return Error(ErrorCode.SignFail, context.SafeSerialize());
             }
-            var result = new TxResultModel();
-            await tx.Broadcast();
-            result.TxId = tx.Hash;
-            return result;
+            return await BroadcastAndReturnResult(tx);
         }
 
         protected async Task<object> SignAndBroadcastTx(byte[] script, params UInt160[] signers)
@@ -112,10 +118,7 @@ namespace Neo.Services
             }
             tx.Witnesses = context.GetWitnesses();
 
-            var result = new TxResultModel();
-            await tx.Broadcast();
-            result.TxId = tx.Hash;
-            return result;
+            return await BroadcastAndReturnResult(tx);
         }
     }
 }
