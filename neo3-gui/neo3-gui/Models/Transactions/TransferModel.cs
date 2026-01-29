@@ -1,10 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Neo.Wallets;
-
 namespace Neo.Models.Transactions
 {
     public class TransferModel
