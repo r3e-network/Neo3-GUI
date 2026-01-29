@@ -120,14 +120,12 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (nefPath.IsNull())
+            var (isValid, preparedManifestPath, error) = ValidateAndPrepareContractPaths(nefPath, manifestPath);
+            if (!isValid)
             {
-                return Error(ErrorCode.ParameterIsNull, "nefPath is empty.");
+                return error;
             }
-            if (manifestPath.IsNull())
-            {
-                manifestPath = Path.ChangeExtension(nefPath, ManifestExtension);
-            }
+            manifestPath = preparedManifestPath;
             // Read nef
             NefFile nefFile = ReadNefFile(nefPath);
             // Read manifest
@@ -192,14 +190,12 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.WalletNotOpen);
             }
-            if (nefPath.IsNull())
+            var (isValid, preparedManifestPath, error) = ValidateAndPrepareContractPaths(nefPath, manifestPath);
+            if (!isValid)
             {
-                return Error(ErrorCode.ParameterIsNull, "nefPath is empty.");
+                return error;
             }
-            if (manifestPath.IsNull())
-            {
-                manifestPath = Path.ChangeExtension(nefPath, ManifestExtension);
-            }
+            manifestPath = preparedManifestPath;
             // Read nef
             NefFile nefFile = ReadNefFile(nefPath);
             // Read manifest
@@ -717,6 +713,18 @@ namespace Neo.Services.ApiServices
 
         #region Private
 
+        /// <summary>
+        /// Validates nefPath and prepares manifestPath with default value if null
+        /// </summary>
+        private (bool isValid, string manifestPath, WsError error) ValidateAndPrepareContractPaths(string nefPath, string manifestPath)
+        {
+            if (nefPath.IsNull())
+            {
+                return (false, null, Error(ErrorCode.ParameterIsNull, "nefPath is empty."));
+            }
+            manifestPath ??= Path.ChangeExtension(nefPath, ManifestExtension);
+            return (true, manifestPath, null);
+        }
 
         /// <summary>
         /// try to read nef file
