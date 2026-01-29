@@ -1141,9 +1141,10 @@ namespace Neo.Services.ApiServices
 
 
         /// <summary>
-        /// query relate my wallet balances
+        /// query relate my wallet total balances
         /// </summary>
-        /// <returns></returns>
+        /// <param name="assets">Optional assets filter</param>
+        /// <returns>List of asset balance models</returns>
         public async Task<object> GetMyTotalBalance(UInt160[] assets = null)
         {
             if (CurrentWallet == null)
@@ -1154,10 +1155,15 @@ namespace Neo.Services.ApiServices
             var addresses = CurrentWallet.GetAccounts().Select(a => a.ScriptHash).ToList();
             if (addresses.IsEmpty())
             {
-                return new List<AddressBalanceModel>();
+                return new List<AssetBalanceModel>();
             }
+
             using var db = new TrackDB();
             var balances = db.FindAssetBalance(new BalanceFilter() { Addresses = addresses, Assets = assets });
+            if (balances == null)
+            {
+                return new List<AssetBalanceModel>();
+            }
 
             var result = balances.GroupBy(b => new { b.Asset, b.AssetDecimals, b.AssetSymbol }).Select(g => new AssetBalanceModel
             {
