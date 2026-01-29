@@ -9,6 +9,8 @@ namespace Neo.Services.ApiServices
 {
     public class VerifyApiService : ApiService
     {
+        private const int PrivateKeyLength = 32;
+
         /// <summary>
         /// verify hex or wif private key
         /// </summary>
@@ -45,7 +47,7 @@ namespace Neo.Services.ApiServices
             try
             {
                 var key = Wallet.GetPrivateKeyFromNEP2(nep2Key, password, CliSettings.Default.Protocol.AddressVersion);
-                if (key.Length != 32)
+                if (key.Length != PrivateKeyLength)
                 {
                     return Error(ErrorCode.InvalidPrivateKey);
                 }
