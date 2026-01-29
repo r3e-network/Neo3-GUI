@@ -38,6 +38,14 @@ namespace Neo.Services.ApiServices
         /// <returns></returns>
         public async Task<object> OpenWallet(string path, string password)
         {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return Error(ErrorCode.ParameterIsNull, "path cannot be empty");
+            }
+            if (string.IsNullOrEmpty(password))
+            {
+                return Error(ErrorCode.ParameterIsNull, "password cannot be empty");
+            }
             if (!File.Exists(path))
             {
                 return Error(ErrorCode.WalletFileNotFound);
@@ -50,8 +58,9 @@ namespace Neo.Services.ApiServices
             {
                 return Error(ErrorCode.WrongPassword);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                Console.WriteLine($"Failed to open wallet: {ex.Message}");
                 return Error(ErrorCode.FailToOpenWallet);
             }
             return GetWalletAddress(CurrentWallet, int.MaxValue);
@@ -74,17 +83,30 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// create new wallet
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="password"></param>
-        /// <param name="privateKey"></param>
+        /// <param name="path">Wallet file path (must end with .json)</param>
+        /// <param name="password">Wallet password</param>
+        /// <param name="privateKey">Optional private key to import</param>
         /// <returns></returns>
         public async Task<object> CreateWallet(string path, string password, string privateKey = null)
         {
+            if (string.IsNullOrWhiteSpace(path))
+            {
+                return Error(ErrorCode.ParameterIsNull, "path cannot be empty");
+            }
+            if (string.IsNullOrEmpty(password))
+            {
+                return Error(ErrorCode.ParameterIsNull, "password cannot be empty");
+            }
+            if (password.Length < 8)
+            {
+                return Error(ErrorCode.InvalidPara, "password must be at least 8 characters");
+            }
+
             var result = new WalletModel();
             var hexPrivateKey = privateKey.TryGetPrivateKey();
             try
             {
-                switch (Path.GetExtension(path))
+                switch (Path.GetExtension(path).ToLowerInvariant())
                 {
                     case ".json":
                         {
@@ -101,14 +123,18 @@ namespace Neo.Services.ApiServices
                         }
                         break;
                     default:
-                        throw new Exception("Wallet files in that format are not supported, please use a .json or .db3 file extension.");
+                        return Error(ErrorCode.InvalidPara, "Wallet files in that format are not supported, please use a .json file extension.");
                 }
             }
             catch (CryptographicException)
             {
                 return Error(ErrorCode.WrongPassword);
             }
-
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to create wallet: {ex.Message}");
+                return Error(ErrorCode.InvalidPara, $"Failed to create wallet: {ex.Message}");
+            }
 
             GetNeoAndGas(result.Accounts);
             return result;
