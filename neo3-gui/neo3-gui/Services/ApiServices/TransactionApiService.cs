@@ -115,18 +115,24 @@ namespace Neo.Services.ApiServices
         }
 
 
+        /// <summary>
+        /// Get unconfirmed transaction by hash
+        /// </summary>
+        /// <param name="txId">Transaction hash</param>
+        /// <returns>Transaction model</returns>
         public async Task<object> GetUnconfirmedTransaction(UInt256 txId)
         {
+            if (txId == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "txId cannot be null");
+            }
+
             Program.Starter.NeoSystem.MemPool.TryGetValue(txId, out var tx);
             if (tx == null)
             {
                 UnconfirmedTransactionCache.RemoveUnconfirmedTransactions(txId);
                 return Error(ErrorCode.TxIdNotFound);
             }
-            //var transaction = Helpers.GetDefaultSnapshot().GetTransaction(txId);
-            //if (transaction == null)
-            //{
-            //}
 
             var model = new TransactionModel(tx);
             var tempTx = UnconfirmedTransactionCache.GetUnconfirmedTransaction(txId);
