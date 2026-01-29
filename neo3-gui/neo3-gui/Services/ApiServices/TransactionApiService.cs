@@ -375,9 +375,15 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// GetTransactionLog
         /// </summary>
-        /// <returns></returns>
+        /// <param name="txId">Transaction hash</param>
+        /// <returns>Execute log</returns>
         public async Task<object> GetApplicationLog(UInt256 txId)
         {
+            if (txId == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "txId cannot be null");
+            }
+
             using var db = new TrackDB();
             var result = db.GetExecuteLog(txId);
             return result;
