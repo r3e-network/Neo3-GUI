@@ -311,9 +311,8 @@ namespace Neo
             return InitTransaction(wallet, script, sender, cosigners);
         }
 
-        #region Transaction Constants
-        private const long DefaultMaxGas = 2000_00000000;
         #endregion
+
 
         /// <summary>
         /// create tx by script and signer
@@ -325,7 +324,7 @@ namespace Neo
         /// <returns></returns>
         public static Transaction InitTransaction(this Wallet wallet, byte[] script, UInt160 sender = null, params Signer[] signers)
         {
-            var tx = wallet.MakeTransaction(GetDefaultSnapshot(), script, sender, signers, maxGas: DefaultMaxGas);
+            var tx = wallet.MakeTransaction(GetDefaultSnapshot(), script, sender, signers, maxGas: Constant.TestMode);
             return tx;
         }
 
