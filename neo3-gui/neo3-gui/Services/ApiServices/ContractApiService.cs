@@ -25,8 +25,23 @@ namespace Neo.Services.ApiServices
 {
     public class ContractApiService : ApiService
     {
+        /// <summary>
+        /// Get all contracts with pagination
+        /// </summary>
+        /// <param name="pageIndex">Page index (0-based)</param>
+        /// <param name="pageSize">Page size (1-100)</param>
+        /// <returns>List of contract info models</returns>
         public async Task<object> GetAllContracts(int pageIndex = 0, int pageSize = 100)
         {
+            if (pageIndex < 0)
+            {
+                return Error(ErrorCode.InvalidPara, "pageIndex must be >= 0");
+            }
+            if (pageSize <= 0 || pageSize > 100)
+            {
+                pageSize = 100;
+            }
+
             var list = new List<ContractInfoModel>();
             list.AddRange(NativeContract.Contracts.Select(c => new ContractInfoModel()
             {
@@ -35,13 +50,20 @@ namespace Neo.Services.ApiServices
             }));
             var nativeHashes = new HashSet<string>(list.Select(x => x.Hash.ToBigEndianHex()));
             using var db = new TrackDB();
-            var assets = db.GetAllContracts()?.Where(a => !nativeHashes.Contains(a.Hash)).Skip(pageIndex * pageSize).Take(pageSize).Select(a =>
-                new ContractInfoModel()
-                {
-                    Hash = UInt160.Parse(a.Hash),
-                    Name = a.Name,
-                }).ToList();
-            list.AddRange(assets);
+            var contracts = db.GetAllContracts();
+            if (contracts != null)
+            {
+                var assets = contracts
+                    .Where(a => !nativeHashes.Contains(a.Hash))
+                    .Skip(pageIndex * pageSize)
+                    .Take(pageSize)
+                    .Select(a => new ContractInfoModel()
+                    {
+                        Hash = UInt160.Parse(a.Hash),
+                        Name = a.Name,
+                    }).ToList();
+                list.AddRange(assets);
+            }
             return list;
         }
 
