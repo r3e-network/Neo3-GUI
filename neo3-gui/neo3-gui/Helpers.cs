@@ -71,20 +71,22 @@ namespace Neo
 
 
 
-        private static byte UTF8CharacterMask1Byte = 0b1000_0000;
-        private static byte Valid1Byte = 0b0000_0000;//0b0xxx_xxxx
+        #region UTF8 Validation Constants
+        private const byte UTF8CharacterMask1Byte = 0b1000_0000;
+        private const byte Valid1Byte = 0b0000_0000;//0b0xxx_xxxx
 
-        private static byte UTF8CharacterMask2Byte = 0b1110_0000;
-        private static byte Valid2Byte = 0b1100_0000;//0b110x_xxxx
+        private const byte UTF8CharacterMask2Byte = 0b1110_0000;
+        private const byte Valid2Byte = 0b1100_0000;//0b110x_xxxx
 
-        private static byte UTF8CharacterMask3Byte = 0b1111_0000;
-        private static byte Valid3Byte = 0b1110_0000;//0b1110_xxxx
+        private const byte UTF8CharacterMask3Byte = 0b1111_0000;
+        private const byte Valid3Byte = 0b1110_0000;//0b1110_xxxx
 
-        private static byte UTF8CharacterMask4Byte = 0b1111_1000;
-        private static byte Valid4Byte = 0b1111_0000;//0b1111_0xxx
+        private const byte UTF8CharacterMask4Byte = 0b1111_1000;
+        private const byte Valid4Byte = 0b1111_0000;//0b1111_0xxx
 
-        private static byte UTF8CharacterMaskForExtraByte = 0b1100_0000;
-        private static byte ValidExtraByte = 0b1000_0000;//0b10xx_xxxx
+        private const byte UTF8CharacterMaskForExtraByte = 0b1100_0000;
+        private const byte ValidExtraByte = 0b1000_0000;//0b10xx_xxxx
+        #endregion
 
 
         public static bool IsValidUTF8ByteArray(this byte[] bytes)
