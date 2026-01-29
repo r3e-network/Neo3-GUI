@@ -18,9 +18,12 @@ namespace Neo.Common
     /// </summary>
     public class WebSocketConnection : IWebSocketConnection, IDisposable
     {
+        private const int BufferSize = 4 * 1024;
+        private const string GuidFormat = "N";
+
         private readonly WebSocket _socket;
         private readonly BlockingCollection<object> _pushMessagesQueue = new BlockingCollection<object>();
-        private readonly ArraySegment<byte> _buffer = WebSocket.CreateServerBuffer(4 * 1024);
+        private readonly ArraySegment<byte> _buffer = WebSocket.CreateServerBuffer(BufferSize);
         private bool _disposed;
 
         public string ConnectionId { get; set; }
@@ -28,7 +31,7 @@ namespace Neo.Common
         public WebSocketConnection(WebSocket socket)
         {
             _socket = socket ?? throw new ArgumentNullException(nameof(socket));
-            ConnectionId = Guid.NewGuid().ToString("N");
+            ConnectionId = Guid.NewGuid().ToString(GuidFormat);
         }
 
         /// <summary>
