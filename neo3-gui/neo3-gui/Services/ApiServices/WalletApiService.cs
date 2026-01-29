@@ -1272,14 +1272,14 @@ namespace Neo.Services.ApiServices
             }
         }
 
-        private AssetBalanceModel _defaultNeoBalance = new AssetBalanceModel()
+        private static readonly AssetBalanceModel _defaultNeoBalance = new()
         {
             Asset = NativeContract.NEO.Hash,
             Symbol = NativeContract.NEO.Symbol.ToUpper(),
             Balance = new BigInteger(0).ToNeo()
         };
 
-        private AssetBalanceModel _defaultGasBalance = new AssetBalanceModel()
+        private static readonly AssetBalanceModel _defaultGasBalance = new()
         {
             Asset = NativeContract.GAS.Hash,
             Symbol = NativeContract.GAS.Symbol.ToUpper(),
