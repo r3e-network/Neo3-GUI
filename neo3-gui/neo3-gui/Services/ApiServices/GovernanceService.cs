@@ -14,6 +14,7 @@ namespace Neo.Services.ApiServices
 {
     public class GovernanceService : ApiService
     {
+        private const long MaxFeePerByte = 1_00000000;
 
         public async Task<List<string>> GetCommittees()
         {
@@ -110,7 +111,7 @@ namespace Neo.Services.ApiServices
 
         public async Task<object> SetFeePerByte(long fee, List<UInt160> signers = null)
         {
-            if (fee < 0 || fee > 1_00000000)
+            if (fee < 0 || fee > MaxFeePerByte)
             {
                 return Error(ErrorCode.InvalidPara, $"input value should between 0 and  100,000,000");
             }
