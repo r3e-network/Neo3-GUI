@@ -17,6 +17,7 @@ namespace Neo.Services
     {
         private const string InsufficientGasMessage = "Insufficient GAS";
         private const byte TransactionVersion = 0;
+        private static readonly Random SharedRandom = new Random();
 
         protected Wallet CurrentWallet => Program.Starter.CurrentWallet;
 
@@ -87,7 +88,7 @@ namespace Neo.Services
             var tx = new Transaction
             {
                 Version = TransactionVersion,
-                Nonce = (uint)new Random().Next(),
+                Nonce = (uint)SharedRandom.Next(),
                 Script = script,
                 ValidUntilBlock = NativeContract.Ledger.CurrentIndex(snapshot) + CliSettings.Default.Protocol.MaxValidUntilBlockIncrement,
                 Signers = new[] { new Signer { Account = account, Scopes = WitnessScope.CalledByEntry } },
