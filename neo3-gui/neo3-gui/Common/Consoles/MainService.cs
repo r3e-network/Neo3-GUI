@@ -266,7 +266,7 @@ namespace Neo.Common.Consoles
             uint height = NativeContract.Ledger.CurrentIndex(NeoSystem.StoreView);
             var start = args.Length > 2 ? uint.Parse(args[2]) : 0;
             var count = args.Length > 3 ? uint.Parse(args[3]) : uint.MaxValue;
-            var path = args.Length > 4 ? args[4] : "chain.acc";
+            var path = args.Length > 4 ? args[4] : ChainAccFile;
 
             if (height < start)
             {
