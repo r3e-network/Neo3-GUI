@@ -23,10 +23,15 @@ namespace Neo.Services.ApiServices
         /// <summary>
         /// query transaction info
         /// </summary>
-        /// <param name="txId"></param>
-        /// <returns></returns>
+        /// <param name="txId">Transaction hash</param>
+        /// <returns>Transaction model</returns>
         public async Task<object> GetTransaction(UInt256 txId)
         {
+            if (txId == null)
+            {
+                return Error(ErrorCode.ParameterIsNull, "txId cannot be null");
+            }
+
             var snapshot = Helpers.GetDefaultSnapshot();
             var transaction = snapshot.GetTransaction(txId);
             if (transaction == null)
@@ -40,14 +45,17 @@ namespace Neo.Services.ApiServices
             if (txState != null)
             {
                 Header header = snapshot.GetHeader(txState.BlockIndex);
-                model.BlockHash = header.Hash;
-                model.BlockHeight = txState.BlockIndex;
-                model.Timestamp = header.Timestamp;
-                model.Confirmations = snapshot.GetHeight() - header.Index + 1;
+                if (header != null)
+                {
+                    model.BlockHash = header.Hash;
+                    model.BlockHeight = txState.BlockIndex;
+                    model.Timestamp = header.Timestamp;
+                    model.Confirmations = snapshot.GetHeight() - header.Index + 1;
+                }
             }
             using var db = new TrackDB();
-            var trans = db.QueryTransfers(new TransferFilter() { TxIds = new List<UInt256>() { txId }, PageSize = int.MaxValue }).List;
-            model.Transfers = trans.Select(tx => tx.ToTransferModel()).ToList();
+            var trans = db.QueryTransfers(new TransferFilter() { TxIds = new List<UInt256>() { txId }, PageSize = int.MaxValue })?.List;
+            model.Transfers = trans?.Select(tx => tx.ToTransferModel()).ToList() ?? new List<TransferModel>();
 
             var executeResult = db.GetExecuteLog(txId);
             if (executeResult?.Notifications.NotEmpty() == true)
