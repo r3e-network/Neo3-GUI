@@ -16,6 +16,17 @@ namespace Neo.Services.ApiServices
     {
         private const long MaxFeePerByte = 1_00000000;
 
+        /// <summary>
+        /// Ensures signers list is initialized and adds committee address
+        /// </summary>
+        private static List<UInt160> EnsureSignersWithCommittee(List<UInt160> signers)
+        {
+            signers ??= new List<UInt160>();
+            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
+            signers.Add(committee);
+            return signers;
+        }
+
         public async Task<List<string>> GetCommittees()
         {
             var points = NativeContract.NEO.GetCommittee(Helpers.GetDefaultSnapshot());
@@ -73,13 +84,7 @@ namespace Neo.Services.ApiServices
             using var sb = new ScriptBuilder();
             sb.EmitDynamicCall(NativeContract.RoleManagement.Hash, "designateAsRole", paras.ToArray());
 
-            if (signers == null)
-            {
-                signers = new List<UInt160>();
-            }
-            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
-            signers.Add(committee);
-
+            signers = EnsureSignersWithCommittee(signers);
             return await SignAndBroadcastTx(sb.ToArray(), signers.ToArray());
         }
 
@@ -125,12 +130,7 @@ namespace Neo.Services.ApiServices
                 Type = ContractParameterType.Integer,
                 Value = fee
             });
-            if (signers == null)
-            {
-                signers = new List<UInt160>();
-            }
-            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
-            signers.Add(committee);
+            signers = EnsureSignersWithCommittee(signers);
             return await SignAndBroadcastTx(sb.ToArray(), signers.ToArray());
         }
 
@@ -156,12 +156,7 @@ namespace Neo.Services.ApiServices
                 Type = ContractParameterType.Integer,
                 Value = factor
             });
-            if (signers == null)
-            {
-                signers = new List<UInt160>();
-            }
-            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
-            signers.Add(committee);
+            signers = EnsureSignersWithCommittee(signers);
             return await SignAndBroadcastTx(sb.ToArray(), signers.ToArray());
         }
 
@@ -188,12 +183,7 @@ namespace Neo.Services.ApiServices
                 Type = ContractParameterType.Integer,
                 Value = factor
             });
-            if (signers == null)
-            {
-                signers = new List<UInt160>();
-            }
-            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
-            signers.Add(committee);
+            signers = EnsureSignersWithCommittee(signers);
             return await SignAndBroadcastTx(sb.ToArray(), signers.ToArray());
         }
 
@@ -215,12 +205,7 @@ namespace Neo.Services.ApiServices
                 Type = ContractParameterType.Hash160,
                 Value = account
             });
-            if (signers == null)
-            {
-                signers = new List<UInt160>();
-            }
-            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
-            signers.Add(committee);
+            signers = EnsureSignersWithCommittee(signers);
             return await SignAndBroadcastTx(sb.ToArray(), signers.ToArray());
         }
 
@@ -238,12 +223,7 @@ namespace Neo.Services.ApiServices
                 Type = ContractParameterType.Hash160,
                 Value = account
             });
-            if (signers == null)
-            {
-                signers = new List<UInt160>();
-            }
-            var committee = NativeContract.NEO.GetCommitteeAddress(Helpers.GetDefaultSnapshot());
-            signers.Add(committee);
+            signers = EnsureSignersWithCommittee(signers);
             return await SignAndBroadcastTx(sb.ToArray(), signers.ToArray());
         }
 
