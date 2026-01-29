@@ -6,13 +6,30 @@ using System.Threading.Tasks;
 
 namespace Neo.Common.Storage.LevelDBModules
 {
-    public class WriteBatch
+    public class WriteBatch : IDisposable
     {
+        private bool _disposed;
         internal readonly IntPtr handle = Native.leveldb_writebatch_create();
 
         ~WriteBatch()
         {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (_disposed)
+            {
+                return;
+            }
             Native.leveldb_writebatch_destroy(handle);
+            _disposed = true;
         }
 
         public void Clear()
