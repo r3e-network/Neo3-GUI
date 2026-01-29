@@ -1314,38 +1314,6 @@ namespace Neo
             return json;
         }
 
-        //public static JStackItem ToJStackItem(this JToken json)
-        //{
-        //    JStackItem parameter = new JStackItem
-        //    {
-        //        TypeCode = json["type"].AsEnum<StackItemType>(),
-        //    };
-
-        //    if (json["value"] != null)
-        //        switch (parameter.TypeCode)
-        //        {
-        //            case StackItemType.Buffer:
-        //            case StackItemType.ByteString:
-        //                parameter.Value = Convert.FromBase64String(json["value"].AsString());
-        //                break;
-        //            case StackItemType.Boolean:
-        //                parameter.Value = json["value"].AsBoolean();
-        //                break;
-        //            case StackItemType.Integer:
-        //                parameter.Value = BigInteger.Parse(json["value"].AsString());
-        //                break;
-        //            case StackItemType.Array:
-        //                parameter.Value = ((JArray)json["value"]).Select(p => ToJStackItem(p)).ToList();
-        //                break;
-        //            case StackItemType.Map:
-        //                parameter.Value = ((JArray)json["value"]).Select(p => new KeyValuePair<JStackItem, JStackItem>(ToJStackItem(p["key"]), ToJStackItem(p["value"]))).ToList();
-        //                break;
-        //            default:
-        //                throw new ArgumentException();
-        //        }
-        //    return parameter;
-        //}
-
 
         /// <summary>
         /// /检查Nep Token
