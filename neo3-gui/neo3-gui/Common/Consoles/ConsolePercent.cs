@@ -4,6 +4,16 @@ namespace Neo.Common.Consoles
 {
     public class ConsolePercent : IDisposable
     {
+        #region Constants
+        private const long DefaultMaxValue = 100;
+        private const int ProgressBarWidth = 10;
+        private const decimal PercentThreshold = 50;
+        private const string PercentFormat = "0.0";
+        private const int PercentPadWidth = 5;
+        private const char FilledChar = '■';
+        private const char EmptyChar = '□';
+        #endregion
+
         #region Variables
 
         private long _maxValue, _value;
@@ -71,7 +81,7 @@ namespace Neo.Common.Consoles
         /// </summary>
         /// <param name="value">Value</param>
         /// <param name="maxValue">Maximum value</param>
-        public ConsolePercent(long value = 0, long maxValue = 100)
+        public ConsolePercent(long value = 0, long maxValue = DefaultMaxValue)
         {
             _inputRedirected = Console.IsInputRedirected;
             _lastFactor = -1;
@@ -89,7 +99,7 @@ namespace Neo.Common.Consoles
         public void Invalidate()
         {
             var factor = Math.Round((Percent / 100M), 1);
-            var percent = Percent.ToString("0.0").PadLeft(5, ' ');
+            var percent = Percent.ToString(PercentFormat).PadLeft(PercentPadWidth, ' ');
 
             if (_lastFactor == factor && _lastPercent == percent)
             {
@@ -99,8 +109,8 @@ namespace Neo.Common.Consoles
             _lastFactor = factor;
             _lastPercent = percent;
 
-            var fill = string.Empty.PadLeft((int)(10 * factor), '■');
-            var clean = string.Empty.PadLeft(10 - fill.Length, _inputRedirected ? '□' : '■');
+            var fill = string.Empty.PadLeft((int)(ProgressBarWidth * factor), FilledChar);
+            var clean = string.Empty.PadLeft(ProgressBarWidth - fill.Length, _inputRedirected ? EmptyChar : FilledChar);
 
             if (_inputRedirected)
             {
@@ -114,7 +124,7 @@ namespace Neo.Common.Consoles
 
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write("[");
-                Console.ForegroundColor = Percent > 50 ? ConsoleColor.Green : ConsoleColor.DarkGreen;
+                Console.ForegroundColor = Percent > PercentThreshold ? ConsoleColor.Green : ConsoleColor.DarkGreen;
                 Console.Write(fill);
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.Write(clean + "] (" + percent + "%)");
