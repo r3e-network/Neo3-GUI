@@ -80,6 +80,10 @@ namespace Neo.Common.Consoles
 
     public class P2PSettings
     {
+        private const string DefaultPort = "10333";
+        private const string DefaultWsPort = "10334";
+        private const int DefaultMaxConnectionsPerAddress = 3;
+
         public ushort Port { get; }
         public ushort WsPort { get; }
         public int MinDesiredConnections { get; }
@@ -89,12 +93,12 @@ namespace Neo.Common.Consoles
 
         public P2PSettings(IConfigurationSection section)
         {
-            this.Port = ushort.Parse(section.GetValue("Port", "10333"));
-            this.WsPort = ushort.Parse(section.GetValue("WsPort", "10334"));
+            this.Port = ushort.Parse(section.GetValue("Port", DefaultPort));
+            this.WsPort = ushort.Parse(section.GetValue("WsPort", DefaultWsPort));
             this.MinDesiredConnections = section.GetValue("MinDesiredConnections", ChannelsConfig.DefaultMinDesiredConnections);
             this.MaxConnections = section.GetValue("MaxConnections", ChannelsConfig.DefaultMaxConnections);
             this.MaxKnownHashes = section.GetValue("MaxKnownHashes", ChannelsConfig.DefaultMaxKnownHashes);
-            this.MaxConnectionsPerAddress = section.GetValue("MaxConnectionsPerAddress", 3);
+            this.MaxConnectionsPerAddress = section.GetValue("MaxConnectionsPerAddress", DefaultMaxConnectionsPerAddress);
         }
     }
 
