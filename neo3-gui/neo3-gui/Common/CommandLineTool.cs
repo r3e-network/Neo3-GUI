@@ -7,6 +7,11 @@ namespace Neo.Common
 {
     public class CommandLineTool
     {
+        private const string WindowsShell = "cmd";
+        private const string UnixShell = "bash";
+        private const string WindowsShellArg = "/c ";
+        private const string UnixShellArg = "-c ";
+        private const string CloseMessage = "close";
 
         public static readonly bool IsWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         public static readonly bool IsMac = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
@@ -18,7 +23,7 @@ namespace Neo.Common
         {
             get
             {
-                return IsWindows ? "cmd" : "bash";
+                return IsWindows ? WindowsShell : UnixShell;
             }
         }
 
@@ -26,7 +31,7 @@ namespace Neo.Common
         {
             get
             {
-                return IsWindows ? "/c " : "-c ";
+                return IsWindows ? WindowsShellArg : UnixShellArg;
             }
         }
         
@@ -41,7 +46,7 @@ namespace Neo.Common
             {
                 if (r.Data == null)
                 {
-                    Console.WriteLine($"close");
+                    Console.WriteLine(CloseMessage);
                     p = null;
                     return;
                 }
@@ -74,7 +79,7 @@ namespace Neo.Common
             {
                 if (r.Data == null)
                 {
-                    Console.WriteLine($"close");
+                    Console.WriteLine(CloseMessage);
                     p = null;
                     return;
                 }
