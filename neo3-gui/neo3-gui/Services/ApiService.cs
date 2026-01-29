@@ -15,6 +15,9 @@ namespace Neo.Services
     public interface IApiService { }
     public abstract class ApiService : IApiService
     {
+        private const string InsufficientGasMessage = "Insufficient GAS";
+        private const byte TransactionVersion = 0;
+
         protected Wallet CurrentWallet => Program.Starter.CurrentWallet;
 
         private readonly AsyncLocal<IWebSocketConnection> _asyncClient = new AsyncLocal<IWebSocketConnection>();
@@ -53,7 +56,7 @@ namespace Neo.Services
             }
             catch (Exception ex)
             {
-                if (ex.Message.Contains("Insufficient GAS"))
+                if (ex.Message.Contains(InsufficientGasMessage))
                 {
                     return Error(ErrorCode.GasNotEnough);
                 }
@@ -83,7 +86,7 @@ namespace Neo.Services
             var snapshot = Helpers.GetDefaultSnapshot();
             var tx = new Transaction
             {
-                Version = 0,
+                Version = TransactionVersion,
                 Nonce = (uint)new Random().Next(),
                 Script = script,
                 ValidUntilBlock = NativeContract.Ledger.CurrentIndex(snapshot) + CliSettings.Default.Protocol.MaxValidUntilBlockIncrement,
