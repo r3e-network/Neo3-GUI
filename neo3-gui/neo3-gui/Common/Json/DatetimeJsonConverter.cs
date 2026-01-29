@@ -10,6 +10,8 @@ namespace Neo.Common.Json
 {
     public class DatetimeJsonConverter:JsonConverter<DateTime>
     {
+        private const string DateTimeFormat = "yyyy-MM-dd HH:mm:ss";
+
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType == JsonTokenType.String)
@@ -22,7 +24,7 @@ namespace Neo.Common.Json
 
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
         {
-            writer.WriteStringValue(value.ToString("yyyy-MM-dd HH:mm:ss"));
+            writer.WriteStringValue(value.ToString(DateTimeFormat));
         }
     }
 }
