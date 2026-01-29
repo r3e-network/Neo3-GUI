@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Neo.Common.Utility;
 
@@ -11,7 +9,6 @@ namespace Neo.Models.Jobs
     public class TransactionConfirmJob : Job
     {
         private static readonly ConcurrentBag<UnconfirmedTransactionCache.TempTransaction> _confirmedTransactions = new();
-
 
         public TransactionConfirmJob(TimeSpan timeSpan)
         {
