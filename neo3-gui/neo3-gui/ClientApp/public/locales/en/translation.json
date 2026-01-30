@@ -41,6 +41,7 @@
     "more": "More",
     "need address": "Address is required",
     "select address": "Select address",
+    "node role warning": "Query nodes by their designated role in the network",
     "select all": "Select all",
     "signature": "Signature",
     "signature result": "Signature result",

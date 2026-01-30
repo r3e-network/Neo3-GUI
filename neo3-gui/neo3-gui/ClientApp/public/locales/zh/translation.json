@@ -41,6 +41,7 @@
     "more": "更多",
     "need address": "请选择地址",
     "select address": "选择地址",
+    "node role warning": "根据节点在网络中的指定角色查询节点",
     "select all": "全选",
     "signature": "签名",
     "signature result": "签名结果",
