@@ -1,0 +1,68 @@
+/**
+ * CSS Variables - 统一管理颜色、字体、间距等设计令牌
+ * Neo3-GUI Design System
+ */
+
+:root {
+  /* Primary Colors */
+  --color-primary: #00af92;
+  --color-primary-hover: #2b393f;
+  --color-primary-light: rgba(3, 212, 178, 0.2);
+  --color-primary-bg: rgba(12, 221, 186, 0.1);
+  
+  /* Success/Error Colors */
+  --color-success: #00e599;
+  --color-error: #ff4d4f;
+  
+  /* Text Colors */
+  --color-text-dark: #000000;
+  --color-text-primary: #222222;
+  --color-text-secondary: #333333;
+  --color-text-tertiary: #666666;
+  --color-text-muted: #999999;
+  --color-text-disabled: rgba(0, 0, 0, 0.45);
+  --color-text-description: rgba(0, 0, 0, 0.65);
+  
+  /* Background Colors */
+  --color-bg-primary: #ffffff;
+  --color-bg-secondary: #f0f0f0;
+  --color-bg-hover: #efefef;
+  --color-bg-border: #e8e8e8;
+  
+  /* Border Colors */
+  --color-border: #e8e8e8;
+  --color-border-light: #f0f0f0;
+  
+  /* Shadow */
+  --shadow-sm: 0 3px 12px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.103);
+  --shadow-lg: 0 4px 12px #aaaaaa;
+  
+  /* Spacing */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-xxl: 32px;
+  
+  /* Font Sizes */
+  --font-size-xs: 10px;
+  --font-size-sm: 12px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 26px;
+  
+  /* Border Radius */
+  --radius-none: 0;
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 10px;
+  --radius-full: 50%;
+  
+  /* Transitions */
+  --transition-fast: 0.15s;
+  --transition-normal: 0.2s;
+  --transition-slow: 0.3s;
+}
