@@ -54,7 +54,7 @@ class menuDown extends React.Component {
         _this.props.walletStore.setAccounts(_data.result.accounts);
       })
       .catch(function (error) {
-        console.log(error);
+        console.error(error);
       });
   };
   logout = async () => {

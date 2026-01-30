@@ -303,7 +303,6 @@ const Multiaddress = ({ func }) => {
   if (accounts.length === 0) getPublic();
   return (
     <Form className="neo-form" form={form} onFinish={addMulti}>
-      {console.log(accounts)}
       <h4>{t("wallet.signature multi create")}</h4>
       <Form.Item name="publicKeys" rules={[{ required: true, message: t("wallet.please input public key") }]}>
         <Select
@@ -313,7 +312,6 @@ const Multiaddress = ({ func }) => {
           className="multiadd"
           style={{ width: '100%' }}>
           {accounts.length > 0 ? accounts.map((item) => {
-            console.log({ ...item })
             return (
               <Option className="add-list" key={item.publicKey}>{item.publicKey}<span className="add-show">{item.address}</span></Option>
             )

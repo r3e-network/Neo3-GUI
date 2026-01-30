@@ -141,7 +141,7 @@ class Contractdeploy extends React.Component {
       } else if (data.msgType === 3) {
         callback(data);
       }
-    }).catch((error) => console.log(error));
+    }).catch((error) => console.error(error));
   };
   render() {
     const { t } = this.props;

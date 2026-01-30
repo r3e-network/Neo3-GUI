@@ -75,7 +75,7 @@ const Changepass = ({ logout }) => {
         }
       })
       .catch(function (error) {
-        console.log("error", error);
+        console.error(error);
       });
   };
   return (

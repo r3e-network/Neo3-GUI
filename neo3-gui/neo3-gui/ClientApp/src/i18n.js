@@ -33,7 +33,7 @@ i18n
     },
     (e, t) => {
       if (e) {
-        console.log("loading language fail:", e);
+        console.error("loading language fail:", e);
         i18n.language = FALLBACKLNG;
       }
     }
