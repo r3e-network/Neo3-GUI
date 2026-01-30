@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import 'antd/dist/antd.min.css';
 import '../../static/css/menu.css'
 import '../../static/css/contract.css'
 import { Layout, List, Row, Col, PageHeader, Typography, Avatar } from 'antd';

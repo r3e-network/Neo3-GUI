@@ -1,7 +1,6 @@
 import React from "react";
 import { observer, inject } from "mobx-react";
-import "antd/dist/antd.min.css";
-import { message, Modal, Radio } from "antd";
+import { message, Modal } from "antd";
 import { Addressdetail, Changepass, Setting } from "./menuaction";
 import {
   ReadOutlined,

@@ -1,5 +1,4 @@
 import React, { useState, createRef } from "react";
-import "antd/dist/antd.min.css";
 import { Input, PageHeader, Modal, Row, Col, Form, message, Button, Layout } from "antd";
 import "../../static/css/wallet.css";
 import Sync from "../sync";

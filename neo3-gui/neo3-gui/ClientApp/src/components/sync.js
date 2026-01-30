@@ -1,6 +1,5 @@
 import React from "react";
 import { Typography } from "antd";
-import "antd/dist/antd.min.css";
 import { SyncOutlined } from "@ant-design/icons";
 import { observer, inject } from "mobx-react";
 import { withTranslation } from "react-i18next";

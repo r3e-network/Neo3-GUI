@@ -1,5 +1,4 @@
 import React, { createRef } from "react";
-import "antd/dist/antd.min.css";
 import "../../static/css/trans.css";
 import "../../static/js/bundledemo.js";
 import {

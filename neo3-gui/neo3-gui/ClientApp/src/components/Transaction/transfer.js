@@ -1,5 +1,4 @@
 import React, { createRef } from 'react';
-import 'antd/dist/antd.min.css';
 import {
   Alert, Input,
   PageHeader,

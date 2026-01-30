@@ -1,5 +1,4 @@
 import React from 'react';
-import 'antd/dist/antd.min.css';
 import {
   Checkbox,
   PageHeader,
@@ -52,7 +51,7 @@ class Advancednoderole extends React.Component {
                 <Alert
                   className="mt3 mb3"
                   type="warning"
-                  message="XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                  message={t('advanced.node role warning')}
                   showIcon
                 />
                 <Form ref="formRef" onFinish={this.onRole}>

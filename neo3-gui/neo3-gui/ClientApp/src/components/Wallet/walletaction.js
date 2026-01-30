@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import 'antd/dist/antd.min.css';
 import { Form, message, Input, Button, Divider } from 'antd';
 import { walletStore } from "../../store/stores";
 import { useTranslation, Trans } from "react-i18next";
@@ -206,7 +205,9 @@ const onOpen = values => {
       message.success(<Trans>wallet.wallet opened</Trans>);
       walletStore.setWalletState(true);
     }
-  }).catch(() => {});
+  }).catch((error) => {
+    message.error(<Trans>wallet.open wallet failed</Trans>);
+  });
 };
 
 const onCreate = values => {
@@ -220,7 +221,9 @@ const onCreate = values => {
       message.success(<Trans>wallet.create wallet success</Trans>);
       walletStore.setWalletState(true);
     }
-  }).catch(() => {});
+  }).catch((error) => {
+    message.error(<Trans>wallet.create wallet fail</Trans>);
+  });
 };
 
 const onPrivate = (priva) => {

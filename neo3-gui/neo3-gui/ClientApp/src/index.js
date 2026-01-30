@@ -1,5 +1,6 @@
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom/client';
+import 'antd/dist/antd.min.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import "./i18n";

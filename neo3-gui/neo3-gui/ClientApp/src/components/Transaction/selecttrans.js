@@ -1,5 +1,4 @@
 import React from "react";
-import "antd/dist/antd.min.css";
 import { Alert, Tabs, Row, message, Col } from "antd";
 import { Layout } from "antd";
 import "../../static/css/wallet.css";

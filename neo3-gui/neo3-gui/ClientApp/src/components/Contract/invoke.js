@@ -1,5 +1,4 @@
 import React from "react";
-import "antd/dist/antd.min.css";
 import { observer, inject } from "mobx-react";
 import {
   Input,

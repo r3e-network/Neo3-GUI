@@ -1,5 +1,4 @@
 import React, { createRef } from 'react';
-import 'antd/dist/antd.min.css';
 import { Form, Input, Button } from 'antd';
 import { Layout, Row, Col, Tabs, message, PageHeader, Modal } from 'antd';
 import Sync from '../sync';

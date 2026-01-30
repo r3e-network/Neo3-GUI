@@ -1,5 +1,4 @@
 import React from "react";
-import "antd/dist/antd.min.css";
 import "../../static/css/menu.css";
 import "../../static/css/wallet.css";
 import { Layout, Menu, Icon } from "antd";

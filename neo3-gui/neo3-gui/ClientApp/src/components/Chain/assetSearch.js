@@ -1,5 +1,4 @@
 import React, { createRef } from "react";
-import "antd/dist/antd.min.css";
 import { Input, message } from "antd";
 import Topath from "../Common/topath";
 import { ArrowRightOutlined, SearchOutlined } from "@ant-design/icons";
