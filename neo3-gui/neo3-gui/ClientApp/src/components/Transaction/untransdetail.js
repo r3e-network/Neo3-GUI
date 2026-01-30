@@ -1,12 +1,11 @@
-/* eslint-disable */
 import React from 'react';
 import '../../static/css/trans.css';
 import { Layout, Row, Col, Tabs, message } from 'antd';
-import Translog, { Hashdetail, Attrlist, Translist, Witlist } from './translog';
+import { Hashdetail, Attrlist, Translist, Witlist } from './translog';
 import Datatrans from '../Common/datatrans';
 import Sync from '../sync';
 import { SwapOutlined, ArrowLeftOutlined } from '@ant-design/icons';
-import { useTranslation, withTranslation } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import { post } from "../../core/request";
 import withRouter from '../../core/withRouter';
 import { getParamFromLocation } from '../../core/routeUtils';
@@ -28,7 +27,6 @@ class Untransdetail extends React.Component {
   }
   componentDidMount() {
     this.getTransdetail(res => {
-      console.log(res);
       this.setState({
         hashdetail: res,
         transfers: res.transfers,
@@ -56,15 +54,13 @@ class Untransdetail extends React.Component {
     };
     post("GetUnconfirmedTransaction", params).then(res => {
       var _data = res.data;
-      console.log(_data)
       if (_data.msgType === -1) {
         message.error("查询失败");
         return;
       } else {
         callback(_data.result);
       }
-    }).catch(function () {
-      console.log("error");
+    }).catch(() => {
       _this.props.router.navigate(-1);
     });
   }

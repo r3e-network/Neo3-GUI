@@ -1,5 +1,4 @@
 /* eslint-disable */
-//just test replace wallet//
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Layout, Row, Col, List, Button, PageHeader, message } from 'antd';
@@ -127,7 +126,6 @@ class Transaction extends React.Component {
   getAlltrans = async (params, callback) => {
     let response = await postAsync("QueryTransactions", params);
     if (response.msgType === -1) {
-      console.log(response)
       message.error("查询失败");
       return;
     } else {
@@ -137,7 +135,6 @@ class Transaction extends React.Component {
   getNeptrans = async (params, callback) => {
     let response = await postAsync("QueryNep5Transactions", params);
     if (response.msgType === -1) {
-      console.log(response)
       message.error("查询失败");
       return;
     } else {
@@ -183,7 +180,6 @@ class Transaction extends React.Component {
         },
         () => {
           window.dispatchEvent(new Event('resize'));
-          console.log(this.state);
         },
       );
     });
@@ -214,11 +210,6 @@ class Transaction extends React.Component {
     this.setState({
       show: !this.state.show,
     });
-  }
-  show = (e) => {
-    return () => {
-      console.log(this.state.show)
-    }
   }
   render() {
     const { t } = this.props;

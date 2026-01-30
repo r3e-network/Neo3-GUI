@@ -1,12 +1,11 @@
-/* eslint-disable */
 import React from 'react';
 import '../../static/css/trans.css';
-import { Layout, Row, Col, Tabs, message, PageHeader, Divider } from 'antd';
+import { Layout, Row, Col, Tabs, message } from 'antd';
 import { Hashdetail, Attrlist, Translist, Witlist, Scriptlist } from './translog';
 import Notifies from './translog';
 import Datatrans from '../Common/datatrans';
 import Sync from '../sync';
-import { useTranslation, withTranslation } from "react-i18next";
+import { withTranslation } from "react-i18next";
 import { post } from "../../core/request";
 import { SwapOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import withRouter from '../../core/withRouter';
@@ -67,13 +66,9 @@ class Transcon extends React.Component {
       } else {
         callback(_data.result);
       }
-    }).catch(function () {
-      console.log("error");
+    }).catch(() => {
       this.props.router.navigate(-1);
     });
-  }
-  notifiesData = () => {
-    console.log(this.state.notifies)
   }
   back = () => {
     const { location, navigate } = this.props.router;
