@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { observable, action, makeObservable } from "mobx";
 
 class BlockSyncStore {

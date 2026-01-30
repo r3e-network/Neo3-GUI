@@ -1,4 +1,3 @@
-/* eslint-disable */
 /**
  * UnifiedSearch - 统一搜索组件
  * 替代重复的 searcharea.js 文件

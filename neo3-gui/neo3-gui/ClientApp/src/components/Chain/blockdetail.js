@@ -1,4 +1,3 @@
-/* eslint-disable */
 //just test replace wallet//
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";

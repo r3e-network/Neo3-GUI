@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { Layout, Row, Col, Typography } from "antd";

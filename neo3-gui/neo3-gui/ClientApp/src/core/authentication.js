@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from "react";
 import { observer, inject } from "mobx-react";
 import Wallet from "../components/Wallet/wallet";

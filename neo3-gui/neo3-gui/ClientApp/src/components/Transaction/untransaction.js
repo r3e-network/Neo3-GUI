@@ -1,4 +1,3 @@
-/* eslint-disable */
 //just test replace wallet//
 import React from 'react';
 import { Link } from 'react-router-dom';

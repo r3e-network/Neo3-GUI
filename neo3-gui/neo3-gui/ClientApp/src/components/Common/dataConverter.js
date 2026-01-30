@@ -1,4 +1,3 @@
-/* eslint-disable */
 import bs58check from "bs58check";
 import { NEO3_ADDRESS_VERSION } from "../../constants";
 

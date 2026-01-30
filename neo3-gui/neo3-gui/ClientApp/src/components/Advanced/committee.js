@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState } from 'react';
 import "../../static/css/advanced.css";
 import '../../static/css/trans.css';

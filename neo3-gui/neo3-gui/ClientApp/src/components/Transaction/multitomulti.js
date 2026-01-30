@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { createRef } from 'react';
 import {
     Modal, Input,

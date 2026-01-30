@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from "react";
 import { Typography } from "antd";
 import "antd/dist/antd.min.css";

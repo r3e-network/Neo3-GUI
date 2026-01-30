@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React, { useState, createRef } from "react";
 import "antd/dist/antd.min.css";
 import { Input, PageHeader, Modal, Row, Col, Form, message, Button, Layout } from "antd";

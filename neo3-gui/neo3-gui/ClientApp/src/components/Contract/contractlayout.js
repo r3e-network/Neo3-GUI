@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from "react";
 import { Layout, Menu, Input } from "antd";
 import { Link } from "react-router-dom";
