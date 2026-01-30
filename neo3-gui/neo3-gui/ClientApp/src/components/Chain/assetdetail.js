@@ -1,11 +1,9 @@
-/* eslint-disable */
-//just test replace wallet//
 import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { Layout, Row, Col, message, List, PageHeader } from "antd";
+import { Layout, Row, Col, message, PageHeader } from "antd";
 import Transaction from "../Transaction/transaction";
 import Sync from "../sync";
-import { withTranslation, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { postAsync } from "../../core/request";
 import { getRouteParam } from "../../core/routeUtils";
 
@@ -27,7 +25,7 @@ export default function AssetDetail() {
       }
       setAssetDetail(data.result);
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }, []);
   return (

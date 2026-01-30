@@ -1,5 +1,3 @@
-/* eslint-disable */
-//just test replace wallet//
 import React from "react";
 import { Link } from "react-router-dom";
 import {
@@ -48,7 +46,6 @@ class Chain extends React.Component {
     });
   }
   getBlock = async (callback) => {
-    console.log(this.state.lastblock);
     let _params = this.state.lastblock
       ? {
         limit: 50,
@@ -85,11 +82,6 @@ class Chain extends React.Component {
         }
       );
     });
-  };
-  show = (e) => {
-    return () => {
-      console.log(this.state.show);
-    };
   };
   render() {
     const { t } = this.props;

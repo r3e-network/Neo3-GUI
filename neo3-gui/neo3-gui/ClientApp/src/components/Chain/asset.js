@@ -11,7 +11,7 @@ import {
   Avatar,
 } from "antd";
 import Sync from "../sync";
-import { withTranslation, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { postAsync } from "../../core/request";
 import "../../static/css/chain.css";
 import AssetSearch from "./assetSearch";
@@ -29,7 +29,7 @@ export default function ChainAsset() {
       }
       setAssetList(data.result);
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }, []);
   return (

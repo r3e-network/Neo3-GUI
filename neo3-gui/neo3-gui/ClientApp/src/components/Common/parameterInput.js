@@ -1,16 +1,12 @@
 import React from "react";
-import { Input, PageHeader, Modal, Select, Row, Col, Form, message, Button, } from "antd";
+import { Input, Select, Form } from "antd";
 import DataConverter from "./dataConverter";
-
 
 class ParameterInput extends React.Component {
     constructor(props) {
         super(props);
         this.dataConverter = new DataConverter();
-        //select type
-        // let type = this.props.type;
         this.initComponentModel();
-        console.log("init ParameterInput", this.props);
         this.state = {
             options: this.options || [],
         };

@@ -5,14 +5,12 @@ class ParameterTree extends React.Component {
   constructor(props) {
     super(props);
     this.level = props.level || 0;
-
-    console.log("init ParameterTree", this.props);
   }
 
   render() {
     const { type, value } = this.props;
     const level = this.level;
-    const isArray = type == "Array" && value.length;
+    const isArray = type === "Array" && value.length;
     if (!isArray) {
       return <ParameterValue type={type} value={value}></ParameterValue>;
     }
