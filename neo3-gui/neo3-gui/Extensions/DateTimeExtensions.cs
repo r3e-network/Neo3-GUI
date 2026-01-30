@@ -1,3 +1,5 @@
+using System;
+
 namespace Neo.Extensions
 {
     /// <summary>
