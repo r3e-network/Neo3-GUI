@@ -3,7 +3,7 @@ namespace Neo.Extensions
     /// <summary>
     /// String extension methods
     /// </summary>
-    public static class StringExtensions
+    public static class StringHelpers
     {
         public static bool IsNull(this string text)
         {

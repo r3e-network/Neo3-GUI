@@ -1,3 +1,4 @@
+using Neo.SmartContract;
 using Neo.VM;
 
 namespace Neo.Services.Abstractions

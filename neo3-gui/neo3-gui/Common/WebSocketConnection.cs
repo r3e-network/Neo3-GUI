@@ -112,7 +112,9 @@ namespace Neo.Common
                     .CreateLinkedTokenSource(_disposeCts.Token);
                 timeoutCts.CancelAfter(SendTimeoutMs);
 
-                await _socket.SendAsync(data, timeoutCts.Token);
+                var json = data.SerializeJson();
+                var bytes = Encoding.UTF8.GetBytes(json);
+                await _socket.SendAsync(new ArraySegment<byte>(bytes), WebSocketMessageType.Text, true, timeoutCts.Token);
                 _lastActivityTime = DateTime.UtcNow;
             }
             finally

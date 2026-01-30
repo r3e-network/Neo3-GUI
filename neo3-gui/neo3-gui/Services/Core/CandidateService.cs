@@ -1,9 +1,11 @@
 using System.Numerics;
 using Neo.Cryptography.ECC;
+using Neo.Extensions;
 using Neo.Services.Abstractions;
 using Neo.SmartContract.Native;
 using Neo.VM;
 using Neo.VM.Types;
+using VMArray = Neo.VM.Types.Array;
 
 namespace Neo.Services.Core
 {
@@ -25,7 +27,7 @@ namespace Neo.Services.Core
             sb.EmitDynamicCall(NativeContract.NEO.Hash, "getCandidates");
             
             var engine = sb.ToArray().RunTestMode(_blockchain.GetSnapshot());
-            var array = engine.ResultStack.Pop() as Array;
+            var array = engine.ResultStack.Pop() as VMArray;
             
             if (array == null || array.Count == 0)
                 return System.Array.Empty<(ECPoint, BigInteger)>();

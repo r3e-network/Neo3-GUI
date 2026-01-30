@@ -1,6 +1,7 @@
 using Neo.Network.P2P.Payloads;
 using Neo.Persistence;
 using Neo.SmartContract;
+using Neo.SmartContract.Native;
 
 namespace Neo.Services.Abstractions
 {

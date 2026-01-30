@@ -10,12 +10,7 @@ namespace Neo.Extensions
     {
         public static BlockPreviewModel ToPreview(this Block block)
         {
-            return new BlockPreviewModel
-            {
-                Hash = block.Hash,
-                Index = block.Index,
-                Timestamp = block.Timestamp.FromTimestampMS()
-            };
+            return new BlockPreviewModel(block);
         }
     }
 }

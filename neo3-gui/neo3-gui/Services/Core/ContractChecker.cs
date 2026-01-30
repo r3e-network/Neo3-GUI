@@ -1,6 +1,8 @@
 using Neo.Common.Storage;
+using Neo.Common.Storage.SQLiteModules;
 using Neo.Services.Abstractions;
 using Neo.SmartContract;
+using Neo.SmartContract.Manifest;
 
 namespace Neo.Services.Core
 {

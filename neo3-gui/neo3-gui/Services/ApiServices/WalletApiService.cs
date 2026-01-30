@@ -240,7 +240,7 @@ namespace Neo.Services.ApiServices
             ECPoint[] points = null;
             try
             {
-                points = publicKeys.Select(p => ECPoint.DecodePoint(StringExtensions.HexToBytes(p), ECCurve.Secp256r1)).ToArray();
+                points = publicKeys.Select(p => ECPoint.DecodePoint(p.HexToBytes(), ECCurve.Secp256r1)).ToArray();
             }
             catch (FormatException ex)
             {

@@ -1,3 +1,4 @@
+using Neo.Extensions;
 using Neo.Wallets;
 
 namespace Neo.Common.Utility

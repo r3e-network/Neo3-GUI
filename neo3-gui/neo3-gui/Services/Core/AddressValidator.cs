@@ -1,5 +1,7 @@
 using Neo.Common;
+using Neo.Common.Consoles;
 using Neo.Services.Abstractions;
+using Neo.Wallets;
 
 namespace Neo.Services.Core
 {

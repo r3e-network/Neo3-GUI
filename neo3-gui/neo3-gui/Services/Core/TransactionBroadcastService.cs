@@ -1,3 +1,4 @@
+using Akka.Actor;
 using Neo.Common.Utility;
 using Neo.Network.P2P.Payloads;
 using Neo.Services.Abstractions;
@@ -11,7 +12,7 @@ namespace Neo.Services.Core
     {
         public async Task BroadcastAsync(Transaction tx)
         {
-            Program.Starter.NeoSystem.Blockchain.Tell(tx);
+            Program.Starter.NeoSystem.Blockchain.Tell(tx, ActorRefs.NoSender);
             await Task.Run(() => UnconfirmedTransactionCache.AddTransaction(tx));
         }
     }

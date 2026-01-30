@@ -1,4 +1,5 @@
 using Neo.Common;
+using Neo.Common.Consoles;
 using Neo.Network.P2P.Payloads;
 using Neo.Services.Abstractions;
 using Neo.SmartContract;

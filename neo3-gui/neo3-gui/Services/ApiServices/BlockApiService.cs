@@ -6,6 +6,7 @@ using Neo.Common.Storage.SQLiteModules;
 using Neo.Common.Utility;
 using Neo.Models;
 using Neo.Models.Blocks;
+using Neo.Models.Wallets;
 using Neo.Network.P2P.Payloads;
 
 namespace Neo.Services.ApiServices

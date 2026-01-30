@@ -1,10 +1,12 @@
 using System.Numerics;
 using Neo.Common.Utility;
+using Neo.Extensions;
 using Neo.Persistence;
 using Neo.Services.Abstractions;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.VM;
+using Neo.VM.Types;
 
 namespace Neo.Services.Core
 {

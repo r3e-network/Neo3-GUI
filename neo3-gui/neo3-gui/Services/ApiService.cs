@@ -100,14 +100,15 @@ namespace Neo.Services
                 Signers = new[] { new Signer { Account = account, Scopes = WitnessScope.CalledByEntry } },
                 Attributes = Array.Empty<TransactionAttribute>(),
                 SystemFee = fixedSystemFee,
-                NetworkFee = 0
+                NetworkFee = 0,
+                Witnesses = Array.Empty<Witness>()
             };
 
             // Calculate network fee
             var data = new ContractParametersContext(snapshot, tx, CliSettings.Default.Protocol.Network);
             CurrentWallet.Sign(data);
             tx.Witnesses = data.GetWitnesses();
-            tx.NetworkFee = CurrentWallet.CalculateNetworkFee(snapshot, tx, CliSettings.Default.Protocol.MaxVerificationGas);
+            tx.NetworkFee = tx.CalculateNetworkFee(snapshot, CliSettings.Default.Protocol, CurrentWallet, Neo.SmartContract.Helper.MaxVerificationGas);
 
             // Re-sign with correct fees
             var context = new ContractParametersContext(snapshot, tx, CliSettings.Default.Protocol.Network);

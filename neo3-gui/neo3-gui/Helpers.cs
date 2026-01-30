@@ -68,8 +68,10 @@ namespace Neo
             }
         };
 
-
-
+        /// <summary>
+        /// Gets the protocol settings from NeoSystem
+        /// </summary>
+        public static ProtocolSettings ProtocolSettings => Program.Starter.NeoSystem.Settings;
 
         #region UTF8 Validation Constants
         private const byte UTF8CharacterMask1Byte = 0b1000_0000;
