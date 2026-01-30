@@ -1,4 +1,4 @@
-import React from "react";
+import React, { createRef } from "react";
 import "antd/dist/antd.min.css";
 import "../../static/css/trans.css";
 import "../../static/js/bundledemo.js";
@@ -24,6 +24,17 @@ import { SwapOutlined } from "@ant-design/icons";
 class Datatrans extends React.Component {
   constructor(props) {
     super(props);
+    // Create refs for input elements
+    this.inStringRef = createRef();
+    this.inHexStringRef = createRef();
+    this.inHashRef = createRef();
+    this.inLittleHashRef = createRef();
+    this.inLittleAddressRef = createRef();
+    this.inBigHashRef = createRef();
+    this.inBigAddRef = createRef();
+    this.inHexHashRef = createRef();
+    this.inBaseHashRef = createRef();
+    
     this.state = {
       outstr: "",
       outhexstr: "",
@@ -64,14 +75,14 @@ class Datatrans extends React.Component {
     return hexChar;
   };
   stringTrans = () => {
-    let instr = document.getElementById("inString").value;
+    let instr = this.inStringRef.current?.input?.value || "";
     if (instr) {
       var _outStr = this.hexToString(instr);
       this.setState({
         outstr: _outStr,
       });
     }
-    let inhexstr = document.getElementById("inHexString").value;
+    let inhexstr = this.inHexStringRef.current?.input?.value || "";
     if (inhexstr) {
       var _outhexstr = this.stringToHex(inhexstr).join("");
       this.setState({
@@ -81,9 +92,7 @@ class Datatrans extends React.Component {
   };
   endianTrans = () => {
     const { t } = this.props;
-    let inhash = document
-      .getElementById("inHash")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    let inhash = (this.inHashRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inhash.length !== 40 && inhash.length !== 42) {
       message.error(t("datatrans.input error"));
       return;
@@ -116,9 +125,7 @@ class Datatrans extends React.Component {
   littleTrans = () => {
     const { t } = this.props;
     var _this = this;
-    var inlittlehash = document
-      .getElementById("inLittleHash")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    var inlittlehash = (this.inLittleHashRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inlittlehash) {
       if (inlittlehash.substr(0, 2) == "0x")
         inlittlehash = inlittlehash.slice(2);
@@ -131,9 +138,7 @@ class Datatrans extends React.Component {
         outlittlehash: _address,
       });
     }
-    var inlittleadd = document
-      .getElementById("inLittleAddress")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    var inlittleadd = (this.inLittleAddressRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inlittleadd) {
       if (inlittleadd.length != 34) {
         message.error(t("datatrans.input error"));
@@ -153,9 +158,7 @@ class Datatrans extends React.Component {
   bigTrans = () => {
     const { t } = this.props;
     var _this = this;
-    var inbighash = document
-      .getElementById("inBigHash")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    var inbighash = (this.inBigHashRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inbighash) {
       if (inbighash.substr(0, 2) == "0x") inbighash = inbighash.slice(2);
       if (inbighash.length != 40) {
@@ -168,9 +171,7 @@ class Datatrans extends React.Component {
         outbighash: _address,
       });
     }
-    var inbigadd = document
-      .getElementById("inBigAdd")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    var inbigadd = (this.inBigAddRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inbigadd) {
       if (inbigadd.length != 34) {
         message.error(t("datatrans.input error"));
@@ -187,18 +188,14 @@ class Datatrans extends React.Component {
   base64Trans = () => {
     const { t } = this.props;
     var _this = this;
-    var inhexhash = document
-      .getElementById("inHexHash")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    var inhexhash = (this.inHexHashRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inhexhash) {
       let _base64 = this.convert.toBase64String(inhexhash);
       _this.setState({
         outhexhash: _base64,
       });
     }
-    var inbasehash = document
-      .getElementById("inBaseHash")
-      .value.replace(/(^\s*)|(\s*$)/g, "");
+    var inbasehash = (this.inBaseHashRef.current?.input?.value || "").replace(/(^\s*)|(\s*$)/g, "");
     if (inbasehash) {
       // let _hash = this.convert.toHexString(inbasehash);
       let _hash = Buffer.from(inbasehash, "base64").toString("hex");
@@ -249,7 +246,7 @@ class Datatrans extends React.Component {
             </Divider>
             <p className="trans-area">
               <label>Hex String:</label>
-              <Input id="inString" type="text" placeholder="7472616e73666572" />
+              <Input ref={this.inStringRef} type="text" placeholder="7472616e73666572" />
               <label>String:</label>
               <span id="outString" className="trans-text">
                 {this.state.outstr}
@@ -258,7 +255,7 @@ class Datatrans extends React.Component {
             </p>
             <p className="trans-area">
               <label>String:</label>
-              <Input id="inHexString" type="text" placeholder="transfer" />
+              <Input ref={this.inHexStringRef} type="text" placeholder="transfer" />
               <label>Hex String:</label>
               <span id="outHexString" className="trans-text">
                 {this.state.outhexstr}
@@ -277,7 +274,7 @@ class Datatrans extends React.Component {
             </Divider>
             <p className="trans-area">
               <label>Hex String:</label>
-              <Input id="inHexHash" type="text" placeholder="63a3989cb4a99571aa00396d3c7155faea4098ba" />
+              <Input ref={this.inHexHashRef} type="text" placeholder="63a3989cb4a99571aa00396d3c7155faea4098ba" />
               <label>Base64:</label>
               <span id="outString" className="trans-text">
                 {this.state.outhexhash}
@@ -286,7 +283,7 @@ class Datatrans extends React.Component {
             </p>
             <p className="trans-area">
               <label>Base64:</label>
-              <Input id="inBaseHash" type="text" placeholder="Y6OYnLSplXGqADltPHFV+upAmLo=" />
+              <Input ref={this.inBaseHashRef} type="text" placeholder="Y6OYnLSplXGqADltPHFV+upAmLo=" />
               <label>Hex String:</label>
               <span id="outHexString" className="trans-text">
                 {this.state.outbasehash}
@@ -307,7 +304,7 @@ class Datatrans extends React.Component {
             <p className="trans-area">
               <label>Hash:</label>
               <Input
-                id="inLittleHash"
+                ref={this.inLittleHashRef}
                 type="text"
                 placeholder="b135cda6d0c707b8fd019cb76f555eb518f94945"
               />
@@ -318,7 +315,7 @@ class Datatrans extends React.Component {
             <p className="trans-area">
               <label>Address:</label>
               <Input
-                id="inLittleAddress"
+                ref={this.inLittleAddressRef}
                 type="text"
                 placeholder="Nc4yF2jDZkhrm2EnkRe8KjY6CRkATfn7hm"
               />
@@ -343,7 +340,7 @@ class Datatrans extends React.Component {
             <p className="trans-area">
               <label>Hash:</label>
               <Input
-                id="inBigHash"
+                ref={this.inBigHashRef}
                 type="text"
                 placeholder="0x4549f918b55e556fb79c01fdb807c7d0a6cd35b1"
               />
@@ -354,7 +351,7 @@ class Datatrans extends React.Component {
             <p className="trans-area">
               <label>Address:</label>
               <Input
-                id="inBigAdd"
+                ref={this.inBigAddRef}
                 type="text"
                 placeholder="Nc4yF2jDZkhrm2EnkRe8KjY6CRkATfn7hm"
               />
@@ -376,7 +373,7 @@ class Datatrans extends React.Component {
             <p className="trans-area">
               <label>Big / Little:</label>
               <Input
-                id="inHash"
+                ref={this.inHashRef}
                 type="text"
                 placeholder="0xb135cda6d0c707b8fd019cb76f555eb518f94945"
               />
