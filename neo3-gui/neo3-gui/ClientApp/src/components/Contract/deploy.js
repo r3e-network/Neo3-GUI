@@ -88,7 +88,7 @@ class Contractdeploy extends React.Component {
       });
       callback(res);
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   };
   onFill = () => {

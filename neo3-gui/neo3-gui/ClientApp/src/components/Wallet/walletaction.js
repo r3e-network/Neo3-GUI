@@ -122,7 +122,7 @@ const Walletprivate = () => {
         changePrivate(values.private);
       }
     }).catch(function (error) {
-      console.log("error", error);
+      console.error(error);
     });
   }
   return (
@@ -165,7 +165,7 @@ const Walletencrypted = () => {
         changeEncrypted(_data.result);
       }
     }).catch(function (error) {
-      console.log("error", error);
+      console.error(error);
     });
   }
   return (
@@ -207,7 +207,7 @@ const onOpen = values => {
       message.success(<Trans>wallet.wallet opened</Trans>);
       walletStore.setWalletState(true);
     }
-  }).catch(function () { console.log("error"); });
+  }).catch(() => {});
 };
 
 const onCreate = values => {
@@ -221,7 +221,7 @@ const onCreate = values => {
       message.success(<Trans>wallet.create wallet success</Trans>);
       walletStore.setWalletState(true);
     }
-  }).catch(function () { console.log("error"); });
+  }).catch(() => {});
 };
 
 const onPrivate = (priva) => {
@@ -245,7 +245,7 @@ const opendialog = (form) => {
         form.setFieldsValue({ path: res.filePaths[0] });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 }
@@ -264,7 +264,7 @@ const opensavedialog = (form) => {
         form.setFieldsValue({ path: res.filePath });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 }

@@ -25,7 +25,7 @@ class AddressBook extends React.Component {
       };
     };
     request.onerror = function (event) {
-      console.log("数据库打开报错");
+      console.error("数据库打开报错");
     };
   }
   getAddress = () => { };

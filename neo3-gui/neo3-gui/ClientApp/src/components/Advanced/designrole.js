@@ -37,7 +37,6 @@ class Advanceddesignrole extends React.Component {
     let response = await postAsync("GetNodesByRole", {
       "role": fieldsValue.role
     });
-    console.log(response);
   }
   render() {
     const { t } = this.props;

@@ -39,8 +39,8 @@ class Walletlist extends React.Component {
   getAllasset = async () => {
     let data = await postAsync("GetMyTotalBalance", {});
     if (data.msgType === -1) {
-      console.log("GetMyTotalBalance Error");
-      console.log(data);
+      console.error("GetMyTotalBalance Error");
+      console.error(data);
       return;
     }
     this.setState({
@@ -52,8 +52,8 @@ class Walletlist extends React.Component {
       "count": 10
     });
     if (data.msgType === -1) {
-      console.log("ListAddress Error");
-      console.log(data);
+      console.error("ListAddress Error");
+      console.error(data);
       return;
     }
     this.props.walletStore.setAccounts(data.result.accounts);
@@ -61,8 +61,8 @@ class Walletlist extends React.Component {
   getGas = async () => {
     let data = await postAsync("ShowGas");
     if (data.msgType == -1) {
-      console.log("ShowGas Error");
-      console.log(data);
+      console.error("ShowGas Error");
+      console.error(data);
       return;
     }
     this.props.walletStore.setUnclaimedGas(data.result.unclaimedGas);
@@ -86,7 +86,7 @@ class Walletlist extends React.Component {
     let data = await postAsync("CreateAddress");
     if (data.msgType === -1) {
       message.error(t('wallet.open wallet first'));
-      console.log(data)
+      console.error(data)
       return;
     }
     message.success(t('wallet.add address success'));
@@ -215,8 +215,8 @@ const Private = ({ func }) => {
       }
       func();
     }).catch(function (error) {
-      console.log("error");
-      console.log(error);
+      console.error("error");
+      console.error(error);
     });
   }
   return (
@@ -249,7 +249,7 @@ const Multiaddress = ({ func }) => {
       }
       return;
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   const addMulti = values => {
@@ -278,7 +278,7 @@ const Multiaddress = ({ func }) => {
         form.resetFields();
       }
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   const handleChange = value => {

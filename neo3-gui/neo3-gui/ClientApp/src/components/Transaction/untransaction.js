@@ -113,7 +113,6 @@ class Untransaction extends React.Component {
         },
         () => {
           window.dispatchEvent(new Event('resize'));
-          console.log(this.state);
         },
       );
     });
@@ -135,7 +134,6 @@ class Untransaction extends React.Component {
         },
         () => {
           window.dispatchEvent(new Event('resize'));
-          console.log(this.state);
         },
       );
     });

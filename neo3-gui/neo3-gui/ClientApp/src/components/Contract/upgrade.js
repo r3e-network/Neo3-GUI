@@ -88,7 +88,7 @@ class ContractUpgrade extends React.Component {
         callback(res);
       })
       .catch(function (error) {
-        console.log(error);
+        console.error(error);
       });
   };
   onFill = () => {
@@ -134,7 +134,7 @@ class ContractUpgrade extends React.Component {
       }
       this.setState({ showInputs: true });
     }).catch((error) => {
-      console.log(error);
+      console.error(error);
     });
   };
 

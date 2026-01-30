@@ -163,7 +163,6 @@ class Contractinvoke extends React.Component {
     return _params;
   };
   onFill = () => {
-    console.log("OnFill");
     this.myForm.current.setFieldsValue({
       tresult: this.state.tresult,
     });

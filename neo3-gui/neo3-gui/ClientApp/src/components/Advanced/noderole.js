@@ -33,12 +33,10 @@ class Advancednoderole extends React.Component {
   }
   onRole = async (fieldsValue) => {
     const { t } = this.props;
-    console.log(fieldsValue);
 
     let response = await postAsync("GetNodesByRole", {
       "role": parseInt(fieldsValue.role)
     });
-    console.log(response);
   }
   render() {
     const { t } = this.props;

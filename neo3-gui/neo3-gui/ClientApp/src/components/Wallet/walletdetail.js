@@ -77,7 +77,6 @@ class Walletdetail extends React.Component {
         _this.delAddress();
       },
       onCancel() {
-        console.log('Cancel');
       },
     });
   }
@@ -96,7 +95,7 @@ class Walletdetail extends React.Component {
       "address": this.state.address
     });
     if (repsonse.msgType === -1) {
-      console.log(t('wallet.require open'));
+      message.warning(t('wallet.require open'));
       return;
     }
     let data = repsonse.result;

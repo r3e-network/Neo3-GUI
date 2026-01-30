@@ -58,7 +58,6 @@ class Advancedvote extends React.Component {
     const { t } = this.props;
     post("GetValidators", {}).then(function (response) {
       var _data = response.data;
-      console.log(_data)
       if (_data.msgType === -1) {
         let res = _data.error;
         Modal.error({
@@ -78,8 +77,7 @@ class Advancedvote extends React.Component {
       }
     })
       .catch(function (error) {
-        console.log(error);
-        console.log("error");
+        console.error(error);
       });
   }
   onVote = values => {
@@ -142,8 +140,7 @@ class Advancedvote extends React.Component {
       }
     })
       .catch(function (error) {
-        console.log(error);
-        console.log("error");
+        console.error(error);
       });
   }
   onChoose = e => {

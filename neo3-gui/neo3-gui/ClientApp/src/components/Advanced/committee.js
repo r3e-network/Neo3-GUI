@@ -141,7 +141,6 @@ class AdvancedCommittee extends React.Component {
     }
 
     post("IsBlocked", param).then(result => {
-      console.log(result.data)
       if (result.data.msgType == 3) {
         this.setState({
           locked: result.data.result,
@@ -210,7 +209,6 @@ const TransNumber = ({ account, func }) => {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const setTrans = values => {
-    console.log(values)
     let params = {
       "max": values.max,
       "signers": values.signers
@@ -225,7 +223,7 @@ const TransNumber = ({ account, func }) => {
         func();
       }
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   if (account.length === 0) return null;
@@ -266,7 +264,6 @@ const BlockSize = ({ account, func }) => {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const setTrans = values => {
-    console.log(values)
     let params = {
       "max": values.max,
       "signers": values.signers
@@ -281,7 +278,7 @@ const BlockSize = ({ account, func }) => {
         func();
       }
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   if (account.length === 0) return null;
@@ -336,7 +333,7 @@ const BlockFee = ({ account, func }) => {
         func();
       }
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   if (account.length === 0) return null;
@@ -377,14 +374,12 @@ const ByteFee = ({ account, func }) => {
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const setTrans = values => {
-    console.log(values)
     let params = {
       "fee": values.fee,
       "signers": values.signers
     };
     post("SetFeePerByte", params).then(res => {
       var _data = res.data;
-      console.log(_data);
       if (_data.msgType === -1) {
         ModalError(_data, t("advanced.com-set-fail"));
       } else {
@@ -393,7 +388,7 @@ const ByteFee = ({ account, func }) => {
         func();
       }
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   if (account.length === 0) return null;
@@ -449,7 +444,6 @@ const AccountState = ({ account, func }) => {
     });
   }
   const setTrans = values => {
-    console.log(values)
     let params = {
       "account": values.account,
       "signers": values.signers
@@ -464,7 +458,7 @@ const AccountState = ({ account, func }) => {
         func();
       }
     }).catch(function (error) {
-      console.log(error);
+      console.error(error);
     });
   }
   if (account.length === 0) return null;
