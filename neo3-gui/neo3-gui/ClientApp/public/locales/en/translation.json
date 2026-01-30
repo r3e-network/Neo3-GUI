@@ -140,6 +140,7 @@
     "copied": "Copied",
     "count": "Count",
     "load more": "Load More",
+    "query fail": "Query failed",
     "size": "Size",
     "syncing": "Syncing",
     "txsyncing": "Tx Syncing",
@@ -176,6 +177,7 @@
     "upgrade contract": "Update Contract"
   },
   "datatrans": {
+    "illegal ascii": "Illegal Format ASCII Code!",
     "input error": "Format is wrong, please check and enter again!"
   },
   "error code": "Error Code",

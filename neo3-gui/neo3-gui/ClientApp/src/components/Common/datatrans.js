@@ -54,7 +54,7 @@ class Datatrans extends React.Component {
       trimhex.substr(0, 2).toLowerCase() === "0x" ? trimhex.substr(2) : trimhex;
     var len = rawStr.length;
     if (len % 2 !== 0) {
-      message.error("Illegal Format ASCII Code!");
+      message.error(this.props.t("datatrans.illegal ascii"));
       return "";
     }
     var cuChar;

@@ -11,7 +11,7 @@ class NodeStore {
     this.nodeManager.start(network, port);
   }
 
-  @action kill(data) {
+  @action kill() {
     this.nodeManager.kill();
   }
 }

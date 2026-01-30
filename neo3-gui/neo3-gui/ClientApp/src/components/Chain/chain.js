@@ -56,7 +56,7 @@ class Chain extends React.Component {
       };
     let response = await postAsync("GetLastBlocks", _params);
     if (response.msgType < 0) {
-      message.error("Query fail!");
+      message.error(this.props.t("common.query fail"));
       return;
     }
     callback(response)

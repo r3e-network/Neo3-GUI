@@ -1,5 +1,5 @@
 import React from "react";
-import { observer, inject } from "mobx-react";
+import { observer } from "mobx-react";
 import Wallet from "../components/Wallet/wallet";
 import { walletStore } from "../store/stores";
 

@@ -79,8 +79,8 @@ class NeoNode {
     });
     
     ps.firstError = true;
-    ps.stdout.on("data", (data) => {
-      // console.log(data.toString());
+    ps.stdout.on("data", () => {
+      // stdout data ignored
     });
     ps.stderr.setEncoding("utf8");
     ps.stderr.on("data", (data) => {

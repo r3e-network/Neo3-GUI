@@ -140,6 +140,7 @@
     "copied": "已复制",
     "count": "数量",
     "load more": "加载更多",
+    "query fail": "查询失败",
     "size": "大小",
     "syncing": "区块同步中",
     "txsyncing": "交易同步中",
@@ -176,6 +177,7 @@
     "upgrade contract": "升级合约"
   },
   "datatrans": {
+    "illegal ascii": "非法ASCII格式！",
     "input error": "输入格式错误，请检查后再次输入！"
   },
   "error code": "错误码",

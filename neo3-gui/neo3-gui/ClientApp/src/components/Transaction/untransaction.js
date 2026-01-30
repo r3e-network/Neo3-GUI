@@ -77,7 +77,7 @@ class Untransaction extends React.Component {
     post("GetMyUnconfirmedTransactions", params).then(res => {
       var _data = res.data;
       if (_data.msgType === -1) {
-        message.error("查询失败");
+        message.error(this.props.t("common.query fail"));
         return;
       } else {
         callback(_data);
@@ -88,7 +88,7 @@ class Untransaction extends React.Component {
     post("GetUnconfirmTransactions", params).then(res => {
       var _data = res.data;
       if (_data.msgType === -1) {
-        message.error("查询失败");
+        message.error(this.props.t("common.query fail"));
         return;
       } else {
         callback(_data);

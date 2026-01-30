@@ -31,7 +31,7 @@ i18n
         escapeValue: false, // react already safes from xss
       },
     },
-    (e, t) => {
+    (e) => {
       if (e) {
         console.error("loading language fail:", e);
         i18n.language = FALLBACKLNG;

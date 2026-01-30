@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import '../../static/css/menu.css'
 import '../../static/css/contract.css'
-import { Layout, List, Row, Col, PageHeader, Typography, Avatar } from 'antd';
+import { Layout, List, Row, Col, PageHeader, Typography, Avatar, message } from 'antd';
 import Sync from '../sync';
 import UnifiedSearch from '../Common/UnifiedSearch'
 import { withTranslation } from "react-i18next";
@@ -33,7 +33,7 @@ class Contract extends React.Component {
   getAllContracts = async (info) => {
     let response = await postAsync("GetAllContracts");
     if (response.msgType === -1) {
-      message.error("查询失败");
+      message.error(this.props.t("common.query fail"));
       return;
     }
     this.setState({

@@ -116,7 +116,7 @@ class Transaction extends React.Component {
   getMytrans = async (params, callback) => {
     let response = await postAsync("GetMyTransactions", params);
     if (response.msgType === -1) {
-      message.error("查询失败");
+      message.error(this.props.t("common.query fail"));
       return;
     } else {
       callback(response);
@@ -125,7 +125,7 @@ class Transaction extends React.Component {
   getAlltrans = async (params, callback) => {
     let response = await postAsync("QueryTransactions", params);
     if (response.msgType === -1) {
-      message.error("查询失败");
+      message.error(this.props.t("common.query fail"));
       return;
     } else {
       callback(response);
@@ -134,7 +134,7 @@ class Transaction extends React.Component {
   getNeptrans = async (params, callback) => {
     let response = await postAsync("QueryNep5Transactions", params);
     if (response.msgType === -1) {
-      message.error("查询失败");
+      message.error(this.props.t("common.query fail"));
       return;
     } else {
       callback(response);
