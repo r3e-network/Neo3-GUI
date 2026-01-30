@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,11 +20,14 @@ namespace Neo.Common.Scanners
     {
         private const uint LogIntervalBlocks = 500;
         private const int SyncDelaySeconds = 5;
+        private const int MaxConsecutiveErrors = 10;
+        private const int ErrorBackoffMs = 5000;
 
         private TrackDB _db = new TrackDB();
         private LevelDbContext _levelDb = new LevelDbContext();
         private volatile bool _running = true;
         private bool _disposed;
+        private int _consecutiveErrors = 0;
         
         private static uint _scanHeight = 0;
         public static uint ScanHeight => _scanHeight;
@@ -38,12 +41,15 @@ namespace Neo.Common.Scanners
             _scanHeight = _db.GetMaxSyncIndex() ?? 0;
             _lastHeight = _scanHeight;
             _lastTime = DateTime.Now;
+            
             while (_running)
             {
                 try
                 {
                     if (Sync(_scanHeight))
                     {
+                        _consecutiveErrors = 0; // Reset on success
+                        
                         if (_scanHeight - _lastHeight >= LogIntervalBlocks)
                         {
                             var span = DateTime.Now - _lastTime;
@@ -53,6 +59,7 @@ namespace Neo.Common.Scanners
                         }
                         _scanHeight++;
                     }
+                    
                     if (_scanHeight > this.GetCurrentHeight())
                     {
                         await Task.Delay(TimeSpan.FromSeconds(SyncDelaySeconds));
@@ -60,10 +67,35 @@ namespace Neo.Common.Scanners
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
-                    throw;
+                    _consecutiveErrors++;
+                    Console.WriteLine($"Sync error at height {_scanHeight} (attempt {_consecutiveErrors}): {e.Message}");
+                    
+                    if (_consecutiveErrors >= MaxConsecutiveErrors)
+                    {
+                        Console.WriteLine($"Too many consecutive errors, stopping scanner");
+                        _running = false;
+                        break;
+                    }
+                    
+                    // Backoff before retry
+                    await Task.Delay(ErrorBackoffMs);
+                    
+                    // Try to recover database connections
+                    TryRecoverConnections();
                 }
+            }
+        }
 
+        private void TryRecoverConnections()
+        {
+            try
+            {
+                _db?.Dispose();
+                _db = new TrackDB();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to recover TrackDB: {ex.Message}");
             }
         }
 
@@ -91,6 +123,11 @@ namespace Neo.Common.Scanners
             }
 
             var block = blockHeight.GetBlock();
+            if (block == null)
+            {
+                return false;
+            }
+            
             var blockTime = block.Timestamp.FromTimestampMS();
             if (blockHeight == 0)
             {
@@ -167,10 +204,7 @@ namespace Neo.Common.Scanners
 
         /// <summary>
         /// Should run after <see cref="SyncContracts"/> method
-        /// update record will save after call <see cref="_db.Commit()"/> method;
-        /// new record will save immediately
         /// </summary>
-        /// <param name="blockHeight"></param>
         private void SyncBalanceChanges(uint blockHeight)
         {
             var balanceChanges = _levelDb.GetBalancingAccounts(blockHeight);
@@ -188,7 +222,6 @@ namespace Neo.Common.Scanners
         /// <summary>
         /// sync native contracts state into sqldb immediately
         /// </summary>
-        /// <param name="blockTime"></param>
         private void SyncNativeContracts(DateTime blockTime)
         {
             foreach (var nativeContract in NativeContract.Contracts)
@@ -218,8 +251,6 @@ namespace Neo.Common.Scanners
         /// <summary>
         /// sync contract create\update\delete state into sqldb immediately
         /// </summary>
-        /// <param name="blockHeight"></param>
-        /// <param name="blockTime"></param>
         private void SyncContracts(uint blockHeight, DateTime blockTime)
         {
             var contractEvents = _levelDb.GetContractEvent(blockHeight);
@@ -228,17 +259,12 @@ namespace Neo.Common.Scanners
                 foreach (var keyValuePair in contractEvents)
                 {
                     var txId = keyValuePair.Key;
-                    keyValuePair.Value?.ForEach(contractEvent => ProcessContractEvent(contractEvent, txId, blockTime));
+                    keyValuePair.Value?.ForEach(contractEvent => 
+                        ProcessContractEvent(contractEvent, txId, blockTime));
                 }
             }
         }
 
-        /// <summary>
-        /// save contract change info into sqldb immediately
-        /// </summary>
-        /// <param name="contractEvent"></param>
-        /// <param name="txId"></param>
-        /// <param name="blockTime"></param>
         private void ProcessContractEvent(ContractEventInfo contractEvent, UInt256 txId, DateTime blockTime)
         {
             switch (contractEvent.Event)
@@ -263,7 +289,6 @@ namespace Neo.Common.Scanners
             }
         }
 
-
         private ContractEntity GenerateContractEntity(ContractEventInfo contractEvent)
         {
             var newContract = new ContractEntity()
@@ -282,11 +307,6 @@ namespace Neo.Common.Scanners
             return newContract;
         }
 
-
-        /// <summary>
-        /// update record will save after call <see cref="_db.Commit()"/> method;
-        /// new record will save immediately
-        /// </summary>
         private void UpdateBalance(UInt160 account, UInt160 asset, DataCache snapshot)
         {
             try

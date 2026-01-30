@@ -6,7 +6,7 @@ import '../../static/css/menu.css'
 import '../../static/css/contract.css'
 import { Layout, List, Row, Col, PageHeader, Typography, Avatar } from 'antd';
 import Sync from '../sync';
-import Searcharea from './searcharea'
+import UnifiedSearch from '../Common/UnifiedSearch'
 import { withTranslation } from "react-i18next";
 import { Copy } from '../copy';
 import { postAsync } from '../../core/request';
@@ -70,7 +70,7 @@ class Contract extends React.Component {
               />
             </Col>
 
-            <Searcharea />
+            <UnifiedSearch type="contract" />
           </Row>
         </Content>
       </Layout>

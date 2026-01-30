@@ -4,10 +4,13 @@ import { Layout, Row, Col, message, PageHeader, Table, Tag } from "antd";
 import Sync from "../sync";
 import post from "../../core/request";
 import { withTranslation } from "react-i18next";
+import withRouter from "../../core/withRouter";
+import { getParamFromLocation } from "../../core/routeUtils";
 
 const { Content } = Layout;
 const { Column } = Table;
 
+@withRouter
 @withTranslation()
 class Contractdetail extends React.Component {
   constructor(props) {
@@ -21,7 +24,8 @@ class Contractdetail extends React.Component {
     };
   }
   componentDidMount() {
-    let _hash = location.pathname.split(":").pop();
+    const { location } = this.props.router;
+    let _hash = getParamFromLocation(location);
     this.contractDetail(_hash, (res) => {
       let _methodarr = new Array();
       _methodarr = res.manifest.abi.methods ? res.manifest.abi.methods : [];

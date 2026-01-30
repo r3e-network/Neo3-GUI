@@ -3,15 +3,13 @@
  * Replaces Electron API calls with Tauri equivalents
  */
 
-// Check if running in Tauri environment
-const isTauri = () => {
-  return window.__TAURI__ !== undefined;
-};
+// Inline check to avoid circular dependency with platform.js
+const isTauriEnv = () => typeof window !== 'undefined' && window.__TAURI__ !== undefined;
 
 // Dialog API
 export const dialog = {
   async showOpenDialog(options = {}) {
-    if (!isTauri()) {
+    if (!isTauriEnv()) {
       console.warn('Not running in Tauri environment');
       return { filePaths: [] };
     }
@@ -40,8 +38,8 @@ export const dialog = {
     return { filePaths, canceled: false };
   },
   
-  async showSaveDialog(options = ) {
-    if (!isTauri()) {
+  async showSaveDialog(options = {}) {
+    if (!isTauriEnv()) {
       console.warn('Not running in Tauri environment');
       return { filePath: undefined };
     }
@@ -66,7 +64,7 @@ export const dialog = {
 // Shell API
 export const shell = {
   async openExternal(url) {
-    if (!isTauri()) {
+    if (!isTauriEnv()) {
       window.open(url, '_blank');
       return;
     }
@@ -79,7 +77,7 @@ export const shell = {
 // App API
 export const app = {
   async getVersion() {
-    if (!isTauri()) {
+    if (!isTauriEnv()) {
       return '1.6.0';
     }
     
@@ -99,5 +97,5 @@ export default {
   dialog,
   shell,
   app,
-  isTauri
+  isTauri: isTauriEnv
 };

@@ -4,9 +4,8 @@
  */
 
 import Config from "./config";
+import { isTauri } from "./platform";
 
-// Detect runtime environment
-const isTauri = () => window.__TAURI__ !== undefined;
 const isMac = typeof process !== 'undefined' && process.platform === "darwin";
 const isWin = typeof process !== 'undefined' && process.platform === "win32";
 
@@ -62,7 +61,6 @@ class NeoNode {
     
     const appPath = app.getAppPath();
     const startPath = appPath.replace("app.asar", "");
-    console.log("startPath:", startPath);
     
     const parentEnv = process.env;
     const childEnv = { ...parentEnv, ...env };
@@ -117,7 +115,6 @@ class NeoNode {
   }
 
   switchNode(network) {
-    console.log("switch to:", network);
     if (network) {
       Config.changeNetwork(network);
     }
@@ -129,16 +126,11 @@ class NeoNode {
   delayStartNode(retryCount) {
     retryCount = retryCount || 0;
     if (retryCount > 10) {
-      console.log("stop retry");
       return;
     }
     this.kill();
     this.debounce(() => {
       this.startNode(Config.Network, Config.Port, () => {
-        console.log(
-          new Date(),
-          retryCount + ":switch network fail:" + Config.Network
-        );
         retryCount++;
         this.delayStartNode(retryCount);
       });

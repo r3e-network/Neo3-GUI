@@ -14,6 +14,7 @@ import { withTranslation } from "react-i18next";
 import { postAsync } from '../../core/request';
 import { withAuthenticated } from '../../core/authentication';
 import withRouter from '../../core/withRouter';
+import { getParamFromLocation } from '../../core/routeUtils';
 
 
 const { confirm } = Modal;
@@ -38,11 +39,13 @@ class Walletdetail extends React.Component {
     this.getBalances();
   }
   checkAddress = () => {
-    let address = location.pathname.split(":").pop();
+    const { location } = this.props.router;
+    let address = getParamFromLocation(location);
     this.setState({ address: address })
   }
   getBalances = async () => {
-    let address = location.pathname.split(":").pop();
+    const { location } = this.props.router;
+    let address = getParamFromLocation(location);
     let data = await postAsync("GetMyBalances", {
       "address": address
     })

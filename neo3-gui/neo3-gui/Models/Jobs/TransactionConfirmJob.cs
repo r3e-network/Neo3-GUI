@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Neo.Common.Utility;
@@ -8,7 +9,8 @@ namespace Neo.Models.Jobs
 {
     public class TransactionConfirmJob : Job
     {
-        private static readonly ConcurrentBag<UnconfirmedTransactionCache.TempTransaction> _confirmedTransactions = new();
+        private static ConcurrentBag<UnconfirmedTransactionCache.TempTransaction> _confirmedTransactions = new();
+        private static readonly object _swapLock = new();
 
         public TransactionConfirmJob(TimeSpan timeSpan)
         {
@@ -17,13 +19,28 @@ namespace Neo.Models.Jobs
 
         public static void AddConfirmedTransaction(UnconfirmedTransactionCache.TempTransaction tx)
         {
-            _confirmedTransactions.Add(tx);
+            if (tx?.Tx != null)
+            {
+                _confirmedTransactions.Add(tx);
+            }
         }
 
         public override async Task<WsMessage> Invoke()
         {
-            var allConfirmTransactions = _confirmedTransactions.Select(tx => tx.Tx.Hash).ToList();
-            if (allConfirmTransactions.IsEmpty())
+            // Atomically swap the bag to avoid losing transactions added during processing
+            List<UnconfirmedTransactionCache.TempTransaction> snapshot;
+            lock (_swapLock)
+            {
+                if (_confirmedTransactions.IsEmpty)
+                {
+                    return null;
+                }
+                snapshot = _confirmedTransactions.ToList();
+                _confirmedTransactions = new ConcurrentBag<UnconfirmedTransactionCache.TempTransaction>();
+            }
+
+            var allConfirmTransactions = snapshot.Select(tx => tx.Tx.Hash).ToList();
+            if (allConfirmTransactions.Count == 0)
             {
                 return null;
             }
@@ -32,12 +49,17 @@ namespace Neo.Models.Jobs
             {
                 Confirms = allConfirmTransactions,
             };
-            if (Program.Starter.CurrentWallet != null)
+
+            var wallet = Program.Starter.CurrentWallet;
+            if (wallet != null)
             {
-                var accounts = Program.Starter.CurrentWallet.GetAccounts().Select(a => a.ScriptHash).ToList();
-                model.MyConfirms = _confirmedTransactions.Where(tx => tx.Transfers.Any(t => accounts.Contains(t.From) || accounts.Contains(t.To))).Select(tx => tx.Tx.Hash).ToList();
+                var accounts = wallet.GetAccounts().Select(a => a.ScriptHash).ToHashSet();
+                model.MyConfirms = snapshot
+                    .Where(tx => tx.Transfers.Any(t => accounts.Contains(t.From) || accounts.Contains(t.To)))
+                    .Select(tx => tx.Tx.Hash)
+                    .ToList();
             }
-            _confirmedTransactions.Clear();
+
             return new WsMessage()
             {
                 MsgType = WsMessageType.Push,

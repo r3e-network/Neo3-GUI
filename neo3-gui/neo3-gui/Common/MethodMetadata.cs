@@ -14,7 +14,10 @@ namespace Neo.Common
     /// </summary>
     public class MethodMetadata
     {
+        private const int MaxOptimizedParams = 6;
+        
         private readonly ParameterInfo[] _parameters;
+        private readonly MethodInfo _methodInfo;
         private readonly dynamic _delegate;
 
         public Type DeclaringType { get; }
@@ -24,6 +27,7 @@ namespace Neo.Common
         {
             DeclaringType = methodInfo.DeclaringType;
             _parameters = methodInfo.GetParameters();
+            _methodInfo = methodInfo;
             
             var paras = new List<Type> { methodInfo.DeclaringType };
             paras.AddRange(_parameters.Select(p => p.ParameterType));
@@ -33,8 +37,13 @@ namespace Neo.Common
                 methodInfo.ReturnType.GetGenericTypeDefinition() == typeof(Task<>))
             {
                 IsValid = true;
-                var func = Expression.GetFuncType(paras.ToArray());
-                _delegate = Delegate.CreateDelegate(func, methodInfo);
+                
+                // Only create delegate for optimized path
+                if (_parameters.Length <= MaxOptimizedParams)
+                {
+                    var func = Expression.GetFuncType(paras.ToArray());
+                    _delegate = Delegate.CreateDelegate(func, methodInfo);
+                }
             }
         }
 
@@ -46,17 +55,29 @@ namespace Neo.Common
 
         private dynamic InvokeInternal(dynamic instance, params dynamic[] paras)
         {
-            return _parameters.Length switch
+            // Use optimized delegate path for common cases
+            if (_parameters.Length <= MaxOptimizedParams && _delegate != null)
             {
-                0 => _delegate(instance),
-                1 => _delegate(instance, paras[0]),
-                2 => _delegate(instance, paras[0], paras[1]),
-                3 => _delegate(instance, paras[0], paras[1], paras[2]),
-                4 => _delegate(instance, paras[0], paras[1], paras[2], paras[3]),
-                5 => _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4]),
-                6 => _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4], paras[5]),
-                _ => Task.FromResult(string.Empty)
-            };
+                return _parameters.Length switch
+                {
+                    0 => _delegate(instance),
+                    1 => _delegate(instance, paras[0]),
+                    2 => _delegate(instance, paras[0], paras[1]),
+                    3 => _delegate(instance, paras[0], paras[1], paras[2]),
+                    4 => _delegate(instance, paras[0], paras[1], paras[2], paras[3]),
+                    5 => _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4]),
+                    6 => _delegate(instance, paras[0], paras[1], paras[2], paras[3], paras[4], paras[5]),
+                    _ => InvokeViaReflection(instance, paras)
+                };
+            }
+            
+            // Fallback to reflection for methods with many parameters
+            return InvokeViaReflection(instance, paras);
+        }
+
+        private dynamic InvokeViaReflection(object instance, object[] paras)
+        {
+            return _methodInfo.Invoke(instance, paras);
         }
 
         private List<object> PrepareParameters(JsonElement inputParas)
@@ -104,7 +125,6 @@ namespace Neo.Common
                     }
                     else
                     {
-                        // Use default value for missing parameters
                         var defaultVal = _parameters[index].DefaultValue;
                         paras.Add(defaultVal != DBNull.Value ? defaultVal : _parameters[index].ParameterType.GetDefaultValue());
                     }
@@ -121,7 +141,6 @@ namespace Neo.Common
                 }
                 else
                 {
-                    // Try find paraVal case-insensitive
                     var paraToken = inputParas.EnumerateObject()
                         .FirstOrDefault(p => parameterInfo.Name.Equals(p.Name, StringComparison.OrdinalIgnoreCase));
                     

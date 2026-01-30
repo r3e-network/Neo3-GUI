@@ -7,6 +7,7 @@ import { SwapRightOutlined } from "@ant-design/icons";
 import Sync from "../sync";
 import { postAsync } from "../../core/request";
 import { withTranslation, useTranslation } from "react-i18next";
+import { getRouteParam } from "../../core/routeUtils";
 
 
 export default function BlockDetail() {
@@ -18,7 +19,7 @@ export default function BlockDetail() {
   const [height, setHeight] = useState(0);
   const [blockdetail, setBlockDetail] = useState({});
   const [translist, setTransList] = useState([]);
-  let identity = location.pathname.split(":").pop();
+  let identity = getRouteParam(location.pathname);
   let blockHeight = Number(identity);
   useEffect(() => {
     postAsync("GetBlock", { index: blockHeight })

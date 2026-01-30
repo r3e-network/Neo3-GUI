@@ -283,7 +283,17 @@ namespace Neo
         {
             Program.Starter.NeoSystem.Blockchain.Tell(tx);
             //.Tell(new LocalNode.Relay { Inventory = tx });
-            var task = Task.Run(() => UnconfirmedTransactionCache.AddTransaction(tx));
+            _ = Task.Run(() =>
+            {
+                try
+                {
+                    UnconfirmedTransactionCache.AddTransaction(tx);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Failed to cache transaction: {ex.Message}");
+                }
+            });
         }
 
 

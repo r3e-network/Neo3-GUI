@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { observable, action, makeObservable } from "mobx";
 
 class WalletStore {
@@ -16,7 +15,6 @@ class WalletStore {
   }
 
   @action setWalletState(isopen) {
-    console.log("set wallet:", isopen);
     this.isOpen = isopen;
   }
 

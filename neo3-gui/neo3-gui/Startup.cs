@@ -6,16 +6,16 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Neo.Common;
+using Neo.Configuration;
 using Neo.Models.Jobs;
 using Neo.Services;
+using Neo.Services.Abstractions;
+using Neo.Services.Core;
 
 namespace Neo
 {
     public class Startup
     {
-        private const int WebSocketKeepAliveSeconds = 30;
-        private const int WebSocketBufferSize = 4 * 1024;
-
         public IConfiguration Configuration { get; }
         public string ContentRootPath { get; set; }
 
@@ -36,6 +36,15 @@ namespace Neo
 
         public void ConfigureServices(IServiceCollection services)
         {
+            // Configuration
+            var options = new NeoGuiOptions();
+            Configuration.GetSection(NeoGuiOptions.SectionName).Bind(options);
+            options.Validate();
+            services.AddSingleton(options);
+
+            // Core services (using extension method)
+            services.AddNeoServices();
+
             // WebSocket services
             services.AddWebSocketInvoker();
             
@@ -46,14 +55,15 @@ namespace Neo
             services.AddSingleton<JsonRpcMiddleware>();
             
             // WebSocket options
-            services.AddWebSockets(options =>
+            services.AddWebSockets(opt =>
             {
-                options.KeepAliveInterval = TimeSpan.FromSeconds(WebSocketKeepAliveSeconds);
-                options.ReceiveBufferSize = WebSocketBufferSize;
+                opt.KeepAliveInterval = TimeSpan.FromSeconds(options.WebSocketKeepAliveSeconds);
+                opt.ReceiveBufferSize = options.WebSocketBufferSize;
             });
 
-            // Memory cache for hot data
+            // Memory cache and logging
             services.AddMemoryCache();
+            services.AddLogging();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

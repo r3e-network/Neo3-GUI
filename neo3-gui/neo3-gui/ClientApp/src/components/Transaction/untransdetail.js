@@ -9,6 +9,7 @@ import { SwapOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import { useTranslation, withTranslation } from "react-i18next";
 import { post } from "../../core/request";
 import withRouter from '../../core/withRouter';
+import { getParamFromLocation } from '../../core/routeUtils';
 
 const { Content } = Layout;
 @withTranslation()
@@ -49,8 +50,9 @@ class Untransdetail extends React.Component {
   };
   getTransdetail = callback => {
     var _this = this;
+    const { location } = this.props.router;
     let params = {
-      "txId": location.pathname.split(":").pop()
+      "txId": getParamFromLocation(location)
     };
     post("GetUnconfirmedTransaction", params).then(res => {
       var _data = res.data;

@@ -3,8 +3,7 @@
  * Supports both Electron and Tauri environments
  */
 
-// Detect runtime environment
-const isTauri = () => window.__TAURI__ !== undefined;
+import { isTauri } from './platform';
 
 let RPCURL = "";
 let WSURL = "";
@@ -37,7 +36,7 @@ class Config {
       this.initConfig(config);
       this.initialized = true;
     } catch (error) {
-      console.log('Config init error:', error);
+      console.error('Config init error:', error);
       this.initConfig({});
     }
   }

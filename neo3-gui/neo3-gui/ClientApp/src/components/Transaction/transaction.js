@@ -7,6 +7,7 @@ import { withTranslation } from "react-i18next";
 import { SwapRightOutlined } from '@ant-design/icons';
 import { postAsync } from "../../core/request";
 import withRouter from '../../core/withRouter';
+import { getParamFromLocation } from '../../core/routeUtils';
 
 @withTranslation()
 @withRouter
@@ -33,7 +34,8 @@ class Transaction extends React.Component {
     this.selTrans()
   }
   selTrans = () => {
-    let _hash = location.pathname.split(":").pop()
+    const { location } = this.props.router;
+    let _hash = getParamFromLocation(location);
     let page = this.props.page ? this.props.page : "all";
     var _params = this.madeParams();
     if (page === "all") {

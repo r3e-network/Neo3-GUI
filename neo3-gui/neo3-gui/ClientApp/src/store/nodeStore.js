@@ -1,14 +1,9 @@
-/* eslint-disable */
-import { observable, action, makeObservable } from "mobx";
+import { action, makeObservable } from "mobx";
 import neoNode from "../neonode";
 
 class NodeStore {
   constructor() {
     makeObservable(this);
-    console.log("node store init");
-    // if (window.nodeManager) {
-    //     this.nodeManager = window.nodeManager
-    // }
     this.nodeManager = neoNode;
   }
 

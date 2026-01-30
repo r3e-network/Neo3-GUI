@@ -12,7 +12,7 @@ import {
   Button,
   PageHeader,
 } from "antd";
-import Chainsearch from "./chainSearch";
+import UnifiedSearch from "../Common/UnifiedSearch";
 import Sync from "../sync";
 import { withTranslation } from "react-i18next";
 import "../../static/css/contract.css";
@@ -152,7 +152,7 @@ class Chain extends React.Component {
                 )}
               />
             </Col>
-            <Chainsearch show={this.show()} />
+            <UnifiedSearch type="chain" />
           </Row>
           <div className="pv2"></div>
         </Content>

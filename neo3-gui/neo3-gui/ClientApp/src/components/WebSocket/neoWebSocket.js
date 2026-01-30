@@ -1,4 +1,5 @@
 import Config from "../../config";
+
 class NeoWebSocket {
   constructor() {
     this.processMethods = {};
@@ -6,38 +7,24 @@ class NeoWebSocket {
     this.ws = null;
   }
 
-  log() {
-    console.log("NeoWebSocket=>", ...arguments);
-  }
-
-  warn() {
-    console.warn("NeoWebSocket=>", ...arguments)
-  }
-
-
   initWebSocket = () => {
     try {
       this.ws = this.createWebSocket();
     } catch (error) {
-      this.warn(error);
+      console.warn("NeoWebSocket=>", error);
     }
   };
 
   createWebSocket = () => {
-    this.log("creating new webscoket");
     let ws = new WebSocket(Config.getWsUrl());
 
-    ws.onopen = () => {
-      this.log("[opened]");
-    };
-
     ws.onclose = (e) => {
-      this.warn("[closed]", e);
+      console.warn("NeoWebSocket=> [closed]", e);
       this.reconnectWebSocket();
     };
 
     ws.onerror = (e) => {
-      this.warn("[error]", e);
+      console.warn("NeoWebSocket=> [error]", e);
     };
 
     ws.onmessage = this.processMessage;
@@ -45,7 +32,6 @@ class NeoWebSocket {
   };
 
   reconnectWebSocket = () => {
-    let self = this;
     if (this.lock) {
       return;
     }
@@ -57,7 +43,7 @@ class NeoWebSocket {
   };
 
   /**
-   * distribute websocket message to regitered process methods
+   * distribute websocket message to registered process methods
    */
   processMessage = (message) => {
     let msg = JSON.parse(message.data);
@@ -67,14 +53,14 @@ class NeoWebSocket {
         try {
           methodFunc(msg);
         } catch (error) {
-          this.log(error);
+          console.error("NeoWebSocket=>", error);
         }
       }
     }
   };
 
   /**
-   * regiter new process method
+   * register new process method
    * @param {*} method message method name
    * @param {*} func process method
    */
@@ -88,7 +74,7 @@ class NeoWebSocket {
   }
 
   /**
-   * unregiter process method
+   * unregister process method
    * @param {*} method
    * @param {*} func
    */

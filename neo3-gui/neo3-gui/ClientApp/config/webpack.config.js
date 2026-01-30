@@ -188,6 +188,13 @@ module.exports = function (webpackEnv) {
 
   return {
     target: ['electron-renderer'],
+    // Ignore Tauri modules in Electron build (they're loaded dynamically at runtime)
+    externals: {
+      '@tauri-apps/api/core': 'commonjs @tauri-apps/api/core',
+      '@tauri-apps/plugin-dialog': 'commonjs @tauri-apps/plugin-dialog',
+      '@tauri-apps/plugin-shell': 'commonjs @tauri-apps/plugin-shell',
+      '@tauri-apps/plugin-fs': 'commonjs @tauri-apps/plugin-fs',
+    },
     // Webpack noise constrained to errors and warnings
     stats: 'errors-warnings',
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
