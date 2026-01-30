@@ -82,7 +82,10 @@
     "start-electron-prod": "electron .",
     "publish": "npm run build && npm run build-electron",
     "dev": "npm run start | npm run start-electron",
-    "prod": "npm run build && npm run start-electron-prod"
+    "prod": "npm run build && npm run start-electron-prod",
+    "tauri": "tauri",
+    "tauri:dev": "tauri dev",
+    "tauri:build": "tauri build"
   },
   "build": {
     "appId": "neo.ngd.neo-gui",
@@ -218,6 +221,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.19.1",
     "@babel/plugin-proposal-decorators": "^7.19.3",
+    "@tauri-apps/cli": "^2.0.0",
     "cross-env": "^7.0.3",
     "electron": "^21.1.1",
     "electron-builder": "^23.6.0"
