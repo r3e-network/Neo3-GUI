@@ -93,9 +93,11 @@ export const app = {
 };
 
 // Export for compatibility
-export default {
+const tauriApi = {
   dialog,
   shell,
   app,
   isTauri: isTauriEnv
 };
+
+export default tauriApi;

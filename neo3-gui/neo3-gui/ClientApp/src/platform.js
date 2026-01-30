@@ -94,4 +94,6 @@ export const app = {
   }
 };
 
-export default { dialog, shell, app, isTauri, isElectron };
+const platform = { dialog, shell, app, isTauri, isElectron };
+
+export default platform;

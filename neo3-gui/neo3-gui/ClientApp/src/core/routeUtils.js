@@ -35,8 +35,10 @@ export const matchPath = (pathname, pattern) => {
   return pathname.startsWith(pattern);
 };
 
-export default {
+const routeUtils = {
   getRouteParam,
   getParamFromLocation,
   matchPath
 };
+
+export default routeUtils;
