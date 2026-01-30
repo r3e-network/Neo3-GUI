@@ -1,7 +1,11 @@
+<p align="center">
+  <img src="docs/assets/banner.png" alt="Neo3-GUI Banner" width="100%" />
+</p>
+
 # Neo3-GUI
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-6.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/6.0)
+[![.NET](https://img.shields.io/badge/.NET-10.0-purple.svg)](https://dotnet.microsoft.com/download/dotnet/10.0)
 [![Neo](https://img.shields.io/badge/Neo-3.9.1-green.svg)](https://github.com/neo-project/neo)
 
 A cross-platform graphical user interface for Neo N3 blockchain. Neo3-GUI provides an intuitive way to interact with the Neo blockchain, manage wallets, deploy smart contracts, and more.
@@ -17,7 +21,7 @@ A cross-platform graphical user interface for Neo N3 blockchain. Neo3-GUI provid
 
 ## Requirements
 
-- [.NET 6.0 SDK](https://dotnet.microsoft.com/download/dotnet/6.0)
+- [.NET 10.0 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Node.js](https://nodejs.org/) (v16 or later recommended)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) (for development)
 

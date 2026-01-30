@@ -321,8 +321,6 @@ namespace Neo
             return InitTransaction(wallet, script, sender, cosigners);
         }
 
-        #endregion
-
 
         /// <summary>
         /// create tx by script and signer
