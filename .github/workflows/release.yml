@@ -85,12 +85,7 @@ jobs:
         run: |
           VERSION="${{ github.event.inputs.version }}"
           if [ -z "$VERSION" ]; then
-            VERSION=$(python3 - <<'PY'
-import json
-with open('neo3-gui/neo3-gui/ClientApp/package.json', 'r', encoding='utf-8') as f:
-    print(json.load(f)['version'])
-PY
-)
+            VERSION=$(python3 -c "import json;print(json.load(open('neo3-gui/neo3-gui/ClientApp/package.json', 'r', encoding='utf-8'))['version'])")
           fi
           VERSION="${VERSION#v}"
           TAG="v${VERSION}"
