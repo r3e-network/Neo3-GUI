@@ -17,11 +17,8 @@ permissions:
 
 jobs:
   build:
-    name: Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest, windows-latest]
+    name: Build (windows-latest)
+    runs-on: windows-latest
 
     steps:
       - uses: actions/checkout@v4
@@ -41,33 +38,23 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: build windows
-        if: matrix.os == 'windows-latest'
+      - name: Build Windows app and installer
+        shell: bash
         working-directory: neo3-gui/neo3-gui
         env:
           CI: false
-        run: sh publish.sh
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+        run: ./publish.sh
 
-      - name: build mac
-        if: matrix.os == 'macos-latest'
-        working-directory: neo3-gui/neo3-gui
-        env:
-          CI: false
-        run: sh publish.macos.sh
+      - name: Verify Windows release artifacts
+        shell: bash
+        run: ls -la neo3-gui/neo3-gui/ClientApp/build-electron/*.exe
 
       - name: Upload Windows Release Files
-        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: release-win
           path: neo3-gui/neo3-gui/ClientApp/build-electron/*.exe
-
-      - name: Upload Mac Release Files
-        if: matrix.os == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: release-mac
-          path: neo3-gui/neo3-gui/ClientApp/build-electron/*.dmg
 
   release:
     name: Create GitHub Release
@@ -92,11 +79,10 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
-      - name: Download build artifacts
+      - name: Download Windows artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: release-*
-          merge-multiple: true
+          name: release-win
           path: release-assets
 
       - name: Create release with assets
@@ -107,4 +93,3 @@ jobs:
           target_commitish: ${{ github.sha }}
           files: |
             release-assets/*.exe
-            release-assets/*.dmg
