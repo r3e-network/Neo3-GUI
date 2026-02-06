@@ -25,13 +25,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.2" />
     <PackageReference Include="Neo" Version="3.9.1" />
+    <PackageReference Include="Neo.Plugins.Storage.LevelDBStore" Version="3.9.2" />
     <PackageReference Include="ngd.leveldb.release" Version="2.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-	  <None Update="Plugins\LevelDBStore\LevelDBStore.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
 

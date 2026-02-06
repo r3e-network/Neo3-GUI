@@ -60,8 +60,9 @@ namespace Neo.Common.Scanners
                 }
                 catch (Exception e)
                 {
+                    if (!_running) break;
                     Console.WriteLine(e);
-                    throw;
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                 }
 
             }

@@ -5,6 +5,7 @@ using Neo.Ledger;
 using Neo.Network.P2P;
 using Neo.Network.P2P.Payloads;
 using Neo.Plugins;
+using NeoLevelDbStoreProvider = Neo.Plugins.Storage.LevelDBStore;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.Wallets;
@@ -65,7 +66,13 @@ namespace Neo.Common.Consoles
             if (NeoSystem != null) return;
             try
             {
-                NeoSystem = new NeoSystem(CliSettings.Default.Protocol, CliSettings.Default.Storage.Engine, CliSettings.Default.Storage.Path);
+                var storageEngine = CliSettings.Default.Storage.Engine;
+                var storagePath = CliSettings.Default.Storage.Path;
+
+                NeoSystem = string.Equals(storageEngine, "LevelDBStore", StringComparison.OrdinalIgnoreCase)
+                    ? new NeoSystem(CliSettings.Default.Protocol, new NeoLevelDbStoreProvider(), storagePath)
+                    : new NeoSystem(CliSettings.Default.Protocol, storageEngine, storagePath);
+
                 NeoSystem.AddService(this);
 
                 LocalNode = await NeoSystem.LocalNode.Ask<LocalNode>(new LocalNode.GetInstance());
@@ -139,7 +146,7 @@ namespace Neo.Common.Consoles
             });
         }
 
-        public void Stop()
+        public virtual void Stop()
         {
             Interlocked.Exchange(ref neoSystem, null)?.Dispose();
         }

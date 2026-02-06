@@ -27,9 +27,15 @@ namespace Neo
         public override async Task Start(string[] args)
         {
             await base.Start(args);
-            _scanTask = Task.Factory.StartNew(() => ExecuteResultScanner.Start(), TaskCreationOptions.LongRunning);
+            _scanTask = Task.Run(() => ExecuteResultScanner.Start());
             UnconfirmedTransactionCache.RegisterBlockPersistEvent(this.NeoSystem);
         }
 
+        public override void Stop()
+        {
+            ExecuteResultScanner.Stop();
+            _scanTask?.Wait(TimeSpan.FromSeconds(1));
+            base.Stop();
+        }
     }
 }
