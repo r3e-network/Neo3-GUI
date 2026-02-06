@@ -122,7 +122,7 @@ namespace Neo.Common.Consoles
                     blocksToImport.Add(blocksBeingImported.Current);
                 }
                 if (blocksToImport.Count == 0) break;
-                await NeoSystem.Blockchain.Ask<Blockchain.ImportCompleted>(new Blockchain.Import { Blocks = blocksToImport });
+                await NeoSystem.Blockchain.Ask<Blockchain.ImportCompleted>(new Blockchain.Import(blocksToImport, true));
                 if (NeoSystem is null) return;
             }
         }
@@ -368,8 +368,9 @@ namespace Neo.Common.Consoles
             BigInteger gas = BigInteger.Zero;
             var snapshot = NeoSystem.StoreView;
             uint height = NativeContract.Ledger.CurrentIndex(snapshot) + 1;
+            using var engine = ApplicationEngine.Create(TriggerType.Application, null, snapshot, null, NeoSystem.Settings, long.MaxValue, null);
             foreach (UInt160 account in CurrentWallet.GetAccounts().Select(p => p.ScriptHash))
-                gas += NativeContract.NEO.UnclaimedGas(snapshot, account, height);
+                gas += NativeContract.NEO.UnclaimedGas(engine, account, height);
             Console.WriteLine($"Unclaimed gas: {new BigDecimal(gas, NativeContract.GAS.Decimals)}");
             return true;
         }

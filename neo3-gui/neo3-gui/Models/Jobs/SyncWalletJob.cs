@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Neo.Ledger;
 using Neo.Models.Wallets;
 using Neo.Persistence;
+using Neo.SmartContract;
 using Neo.SmartContract.Native;
 
 namespace Neo.Models.Jobs
@@ -43,11 +44,12 @@ namespace Neo.Models.Jobs
                     Gas = gasBalances[i].ToString(),
                 }).ToList();
 
-
+                
                 BigInteger gas = BigInteger.Zero;
+                using var engine = ApplicationEngine.Create(TriggerType.Application, null, snapshot, null, Program.Starter.NeoSystem.Settings, long.MaxValue, null);
                 foreach (UInt160 account in accounts.Where(a => !a.WatchOnly).Select(p => p.ScriptHash))
                 {
-                    gas += NativeContract.NEO.UnclaimedGas(snapshot, account, snapshot.GetHeight() + 1);
+                    gas += NativeContract.NEO.UnclaimedGas(engine, account, snapshot.GetHeight() + 1);
                 }
 
                 var unclaimedGas = new BigDecimal(gas, NativeContract.GAS.Decimals);

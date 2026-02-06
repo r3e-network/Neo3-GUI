@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Neo;
 using Neo.Common.Storage;
+using Neo.Common.Storage.SQLiteModules;
 using Neo.Extensions;
 using Neo.Models;
 using Neo.SmartContract.Native;
@@ -22,6 +23,17 @@ namespace neo3_gui.tests.Storage
         [TestMethod]
         public async Task AddTransfer_Test()
         {
+            _db.CreateContract(new ContractEntity
+            {
+                Hash = NativeContract.NEO.Hash.ToBigEndianHex(),
+                Name = "NeoToken",
+                Symbol = "NEO",
+                Decimals = NativeContract.NEO.Decimals,
+                AssetType = AssetType.Nep17,
+                CreateTime = DateTime.UtcNow,
+                CreateTxId = "0000000000000000000000000000000000000000000000000000000000000000"
+            });
+
             var transfer = new TransferInfo()
             {
                 BlockHeight = 0,
@@ -30,7 +42,7 @@ namespace neo3_gui.tests.Storage
                     
                 Asset = NativeContract.NEO.Hash,
                 Amount = 1,
-                TxId = UInt256.Parse(""),
+                TxId = UInt256.Parse("0x0000000000000000000000000000000000000000000000000000000000000000"),
                 TimeStamp = DateTime.Now.ToTimestamp(),
                 //AssetInfo = new AssetInfo()
                 //{

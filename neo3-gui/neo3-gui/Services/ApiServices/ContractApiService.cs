@@ -247,7 +247,8 @@ namespace Neo.Services.ApiServices
             var testTx = new Transaction()
             {
                 Signers = signers.ToArray(),
-                Attributes = new TransactionAttribute[0]
+                Attributes = new TransactionAttribute[0],
+                Witnesses = new Witness[0]
             };
             using ApplicationEngine engine = sb.ToArray().RunTestMode(null, testTx);
 

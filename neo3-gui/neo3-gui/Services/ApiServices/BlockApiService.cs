@@ -19,6 +19,10 @@ namespace Neo.Services.ApiServices
         /// <returns></returns>
         public async Task<object> GetBlock(uint index)
         {
+            if (Program.Starter?.NeoSystem == null)
+            {
+                return Error(ErrorCode.BlockHeightInvalid);
+            }
             var block = index.GetBlock();
             if (block == null)
             {
@@ -34,6 +38,10 @@ namespace Neo.Services.ApiServices
         /// <returns></returns>
         public async Task<object> GetBlockByHash(UInt256 hash)
         {
+            if (Program.Starter?.NeoSystem == null)
+            {
+                return Error(ErrorCode.BlockHashInvalid);
+            }
             var block = hash.GetBlock();
             if (block == null)
             {

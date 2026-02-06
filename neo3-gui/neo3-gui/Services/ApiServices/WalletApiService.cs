@@ -422,9 +422,10 @@ namespace Neo.Services.ApiServices
             }
             BigInteger gas = BigInteger.Zero;
             var snapshot = Helpers.GetDefaultSnapshot();
+            using var engine = ApplicationEngine.Create(TriggerType.Application, null, snapshot, null, Program.Starter.NeoSystem.Settings, long.MaxValue, null);
             foreach (UInt160 account in CurrentWallet.GetAccounts().Where(a => !a.WatchOnly).Select(p => p.ScriptHash))
             {
-                gas += NativeContract.NEO.UnclaimedGas(snapshot, account, snapshot.GetHeight() + 1);
+                gas += NativeContract.NEO.UnclaimedGas(engine, account, snapshot.GetHeight() + 1);
             }
             return new UnclaimedGasModel()
             {

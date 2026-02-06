@@ -8,6 +8,7 @@ using Neo.Models;
 using Neo.SmartContract;
 using Neo.SmartContract.Native;
 using Neo.VM;
+using Neo.Persistence;
 
 namespace Neo.Services.ApiServices
 {
@@ -134,7 +135,10 @@ namespace Neo.Services.ApiServices
 
         public async Task<object> GetExecFeeFactor()
         {
-            return NativeContract.Policy.GetExecFeeFactor(Helpers.GetDefaultSnapshot());
+            var snapshot = Helpers.GetDefaultSnapshot();
+            var settings = Program.Starter.NeoSystem.Settings;
+            var index = NativeContract.Ledger.CurrentIndex(snapshot);
+            return NativeContract.Policy.GetExecFeeFactor(settings, snapshot, index);
         }
 
         public async Task<object> SetExecFeeFactor(uint factor, List<UInt160> signers = null)

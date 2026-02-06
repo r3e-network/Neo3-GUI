@@ -6,8 +6,12 @@ Your feedbacks and suggestions are welcome. Please submit issues.
 
 ## Required Tools and Dependencies for development
 
-1. [Visual Studio 2019](https://visualstudio.microsoft.com/) and [.NET Core 6.0](https://dotnet.microsoft.com/download) 
+1. [Visual Studio 2022](https://visualstudio.microsoft.com/) and [.NET 10 SDK](https://dotnet.microsoft.com/download) 
 2. [Node.js](https://nodejs.org/) 
+
+## Neo Version
+
+This branch is upgraded to use Neo package `v3.9.1`.
 
 ## Build and Run
 
@@ -21,7 +25,7 @@ npm install
 ### Run Neo3-GUI
 After successfully install JS dependencies, you can start runing or debugging Neo3-GUI with Visual Studio.
 
-Open `./neo3-gui/neo3-gui.sln` with Visual Studio 2019, press **F5** to start debuging Neo3-GUI.
+Open `./neo3-gui/neo3-gui.sln` with Visual Studio 2022, press **F5** to start debuging Neo3-GUI.
 
 ## Release
 To release and publish an installation program for Neo3-GUI, please run the following comment in `neo3-gui/neo3-gui` directory:
